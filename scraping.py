@@ -13,8 +13,8 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException
 
 # --- Configuration ---
-START_PAGE = 5
-END_PAGE = 7
+START_PAGE = 8
+END_PAGE = 28
 BASE_URL = "https://www.airliners.net/search?photoCategory=39&sortBy=dateAccepted&sortOrder=desc&perPage=36&display=detail&page={}"
 IMAGE_SAVE_DIR = "airliners_images"
 CSV_FILENAME = "airliners_metadata.csv"
@@ -151,7 +151,7 @@ for page_num in range(START_PAGE, END_PAGE + 1):
             "image_filename": img_filename
         })
         
-    sleep_time = random.uniform(10.0, 20.0)
+    sleep_time = random.uniform(10.0, 15.0)
     print(f"Page {page_num} complete. Sleeping for {sleep_time:.2f} seconds...")
     time.sleep(sleep_time)
 
