@@ -14,8 +14,8 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException
 
 # --- Configuration ---
-START_PAGE = 101
-END_PAGE = 121
+START_PAGE = 391
+END_PAGE = 420
 BASE_URL = "https://www.airliners.net/search?photoCategory=39&sortBy=dateAccepted&sortOrder=desc&perPage=36&display=detail&page={}"
 IMAGE_SAVE_DIR = "airliners_images"
 CSV_FILENAME = "airliners_metadata.csv"
