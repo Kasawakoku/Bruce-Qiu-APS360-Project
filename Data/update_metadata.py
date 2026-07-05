@@ -26,15 +26,23 @@ def load_mappings():
     variant_to_family = {}
     family_to_manufacturer = {}
 
-    for mfg, families in aircraft_raw.items():
-        for family, variants in families.items():
-            family_to_manufacturer[family] = mfg
-            for variant, models in variants.items():
-                variant_to_family[variant] = family
-                model_to_variant[variant] = variant
-                if models:
-                    for model in models:
-                        model_to_variant[model] = variant
+    # NEW LOGIC: Handling Lists of Dictionaries instead of pure Dictionaries
+    for mfg, families_list in aircraft_raw.items():
+        if not families_list: continue
+        
+        for family_dict in families_list:
+            for family, variants_list in family_dict.items():
+                family_to_manufacturer[family] = mfg
+                if not variants_list: continue
+                
+                for variant_dict in variants_list:
+                    for variant, models in variant_dict.items():
+                        variant_to_family[variant] = family
+                        model_to_variant[variant] = variant # Map variant to itself
+                        
+                        if models:
+                            for model in models:
+                                model_to_variant[model] = variant
                         
     return airline_lookup, model_to_variant, variant_to_family, family_to_manufacturer
 

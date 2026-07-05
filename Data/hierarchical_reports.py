@@ -26,17 +26,40 @@ def load_mappings():
     variant_to_family = {}
     family_to_manufacturer = {}
 
-    for mfg, families in aircraft_raw.items():
-        for family, variants in families.items():
-            family_to_manufacturer[family] = mfg
-            for variant, models in variants.items():
-                variant_to_family[variant] = family
-                model_to_variant[variant] = variant # Map variant to itself
-                if models: # Check if the list isn't empty
-                    for model in models:
-                        model_to_variant[model] = variant
+    # ROBUST LOGIC: Handles missing colons and empty lists gracefully
+    for mfg, families_list in aircraft_raw.items():
+        if not families_list: continue
+        
+        for family_item in families_list:
+            # If the family is missing a colon, treat it as a plain string
+            if isinstance(family_item, str):
+                family_to_manufacturer[family_item] = mfg
+                
+            elif isinstance(family_item, dict):
+                for family, variants_list in family_item.items():
+                    family_to_manufacturer[family] = mfg
+                    if not variants_list: continue
+                    
+                    for variant_item in variants_list:
+                        # If the variant has no colon/children, it parses as a string
+                        if isinstance(variant_item, str):
+                            variant = variant_item
+                            variant_to_family[variant] = family
+                            model_to_variant[variant] = variant
+                            
+                        # If the variant has a colon/children, it parses as a dictionary
+                        elif isinstance(variant_item, dict):
+                            for variant, models in variant_item.items():
+                                variant_to_family[variant] = family
+                                model_to_variant[variant] = variant # Map variant to itself
+                                
+                                if models and isinstance(models, list):
+                                    for model in models:
+                                        model_to_variant[model] = variant
                         
     return airline_lookup, model_to_variant, variant_to_family, family_to_manufacturer
+                        
+    
 
 def generate_reports():
     if not os.path.exists(INPUT_CSV):
@@ -50,7 +73,7 @@ def generate_reports():
     # Apply mappings. 
     # .fillna() ensures that if a string ISN'T in your YAML, it just keeps the original scraped string.
     df['merged_airline'] = df['airline'].map(airline_lookup).fillna(df['airline'])
-    df['variant'] = df['aircraft_variant'].map(model_to_variant).fillna(df['aircraft_variant'])
+    df['variant'] = df['aircraft_model'].map(model_to_variant).fillna(df['aircraft_model'])
     df['family'] = df['variant'].map(variant_to_family).fillna("Unknown Family")
     df['manufacturer'] = df['family'].map(family_to_manufacturer).fillna("Unknown Manufacturer")
 

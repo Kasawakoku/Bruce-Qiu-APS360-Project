@@ -3,8 +3,8 @@ import os
 
 # --- Configuration ---
 INPUT_CSV = "airliners_metadata.csv"
-AIRLINES_OUTPUT_CSV = "airline_counts.csv"
-MODEL_OUTPUT_CSV = "model_counts.csv"
+AIRLINES_OUTPUT_CSV = "counts_airlines.csv"
+MODEL_OUTPUT_CSV = "counts_models.csv"
 
 def generate_distribution_reports():
     if not os.path.exists(INPUT_CSV):
@@ -21,26 +21,26 @@ def generate_distribution_reports():
     # .dropna() removes rows where the airline was blank/None
     # .value_counts() groups them and counts the occurrences
     # .reset_index() turns it back into a standard DataFrame table
-    airline_counts = df['airline'].dropna().value_counts().reset_index()
-    airline_counts.columns = ['Airline', 'Image Count']
+    counts_airlines = df['airline'].dropna().value_counts().reset_index()
+    counts_airlines.columns = ['Airline', 'Image Count']
     
     # Sort alphabetically by the 'Airline' column
-    airline_counts = airline_counts.sort_values(by='Airline', ascending=True)
+    counts_airlines = counts_airlines.sort_values(by='Airline', ascending=True)
     
     # Export to CSV
-    airline_counts.to_csv(AIRLINES_OUTPUT_CSV, index=False, encoding='utf-8')
-    print(f"[*] Saved {len(airline_counts)} unique airlines to {AIRLINES_OUTPUT_CSV}")
+    counts_airlines.to_csv(AIRLINES_OUTPUT_CSV, index=False, encoding='utf-8')
+    print(f"[*] Saved {len(counts_airlines)} unique airlines to {AIRLINES_OUTPUT_CSV}")
 
     # --- 2. Process Aircraft MODEL ---
-    model_counts = df['aircraft_model'].dropna().value_counts().reset_index()
-    model_counts.columns = ['Aircraft Model', 'Image Count']
+    counts_models = df['aircraft_model'].dropna().value_counts().reset_index()
+    counts_models.columns = ['Aircraft Model', 'Image Count']
     
     # Sort alphabetically by the 'Aircraft Model' column
-    model_counts = model_counts.sort_values(by='Aircraft Model', ascending=True)
+    counts_models = counts_models.sort_values(by='Aircraft Model', ascending=True)
     
     # Export to CSV
-    model_counts.to_csv(MODEL_OUTPUT_CSV, index=False, encoding='utf-8')
-    print(f"[*] Saved {len(model_counts)} unique aircraft models to {MODEL_OUTPUT_CSV}")
+    counts_models.to_csv(MODEL_OUTPUT_CSV, index=False, encoding='utf-8')
+    print(f"[*] Saved {len(counts_models)} unique aircraft models to {MODEL_OUTPUT_CSV}")
 
     print("\nReports generated successfully!")
 
