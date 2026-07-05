@@ -161,7 +161,7 @@ for page_num in range(START_PAGE, END_PAGE + 1):
             metadata_records.append({
                 "photo_id": photo_id,
                 "airline": airline,
-                "aircraft_variant": aircraft,
+                "aircraft_model": aircraft,
                 "registration": registration,
                 "msn": msn,
                 "location": location,

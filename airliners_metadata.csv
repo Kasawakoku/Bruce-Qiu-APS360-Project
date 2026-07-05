@@ -1,4 +1,4 @@
-photo_id,airline,aircraft_variant,registration,msn,location,date,photographer,image_filename,caption
+photo_id,airline,aircraft_model,registration,msn,location,date,photographer,image_filename,caption
 8130139,Tesis,Ilyushin Il-76TD,RA-76791,0093497936,Maastricht / Aachen (- Beek / Zuid Limburg) (MST / EHBK),1996,Wolfgang Mendorf,8130139.jpg,
 8130137,Sayakhat Airlines,Ilyushin Il-76TD,CCCP-76442,1023414450,Dusseldorf - International (Rhein-Ruhr / Lohausen) (DUS / EDDL),1993,Wolfgang Mendorf,8130137.jpg,
 8130133,Eastern Airways,Douglas C-47B Dakota 4 (DC-3),G-AMPO,33185/16437,Dusseldorf - International (Rhein-Ruhr / Lohausen) (DUS / EDDL),1979,Wolfgang Mendorf,8130133.jpg,

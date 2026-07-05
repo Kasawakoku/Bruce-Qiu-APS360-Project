@@ -4,7 +4,7 @@ import os
 # --- Configuration ---
 INPUT_CSV = "airliners_metadata.csv"
 AIRLINES_OUTPUT_CSV = "airline_counts.csv"
-VARIANTS_OUTPUT_CSV = "variant_counts.csv"
+MODEL_OUTPUT_CSV = "model_counts.csv"
 
 def generate_distribution_reports():
     if not os.path.exists(INPUT_CSV):
@@ -31,17 +31,17 @@ def generate_distribution_reports():
     airline_counts.to_csv(AIRLINES_OUTPUT_CSV, index=False, encoding='utf-8')
     print(f"[*] Saved {len(airline_counts)} unique airlines to {AIRLINES_OUTPUT_CSV}")
 
-    # --- 2. Process Aircraft Variants ---
-    variant_counts = df['aircraft_variant'].dropna().value_counts().reset_index()
-    variant_counts.columns = ['Aircraft Variant', 'Image Count']
+    # --- 2. Process Aircraft MODEL ---
+    model_counts = df['aircraft_model'].dropna().value_counts().reset_index()
+    model_counts.columns = ['Aircraft Model', 'Image Count']
     
-    # Sort alphabetically by the 'Aircraft Variant' column
-    variant_counts = variant_counts.sort_values(by='Aircraft Variant', ascending=True)
+    # Sort alphabetically by the 'Aircraft Model' column
+    model_counts = model_counts.sort_values(by='Aircraft Model', ascending=True)
     
     # Export to CSV
-    variant_counts.to_csv(VARIANTS_OUTPUT_CSV, index=False, encoding='utf-8')
-    print(f"[*] Saved {len(variant_counts)} unique aircraft variants to {VARIANTS_OUTPUT_CSV}")
-    
+    model_counts.to_csv(MODEL_OUTPUT_CSV, index=False, encoding='utf-8')
+    print(f"[*] Saved {len(model_counts)} unique aircraft models to {MODEL_OUTPUT_CSV}")
+
     print("\nReports generated successfully!")
 
 if __name__ == "__main__":
