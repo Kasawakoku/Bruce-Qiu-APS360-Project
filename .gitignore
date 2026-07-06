@@ -4,4 +4,6 @@
 
 *.tar.gz
 sample.html
+
 raw_aircraft.txt
+raw_airlines.txt

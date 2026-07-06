@@ -5,12 +5,12 @@ Aero Vodochody,18
 Aerospatiale/British Aircraft Corporation,6
 Airbus,8064
 Antonov,114
-Beechcraft,123
+Beechcraft,183
 Boeing,8622
 Bombardier/Canadair,1053
 British Aircraft Corporation/British Aerospace,37
 COMAC,69
-Cessna,3
+Cessna,952
 Cirrus,124
 Dassault,207
 De Havilland,6
@@ -18,8 +18,9 @@ De Havilland Canada,269
 Dornier,52
 Embraer,1010
 Fokker,68
-Gulfstream Aerospace,357
-Ilyushin,80
+Gulfstream Aerospace,362
+Hawker/Hawker Siddeley,7
+Ilyushin,81
 Israel Aerospace Industries,59
 Learjet,89
 Lockheed/Lockheed-Martin,102
@@ -29,6 +30,7 @@ Piper,356
 Saab,57
 Sud Aviation,26
 Sukhoi,58
+Swearingen,24
 Tupolev,56
-Unknown Manufacturer,4036
+Unknown Manufacturer,2990
 Yakovlev,60

@@ -285,9 +285,6 @@ Basler BT-67 (DC3T),5
 Bearhawk Model 5,1
 Beech 2000A Starship I,2
 Beech 23 Musketeer,2
-Beech 35 Bonanza,1
-Beech 35-C33 Debonair,1
-Beech 36 Bonanza 36,1
 Beech 56TC Turbo Baron,2
 Beech 58 Baron,3
 Beech 58... Baron,1
@@ -301,10 +298,7 @@ Beech 95-A55 Baron,1
 Beech A23 Musketeer II,1
 Beech A24R Sierra,1
 Beech A24R Sierra 200,1
-Beech A36 Bonanza,4
-Beech A36 Bonanza 36,2
 Beech A55 Baron (95-A55),1
-Beech B36TC Bonanza,2
 Beech B55 Baron (95-B55),3
 Beech Beechjet 400A,2
 Beech C-45G Expeditor (D18S),1
@@ -318,44 +312,27 @@ Beech D50C Twin Bonanza,1
 Beech D55 Baron,1
 Beech E18S,3
 Beech E55 Baron,1
-Beech F33A Bonanza,7
-Beech F35 Bonanza,1
 Beech G18S,1
-Beech G36 Bonanza,1
-Beech K35 Bonanza,1
-Beech M35 Bonanza,1
-Beech P35 Bonanza,1
 Beech T-34A Mentor (45),3
 Beech T-34B Mentor (D45),2
 Beech UC-45J Expeditor (18),1
-Beech V35 Bonanza,2
-Beech V35A Bonanza,1
-Beech V35B Bonanza,5
 Beechcraft 100 King Air (BE10),3
 Beechcraft 1900C/D (B190),14
 Beechcraft 200 King Air,6
 Beechcraft 200 Super King Air (BE20),50
 Beechcraft 300 Super King Air (BE30),26
-Beechcraft 35-C33A Bonanza,1
+Beechcraft 33 Debonair/Bonanza (BE33),10
+Beechcraft 35 Bonanza (BE35),26
+Beechcraft 36 Bonanza (BE36/B36T/BT36),24
 Beechcraft 58 Baron,2
 Beechcraft 58P Baron,1
 Beechcraft 90 King Air (BE90),30
 Beechcraft 99 Airliner,1
-Beechcraft A35 Bonanza,1
-Beechcraft A36 Bonanza,9
-Beechcraft B36TC Bonanza,2
 Beechcraft Beechjet 400A,1
 Beechcraft C23 Sundowner,1
-Beechcraft E33 Bonanza,1
 Beechcraft G58 Baron,2
-Beechcraft H35 Bonanza,1
-Beechcraft M35 Bonanza,2
-Beechcraft N35 Bonanza,2
-Beechcraft P35 Bonanza,1
 Beechcraft Staggerwing D-17S,1
 Beechcraft T-6 Texan II (TEX2),2
-Beechcraft V35 Bonanza,2
-Beechcraft V35B Bonanza,4
 Bell (Agusta) AB-205A-1,1
 Bell (Agusta) AB-206B JetRanger II,6
 Bell (Agusta) AB-206B-3 JetRanger III,2
@@ -400,7 +377,6 @@ Bellanca 8KCAB Decathlon,1
 Bellanca 8KCAB Super Decathlon,1
 Beriev Be-200ChS,2
 Beriev Be-32,1
-Beriev Be-976 (Il-76SKIP),1
 Best Off Skyranger Nynja 912,1
 Blackshape Prime,1
 Blackwing 635RG,1
@@ -549,222 +525,48 @@ Canadian Regional Jet CRJ-700/-550/Challenger 870 (CRJ7),46
 Canadian Regional Jet CRJ-900/-705/Challenger 890 (CRJ9),112
 Caproni Ca-100 Caproncino,1
 Caproni Ca-3 (replica),1
-Cessna  172,3
-Cessna 140,2
-Cessna 150,1
-Cessna 150...,1
-Cessna 150B,3
-Cessna 150F,3
-Cessna 150F Commuter,1
-Cessna 150G,2
-Cessna 150H,4
-Cessna 150J,1
-Cessna 150K,1
-Cessna 150L,5
-Cessna 150L Commuter,1
-Cessna 150M,4
-Cessna 152,16
-Cessna 152 II,4
-Cessna 162 Skycatcher,2
-Cessna 170,1
-Cessna 170A,2
-Cessna 170B,3
-Cessna 172,1
-Cessna 172 N Skyhawk,5
-Cessna 172 Skyhawk,5
-Cessna 172 Skyhawk (C172),3
-Cessna 172 Skyhawk II,1
-Cessna 172B Skyhawk,1
-Cessna 172C,2
-Cessna 172D Skyhawk,1
-Cessna 172E Skyhawk,1
-Cessna 172G Skyhawk,3
-Cessna 172H Skyhawk,2
-Cessna 172K Skyhawk II,1
-Cessna 172L Skyhawk,3
-Cessna 172M,4
-Cessna 172M Skyhawk,9
-Cessna 172M Skyhawk 1,3
-Cessna 172M Skyhawk II,3
-Cessna 172N,5
-Cessna 172N Skyhawk 100,2
-Cessna 172N Skyhawk 100 II,4
-Cessna 172N Skyhawk 100 II/Air Plains 180HP,1
-Cessna 172N Skyhawk II,2
-Cessna 172P Skyhawk,8
-Cessna 172P Skyhawk II,2
-Cessna 172R Skyhawk,6
-Cessna 172R Skyhawk II,1
-Cessna 172RG Cutlass RG,2
-Cessna 172S,2
-Cessna 172S Skyhawk,2
-Cessna 172S Skyhawk SP,43
-Cessna 172SP Skyhawk,2
-Cessna 177 Cardinal,2
-Cessna 177B Cardinal,3
-Cessna 177B Cardinal II,1
-Cessna 177RG Cardinal,1
-Cessna 180,1
-Cessna 180 Skywagon,2
-Cessna 180A Skywagon,1
-Cessna 180D Skywagon,1
-Cessna 180E Skywagon,1
-Cessna 180H,1
-Cessna 180H Skywagon,2
-Cessna 180H Skywagon 180,1
-Cessna 180J Skywagon,1
-Cessna 180K Skywagon II,1
-Cessna 182,1
-Cessna 182 Skylane,2
-Cessna 182A Skylane,1
-Cessna 182B Skylane,1
-Cessna 182C,1
-Cessna 182D,1
-Cessna 182D Skylane,1
-Cessna 182F Skylane,1
-Cessna 182G,1
-Cessna 182G Skylane,2
-Cessna 182H Skylane,1
-Cessna 182J Skylane,1
-Cessna 182K,1
-Cessna 182K Skylane,2
-Cessna 182L Skylane,1
-Cessna 182N,2
-Cessna 182P,3
-Cessna 182P Skylane,9
-Cessna 182P Skylane II,2
-Cessna 182Q Skylane,9
-Cessna 182Q Skylane II,4
-Cessna 182R Skylane,1
-Cessna 182R Skylane II,2
-Cessna 182RG Skylane II,1
-Cessna 182S Skylane,4
-Cessna 182T,2
-Cessna 182T Skylane,11
-Cessna 182T Skylane II,1
-Cessna 182T Turbo Skylane,1
-Cessna 185 Skywagon,1
-Cessna 185... Skywagon,1
-Cessna 185E Skywagon,2
-Cessna 195,3
-Cessna 195B,1
-Cessna 206 Stationair TC,1
-Cessna 206G Stationair,1
-Cessna 206H Stationair,2
-Cessna 207 Skywagon 207,1
-Cessna 208 Caravan,3
-Cessna 208 Caravan Amphibian,1
-Cessna 208 Caravan I,5
-Cessna 208A Caravan 675,2
-Cessna 208B Caravan I,2
-Cessna 208B Grand Caravan,30
-Cessna 208B Grand Caravan EX,32
-Cessna 208B Grand Caravan EX Anphibian,1
-Cessna 208B Super Cargomaster,7
-Cessna 210D Centurion,1
-Cessna 210N Centurion II,1
-Cessna 305A Bird Dog,1
-Cessna 310 Q,1
-Cessna 310 R,1
-Cessna 310D,1
-Cessna 310G,1
-Cessna 310P,1
-Cessna 310R,2
-Cessna 337A Super Skymaster,1
-Cessna 337G Super Skymaster,1
-Cessna 340A,2
-Cessna 340A III,1
-Cessna 400 Corvalis TT,1
-Cessna 401A,1
-Cessna 402B,3
-Cessna 402C,4
-Cessna 402C ...,1
-Cessna 402C Businessliner,1
-Cessna 402C III,1
-Cessna 404 Titan,2
-Cessna 404 Titan Ambassador II,1
-Cessna 408 SkyCourier,4
-Cessna 408F SkyCourier,2
-Cessna 411A,1
-Cessna 414,1
-Cessna 414A Chancellor,5
-Cessna 421B Golden Eagle,1
-Cessna 421C,1
-Cessna 421C ...,1
-Cessna 421C Golden Eagle,3
-Cessna 441 Conquest,2
-Cessna 441 Conquest II,2
-Cessna 500 Citation,1
-Cessna 501 Citation I/SP,4
-Cessna 510 Citation Mustang,16
-Cessna 525 Citation CJ1,12
-Cessna 525 Citation CJ1+,5
-Cessna 525 Citation M2,14
-Cessna 525 CitationJet,5
-Cessna 525 CitationJet M2,5
-Cessna 525A Citation CJ2,19
-Cessna 525A Citation CJ2+,22
-Cessna 525B Citation CJ3,25
-Cessna 525B Citation CJ3+,11
-Cessna 525C Citation CJ4,16
-Cessna 525C Citation CJ4 Gen2,2
-Cessna 526 citationjet M2,1
-Cessna 550 Citation II,6
-Cessna 550 Citation II Bravo,2
-Cessna 550B Citation Bravo,8
-Cessna 551 Citation II/SP,3
-Cessna 560 Citation Encore,4
-Cessna 560 Citation Encore+,1
-Cessna 560 Citation Ultra,5
-Cessna 560 Citation V,3
-Cessna 560XL Citation Excel,16
-Cessna 560XL Citation XLS,40
-Cessna 560XL Citation XLS+,43
-Cessna 650 Citation III,8
-Cessna 650 Citation VII,2
-Cessna 680 Citation Sovereign,18
-Cessna 680 Citation Sovereign+,7
-Cessna 680A Citation Latitude,54
-Cessna 700 Citation Longitude,12
-Cessna 750 Citation X,11
-Cessna A.185F Skyvagon,1
-Cessna A150L Aerobat,1
-Cessna A152 Aerobat,1
-Cessna A185E Skywagon,1
-Cessna A185F Skywagon,5
-Cessna A185F Skywagon 185,3
-Cessna O-1 Bird Dog (305/321/L-19/OE),1
-Cessna O-2A Super Skymaster (M337),3
-Cessna P210 Silver Eagle,1
-Cessna P210N Pressurized Centurion,1
-Cessna P210N Pressurized Centurion II,1
-Cessna P337H Pressurized Skymaster,1
-Cessna R172K Hawk XP,6
-Cessna R172K Hawk XP II,2
+Cessna 140 (C140),2
+Cessna 150 (C150),34
+Cessna 152 (C152),27
+Cessna 162 Skycatcher (C162),2
+Cessna 170 (C170),6
+Cessna 172 Skyhawk/Cutlass/Hawk (C172/C72R),186
+Cessna 177 Cardinal (C177/C77R),8
+Cessna 180 Skywagon (C180),12
+Cessna 182 Skylane (C182/C82R/S/T),77
+Cessna 185 Skywagon (C185),14
+Cessna 195 (C195),4
+Cessna 206 (C206/C06T/T206),19
+Cessna 207 (C207/C07T),1
+Cessna 208 Caravan/Grand Caravan (C208),83
+Cessna 210 Centurion (C210/C10T/P210/T210),9
+Cessna 310 (C310),8
+Cessna 335/340 (C340),3
+Cessna 337 Skymaster (C337/P337),6
+Cessna 400 Corvalis (C400),1
+Cessna 401/402 (C402/C02T),11
+Cessna 404 Titan (C404/C04T),3
+Cessna 408 SkyCourier (C408),6
+Cessna 411 (C411),1
+Cessna 414 Chancellor (C414/C14T),6
+Cessna 421 Golden Eagle (C421/C21T),6
+Cessna 441 Conquest II (C441),4
+Cessna 500/501 Citation I (C500/C501),5
+Cessna 510 Citation Mustang (C510),16
+Cessna 525 CitationJet/CJ/M2 (C525),137
+Cessna 550 Citation II/Bravo (C550/C55B),19
+Cessna 560 Citation V/Encore/Ultra (C560),13
+Cessna 560XL Citation Excel/XLS (C56X),99
+Cessna 650 III/IV/VI/VII (C650),10
+Cessna 680 Citation Sovereign (C680),25
+Cessna 680A Citation Latitude (C68A),54
+Cessna 700 Citation Longtitude (C700),13
+Cessna 750 Citation X (C750),11
+Cessna O-1 Bird Dog (O1),3
 Cessna R182 Skylane RG,5
-Cessna T-50 Bobcat,2
-Cessna T182T Turbo Skylane,1
-Cessna T182T Turbo Skylane TC,1
-Cessna T206H Stationair,1
-Cessna T206H Stationair HD,2
-Cessna T206H Turbo Stationair,1
-Cessna T206H Turbo Stationair II,1
-Cessna T206H Turbo Stationair TC,1
-Cessna T210L Turbo Centurion,1
-Cessna T210M Centurion,1
-Cessna T210M Turbo Centurion II,1
-Cessna T210R Turbo Centurion II,1
-Cessna T303 Crusader,3
-Cessna TO-1D Bird Dog (305B/TL-19D),1
-Cessna TR182 Turbo Skylane RG,1
-Cessna TU206G Stationair 6,1
-Cessna TU206G Turbo Stationair 6,1
-Cessna U-3A Blue Canoe (310A/L-27A),1
-Cessna U206,1
-Cessna U206F Stationair,1
-Cessna U206G,3
-Cessna U206G Stationair,1
-Cessna U206G Stationair 6,1
+Cessna T-303 Crusader (T303),3
+Cessna T-50 Bobcat (T50),2
+Cessna-Reims F406 Caravan II (F406),3
 Champion 7ECA Citabria,2
 Champion 7FC Tri-Traveler,1
 Christen Eagle II,2
@@ -1027,12 +829,6 @@ Fairchild C-119F Flying Boxcar,1
 Fairchild C-123K Provider,1
 Fairchild Dornier Do-328JET-300 (J328),12
 Fairchild M-62A Cornell,1
-Fairchild SA-227AC Metro III,9
-Fairchild SA-227AT Merlin IVC,1
-Fairchild SA-227BC Metro III,2
-Fairchild SA-227DC Metro 23,4
-Fairchild SA-227TT Fairchild 300,1
-Fairchild Swearingen SA-227AC Metro III,2
 Fairey Swordfish Mk1,1
 Fairey Tipsy T.66 Nipper III,1
 Fiat G-46,2
@@ -1067,9 +863,7 @@ Fournier (Sportavia-Putzer) RF-5B Sperber,1
 Fournier RF-5B Sperber,1
 Fuji FA-200-180 Aero Subaru,3
 Fuji LM-1 Nikko,1
-G-700,2
 G-91R/1A,2
-G-VIII,2
 G1 Aviation G1 Spyl,1
 GAF N-22S Nomad,1
 GEO-IK (mock-up),1
@@ -1105,7 +899,6 @@ Grumman American AA-5 Traveller,1
 Grumman American AA-5B Tiger,5
 Grumman F6F-5 Hellcat (G-50),1
 Grumman F7F-3 Tigercat (G-51),1
-Grumman G-1159 Gulfstream II,1
 Grumman G-164C Ag-Cat C,1
 Grumman G-44 Widgeon,1
 Grumman G-44A Widgeon,1
@@ -1122,10 +915,10 @@ Gulfstream G400 (GA4C),2
 Gulfstream G500/550 (GA5C),101
 Gulfstream G600 (GA6C),27
 Gulfstream G650 (GLF6),89
-Gulfstream G700 (GA7C),17
+Gulfstream G700 (GA7C),21
 Gulfstream G800 (GA8C),8
 Gulfstream I (GLF1),2
-Gulfstream II (GLF2),4
+Gulfstream II (GLF2),5
 Gulfstream III (GLF3),7
 Gulfstream IV (GLF4),78
 Gulfstream V (GLF5),22
@@ -1159,9 +952,7 @@ Hawker Hurricane Mk2C,1
 Hawker Hurricane Mk4,1
 Hawker Sea Fury FB11,2
 Hawker Sea Fury T20,1
-Hawker Siddeley HS-121 Trident 1C,1
-Hawker Siddeley HS-121 Trident 2E,4
-Hawker Siddeley HS-121 Trident 3B,2
+Hawker Siddeley HS-121 Trident (TRID),7
 Hawker Siddeley HS-125-3B,2
 Hawker Siddeley HS-748 Srs2/244,1
 Hawker Siddeley HS-748 Srs2A/108,1
@@ -1204,7 +995,7 @@ Ikarus C42 FB100,1
 Ilyushin Il-14 (IL14),1
 Ilyushin Il-18 (IL18),12
 Ilyushin Il-62 (IL62),15
-Ilyushin Il-76/-78 (IL76),35
+Ilyushin Il-76/-78 (IL76),36
 Ilyushin Il-86 (IL86),6
 Ilyushin Il-96 (IL96),11
 InnovAviation FX1,1
@@ -1373,7 +1164,6 @@ Messerschmitt Bf-109 (replica),1
 Messerschmitt Bf-109E-4,1
 Messerschmitt Me-262A-1C Schwalbe Replica,1
 Messerschmitt Me-262A/B-1C Schwalbe Replica,1
-Metro III,1
 Micro Aviation Bat Hawk C,1
 Mikoyan-Gurevich MiG-15,1
 Mikoyan-Gurevich MiG-15bis,1
@@ -1579,8 +1369,6 @@ Rans S-6ES Coyote II 582,1
 Rans S-7 Courier,1
 Rans S-7S Courier,1
 Raytheon 390 Premier I,4
-Raytheon A36 Bonanza,1
-Raytheon A36 Bonanza 36,2
 Raytheon Beechjet 400A,5
 Raytheon Beechjet 400A/Nextant 400XTi,1
 Raytheon Beechjet 400XPR,1
@@ -1589,36 +1377,6 @@ Raytheon Hawker 800XP,11
 Raytheon Hawker 800XPi,1
 Raytheon Hawker 850XP,2
 Raytheon Hawker 850XPi,1
-Reims Cessna F150L,3
-Reims Cessna F172M,1
-Reims Cessna F172P,1
-Reims F150G,1
-Reims F150J,1
-Reims F150L,1
-Reims F152,3
-Reims F152 II,3
-Reims F172D Skyhawk,1
-Reims F172G Skyhawk,1
-Reims F172H,1
-Reims F172H Skyhawk,3
-Reims F172L Skyhawk,4
-Reims F172M Skyhawk,5
-Reims F172N,2
-Reims F172N Skyhawk,2
-Reims F172N Skyhawk 100,2
-Reims F172N Skyhawk 100 II,5
-Reims F172N Skyhawk II,3
-Reims F172P,1
-Reims F172P Skyhawk II,2
-Reims F177RG Cardinal RG,1
-Reims F182Q Skylane II,4
-Reims F406 Caravan II,3
-Reims FR172E Reims Rocket,2
-Reims FR172G Reims Rocket,2
-Reims FR172H Reims Rocket,1
-Reims FR172J Reims Rocket,2
-Reims FR172K Hawk XP II,1
-Reims/Cessna F172M Skyhawk II,1
 Remos G3 Mirage,1
 Remos G3 Mirage 600,5
 Remos GX,8
@@ -1859,10 +1617,7 @@ Supermarine 379 Spitfire FR14,1
 Supermarine 389 Spitfire PR19,1
 Supermarine 395 Seafire F17,2
 Svoboda Fisher Classic,1
-Swearingen SA-226T Merlin III,1
-Swearingen SA-226T(B) Merlin IIIB,1
-Swearingen SA-226TC Metro II,1
-Swearingen SA226-T Merlin IIIB,1
+Swearigen Metroliner SA226/227 (SW4),24
 T-38C Talon,1
 TBM 960,7
 TL Ultralight Stream,1
@@ -1912,8 +1667,6 @@ Tecnam P2012 Traveller,3
 Ted Smith Aerostar 601,1
 Ted Smith Aerostar 601P,1
 Terzi T-30 Katana,1
-Textron Aviation 700,1
-Textron Aviation Inc. 172S,2
 The Airplane Factory LSA,1
 Thrush S2R-T660 Thrush 710P,1
 Tomark Aero SD-4 Viper RTC,2

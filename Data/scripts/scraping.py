@@ -17,8 +17,8 @@ from selenium.common.exceptions import TimeoutException
 START_PAGE = 1
 END_PAGE = 2
 BASE_URL = "https://www.airliners.net/search?photoCategory=39&sortBy=dateAccepted&sortOrder=desc&perPage=36&display=detail&page={}"
-IMAGE_SAVE_DIR = "airliners_images"
-CSV_FILENAME = "airliners_metadata.csv"
+IMAGE_SAVE_DIR = "../airliners_images"
+CSV_FILENAME = "../metadata/airliners_metadata.csv"
 
 HEADERS = {
     "Accept": "image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8",

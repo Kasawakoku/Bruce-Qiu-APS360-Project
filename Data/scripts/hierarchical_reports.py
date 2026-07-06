@@ -3,9 +3,9 @@ import yaml
 import os
 
 # --- Configuration ---
-INPUT_CSV = "airliners_metadata.csv"
-AIRLINE_YAML = "airline_mapping.yaml"
-AIRCRAFT_YAML = "aircraft_hierarchy.yaml"
+INPUT_CSV = "../metadata/airliners_metadata.csv"
+AIRLINE_YAML = "../class_definitions/airline_mapping.yaml"
+AIRCRAFT_YAML = "../class_definitions/aircraft_hierarchy.yaml"
 
 def load_mappings():
     # 1. Load and invert Airline Mapping (Alias -> True Airline)

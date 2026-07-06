@@ -19,6 +19,7 @@ from torchvision.models import (
 # Other packages
 import numpy as np
 import time
+import pandas as pd
 import matplotlib.pyplot as plt
 from collections import Counter
 import natsort
@@ -26,6 +27,190 @@ from natsort import natsorted
 import random
 import os
 from sklearn.model_selection import train_test_split
+
+
+
+# Data Loading
+
+'''
+def split_intersection_dataset(
+    csv_path, 
+    val_size=0.10, 
+    test_size=0.10, 
+    random_state=42, 
+    min_stratify_count=2
+):
+    """
+    Splits the intersection dataset into train, val, and test sets using
+    stratification on a combined (airline + variant) key.
+    
+    Parameters:
+    -----------
+    csv_path : str
+        Path to the intersection metadata CSV file.
+    val_size : float
+        Proportion of the dataset to include in the validation split.
+    test_size : float
+        Proportion of the dataset to include in the test split.
+    random_state : int
+        Controls the shuffling applied to the data before the split.
+    min_stratify_count : int
+        Minimum occurrences of a combined class to be stratified. Pairs 
+        with counts below this will be grouped together into a fallback class.
+    """
+    # 1. Load data
+    df = pd.read_csv(csv_path)
+    print(f"Loaded dataset with {len(df)} rows.")
+    
+    # 2. Create a composite key for stratification
+    # We use both airline and variant to capture the multi-task nature
+    df['stratify_key'] = df['airline'].astype(str) + "_" + df['aircraft_variant'].astype(str)
+    
+    # 3. Handle rare combinations that would break stratification
+    counts = df['stratify_key'].value_counts()
+    rare_classes = counts[counts < min_stratify_count].index
+    
+    # Group rare combinations into a single fallback category for splitting purposes
+    df['split_key'] = df['stratify_key'].apply(lambda x: 'rare_combination' if x in rare_classes else x)
+    
+    # 4. First Split: Isolate the Test Set
+    # To get a true test_size proportion of the total, adjust the remainder budget
+    remaining_size = 1.0 - test_size
+    relative_val_size = val_size / remaining_size
+    
+    train_val_df, test_df = train_test_split(
+        df,
+        test_size=test_size,
+        stratify=df['split_key'],
+        random_state=random_state
+    )
+    
+    # 5. Second Split: Separate Train and Validation
+    train_df, val_df = train_test_split(
+        train_val_df,
+        test_size=relative_val_size,
+        stratify=train_val_df['split_key'],
+        random_state=random_state
+    )
+    
+    # Clean up the temporary helper columns before saving
+    for target_df in [train_df, val_df, test_df]:
+        target_df.drop(columns=['stratify_key', 'split_key'], inplace=True, errors='ignore')
+        
+    print("\n--- Split Results ---")
+    print(f"Train set size:      {len(train_df)} ({len(train_df)/len(df)*100:.1f}%)")
+    print(f"Validation set size: {len(val_df)} ({len(val_df)/len(df)*100:.1f}%)")
+    print(f"Test set size:       {len(test_df)} ({len(test_df)/len(df)*100:.1f}%)")
+    
+    return train_df, val_df, test_df
+
+# Example Usage (uncomment to run when ready):
+# train_df, val_df, test_df = split_intersection_dataset(
+#     csv_path='path_to_your_intersection.csv', 
+#     val_size=0.10, 
+#     test_size=0.10
+# )
+# 
+# # Save the splits to new CSVs which your PyTorch Dataset can read directly
+# train_df.to_csv('train_metadata.csv', index=False)
+# val_df.to_csv('val_metadata.csv', index=False)
+# test_df.to_csv('test_metadata.csv', index=False)
+'''
+
+def generate_splits_with_union(
+    master_csv_path, 
+    intersection_csv_path, 
+    valid_airlines_path, 
+    valid_variants_path,
+    val_size=0.10, 
+    test_size=0.10, 
+    random_state=42
+):
+    """
+    Splits the clean intersection data for pristine validation/testing,
+    then combines the training remainder with any valid single-task images
+    from the messy union dataset, mapping missing labels to -100.
+    """
+    # 1. Load your locked-down trimmed classes to determine what is "valid"
+    valid_airlines_df = pd.read_csv(valid_airlines_path)
+    valid_variants_df = pd.read_csv(valid_variants_path)
+    
+    # Create sets for O(1) lookups
+    valid_airlines = set(valid_airlines_df['Airline'].dropna().unique())
+    valid_variants = set(valid_variants_df['Variant'].dropna().unique())
+    
+    # 2. Load Dataframes
+    df_master = pd.read_csv(master_csv_path)
+    df_inter = pd.read_csv(intersection_csv_path)
+    
+    # 3. Stratify and split the clean intersection set first
+    # Create a temporary joint column just to ensure balanced splits
+    df_inter['split_key'] = df_inter['airline'].astype(str) + "_" + df_inter['aircraft_variant'].astype(str)
+    
+    # Smooth rare combinations that appear only once in the intersection set
+    counts = df_inter['split_key'].value_counts()
+    rare_classes = counts[counts < 2].index
+    df_inter['split_key'] = df_inter['split_key'].apply(lambda x: 'rare' if x in rare_classes else x)
+    
+    # Calculate relative validation size for the second split
+    remaining_size = 1.0 - test_size
+    relative_val_size = val_size / remaining_size
+    
+    # Perform splits
+    inter_train_val, test_df = train_test_split(
+        df_inter, test_size=test_size, stratify=df_inter['split_key'], random_state=random_state
+    )
+    inter_train_df, val_df = train_test_split(
+        inter_train_val, test_size=relative_val_size, stratify=inter_train_val['split_key'], random_state=random_state
+    )
+    
+    # 4. Isolate the "Union-Only" entries from the master dataframe
+    # We want images that are NOT in the intersection set, but possess at least ONE valid label
+    allocated_photo_ids = set(df_inter['photo_id'])
+    df_leftovers = df_master[~df_master['photo_id'].isin(allocated_photo_ids)].copy()
+    
+    # Check validity against your trimmed cutoff criteria
+    df_leftovers['has_valid_airline'] = df_leftovers['airline'].isin(valid_airlines)
+    df_leftovers['has_valid_variant'] = df_leftovers['aircraft_variant'].isin(valid_variants)
+    
+    # Keep only rows that have at least one useful valid attribute
+    union_train_reinforcements = df_leftovers[df_leftovers['has_valid_airline'] | df_leftovers['has_valid_variant']].copy()
+    
+    # Mask invalid/dropped categorical values right in the dataframe so your Dataset handles them seamlessly
+    union_train_reinforcements.loc[~union_train_reinforcements['has_valid_airline'], 'airline'] = '-100'
+    union_train_reinforcements.loc[~union_train_reinforcements['has_valid_variant'], 'aircraft_variant'] = '-100'
+    
+    # 5. Merge the clean training slice with the masked union leftovers
+    # Keep only the essential columns to match schemas
+    keep_cols = ['photo_id', 'airline', 'aircraft_variant', 'image_filename']
+    
+    final_train_df = pd.concat([
+        inter_train_df[keep_cols], 
+        union_train_reinforcements[keep_cols]
+    ], ignore_index=True)
+    
+    # Clean up evaluation dataframes
+    final_val_df = val_df[keep_cols].copy()
+    final_test_df = test_df[keep_cols].copy()
+    
+    print("--- Multi-Task Split Summary ---")
+    print(f"Total Master Scraped Images:    {len(df_master)}")
+    print(f"Clean Intersection Sub-budget:  {len(df_inter)}")
+    print(f"Pristine Validation Set Size:   {len(final_val_df)}")
+    print(f"Pristine Test Set Size:         {len(final_test_df)}")
+    print(f"Final Augmented Training Size:  {len(final_train_df)}")
+    print(f" -> From clean pairs:           {len(inter_train_df)}")
+    print(f" -> From single-task union:     {len(union_train_reinforcements)}")
+    
+    return final_train_df, final_val_df, final_test_df
+
+# To use this when ready, execute:
+# train_df, val_df, test_df = generate_splits_with_union(
+#     master_csv_path='master_metadata.csv',
+#     intersection_csv_path='intersection_metadata.csv',
+#     valid_airlines_path='valid_airlines.csv',
+#     valid_variants_path='valid_variants.csv'
+# )
 
 
 # Neural Net Modules
@@ -149,6 +334,7 @@ def get_model_name(name, batch_size, learning_rate, epoch):
   path = "/content/checkpoints/model_{0}_bs{1}_lr{2}_epoch{3}".format(name, batch_size,learning_rate, epoch)
   return path
 
+# Need to change...
 def evaluate(net, loader, criterion, device):
   # Evaluate network on validation set
   total_loss = 0.0
@@ -210,6 +396,7 @@ def plot_training_curve(path):
   plt.tight_layout()
   plt.show()
 
+# Need to change...
 def train_net(net, train_loader, val_loader, batch_size=64, learning_rate=0.01, num_epochs=30, checkpoint_freq=5):
   # Trains multi-class PyTorch model
 

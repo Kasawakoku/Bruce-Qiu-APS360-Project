@@ -20,6 +20,7 @@ Antonov An-8/-10/-12,28
 BAC 1-11 One-Eleven,4
 BAC 167 Strikemaster,2
 Beechcraft 1900,14
+Beechcraft Bonanza,60
 Beechcraft King Air/Super King Air,109
 Boeing 377 Stratocruiser,3
 Boeing 707/720/KC-135,63
@@ -36,7 +37,26 @@ COMAC C909/ARJ-21,34
 COMAC C919,35
 Canadair CL-215/-415,6
 Canadair CL-44 Yukon,1
-Cessna 172,3
+Cessna 140,2
+Cessna 150/152,61
+Cessna 162,2
+Cessna 165/195,4
+Cessna 170/172,195
+Cessna 177,8
+Cessna 180/182/185,103
+Cessna 205/206/207/210,29
+Cessna 208,83
+Cessna 350/400 Corvalis,1
+Cessna 408,6
+Cessna Citation Excel/Sovereign/Latitude/Longtitude,191
+Cessna Citation I/II/V,37
+Cessna Citation III/IV/VI/VII/X,21
+Cessna Citation Mustang,16
+Cessna CitationJet CJ,137
+Cessna Skymaster,6
+Cessna T-303 Crusader,3
+Cessna T-50 Bobcat,2
+Cessna Twin Pistons,45
 Challenger/Canadian Regional Jet (CRJ)/Global,717
 Cirrus SR20/22,105
 Cirrus Vision SF50,19
@@ -71,13 +91,14 @@ Embraer Legacy/Praetor,57
 Fokker F27 Friendship/F50,28
 Fokker F28 Fellowship/F70/F100,40
 Gulfstream I,2
-Gulfstream Jets,355
+Gulfstream Jets,360
+Hawker Siddeley Trident,7
 IAI/Gulfstream Astra,11
 IAI/Gulfstream Galaxy,48
 Ilyushin Il-14,1
 Ilyushin Il-18,12
 Ilyushin Il-62,15
-Ilyushin Il-76/-78,35
+Ilyushin Il-76/-78,36
 Ilyushin Il-86/96,17
 Learjet,89
 Lockheed 10/12/14 Electra,4
@@ -103,11 +124,12 @@ Piper Tomahawk,3
 Saab 340/2000,57
 Sud Aviation Caravelle,26
 Sukhoi Superjet,58
+Swearingen Metroliner,24
 Tupolev 104,1
 Tupolev 134,13
 Tupolev 154,30
 Tupolev 204/214,12
-Unknown Family,4036
+Unknown Family,2990
 Yak-10/-12,1
 Yak-18/-50/-52/-54/-55,34
 Yak-3,3

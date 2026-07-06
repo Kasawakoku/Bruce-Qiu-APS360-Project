@@ -2,9 +2,9 @@ import pandas as pd
 import os
 
 # --- Configuration ---
-INPUT_CSV = "airliners_metadata.csv"
-AIRLINES_OUTPUT_CSV = "counts_airlines.csv"
-MODEL_OUTPUT_CSV = "counts_models.csv"
+INPUT_CSV = "../metadata/airliners_metadata.csv"
+AIRLINES_OUTPUT_CSV = "../class_definitions/counts_airlines.csv"
+MODEL_OUTPUT_CSV = "../class_definitions/counts_models.csv"
 
 def generate_distribution_reports():
     if not os.path.exists(INPUT_CSV):

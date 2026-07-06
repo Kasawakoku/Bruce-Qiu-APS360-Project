@@ -39,4 +39,4 @@ def format_aircraft_list(input_filepath, output_filepath):
 
 # Run it (Make sure to save your messy block in 'raw_aircraft.txt')
 if __name__ == "__main__":
-    format_aircraft_list("raw_aircraft.txt", "aircraft_hierarchy.yaml")
+    format_aircraft_list("../class_definitions/raw_aircraft.txt", "../class_definitions/aircraft_hierarchy.yaml")

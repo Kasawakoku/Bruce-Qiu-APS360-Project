@@ -355,6 +355,42 @@ Beechcraft:
       - Hawker Beechcraft 350i King Air (B300)
       - Beechcraft King Air 360
       - Beechcraft 360 King Air
+  - Beechcraft Bonanza:
+    - Beechcraft 33 Debonair/Bonanza (BE33):
+      - Beech 35-C33 Debonair
+      - Beech F33A Bonanza
+      - Beechcraft 35-C33A Bonanza
+      - Beechcraft E33 Bonanza
+
+    - Beechcraft 35 Bonanza (BE35):
+      - Beech 35 Bonanza
+      - Beech F35 Bonanza
+      - Beech K35 Bonanza
+      - Beech M35 Bonanza
+      - Beech P35 Bonanza
+      - Beech V35 Bonanza
+      - Beech V35A Bonanza
+      - Beech V35B Bonanza
+      - Beechcraft A35 Bonanza
+      - Beechcraft H35 Bonanza
+      - Beechcraft M35 Bonanza
+      - Beechcraft N35 Bonanza
+      - Beechcraft P35 Bonanza
+      - Beechcraft V35 Bonanza
+      - Beechcraft V35B Bonanza
+
+    - Beechcraft 36 Bonanza (BE36/B36T/BT36):
+      - Raytheon A36 Bonanza
+      - Raytheon A36 Bonanza 36
+      - Beech 36 Bonanza 36
+      - Beech A36 Bonanza
+      - Beech A36 Bonanza 36
+      - Beech B36TC Bonanza
+      - Beech G36 Bonanza
+      - Beechcraft A36 Bonanza
+      - Beechcraft B36TC Bonanza
+
+
 
 Boeing:
   - Boeing 377 Stratocruiser:
@@ -1510,10 +1546,327 @@ British Aircraft Corporation/British Aerospace:
       - British Aerospace BAe-146-300QT Quiet Trader
 
 Cessna:
-  - Cessna 172:
-    - Cessna 172 Skyhawk (C172):
+  - Cessna 140:
+    - Cessna 140 (C140):
+      - Cessna 140
+  - Cessna 150/152:
+    - Cessna 150 (C150):
+      - Reims Cessna F150L
+      - Reims F150G
+      - Reims F150J
+      - Reims F150L
+      - Cessna 150
+      - Cessna 150...
+      - Cessna 150B
+      - Cessna 150F
+      - Cessna 150F Commuter
+      - Cessna 150G
+      - Cessna 150H
+      - Cessna 150J
+      - Cessna 150K
+      - Cessna 150L
+      - Cessna 150L Commuter
+      - Cessna 150M
+      - Cessna A150L Aerobat
+
+    - Cessna 152 (C152):
+      - Cessna 152
+      - Cessna 152 II
+      - Reims F152
+      - Reims F152 II
+      - Cessna A152 Aerobat
+  - Cessna 162:
+    - Cessna 162 Skycatcher (C162):
+      - Cessna 162 Skycatcher
+  - Cessna 165/195:
+    - Cessna 195 (C195):
+      - Cessna 195
+      - Cessna 195B
+  - Cessna 170/172:
+    - Cessna 170 (C170):
+      - Cessna 170
+      - Cessna 170A
+      - Cessna 170B
+    - Cessna 172 Skyhawk/Cutlass/Hawk (C172/C72R):
       - 172RG Cutlass RG
       - 172S Skyhawk SP
+      - Textron Aviation Inc. 172S
+      - Cessna  172
+      - Reims F172D Skyhawk
+      - Reims F172G Skyhawk
+      - Reims F172H
+      - Reims F172H Skyhawk
+      - Reims F172L Skyhawk
+      - Reims F172M Skyhawk
+      - Reims F172N
+      - Reims F172N Skyhawk
+      - Reims F172N Skyhawk 100
+      - Reims F172N Skyhawk 100 II
+      - Reims F172N Skyhawk II
+      - Reims F172P
+      - Reims F172P Skyhawk II
+      - Reims Cessna F172M
+      - Reims Cessna F172P
+      - Reims FR172E Reims Rocket
+      - Reims FR172G Reims Rocket
+      - Reims FR172H Reims Rocket
+      - Reims FR172J Reims Rocket
+      - Reims FR172K Hawk XP II
+      - Reims/Cessna F172M Skyhawk II
+      - Cessna 172
+      - Cessna 172 N Skyhawk
+      - Cessna 172 Skyhawk
+      - Cessna 172 Skyhawk II
+      - Cessna 172B Skyhawk
+      - Cessna 172C
+      - Cessna 172D Skyhawk
+      - Cessna 172E Skyhawk
+      - Cessna 172G Skyhawk
+      - Cessna 172H Skyhawk
+      - Cessna 172K Skyhawk II
+      - Cessna 172L Skyhawk
+      - Cessna 172M
+      - Cessna 172M Skyhawk
+      - Cessna 172M Skyhawk 1
+      - Cessna 172M Skyhawk II
+      - Cessna 172N
+      - Cessna 172N Skyhawk 100
+      - Cessna 172N Skyhawk 100 II
+      - Cessna 172N Skyhawk 100 II/Air Plains 180HP
+      - Cessna 172N Skyhawk II
+      - Cessna 172P Skyhawk
+      - Cessna 172P Skyhawk II
+      - Cessna 172R Skyhawk
+      - Cessna 172R Skyhawk II
+      - Cessna 172RG Cutlass RG
+      - Cessna 172S
+      - Cessna 172S Skyhawk
+      - Cessna 172S Skyhawk SP
+      - Cessna 172SP Skyhawk
+      - Cessna R172K Hawk XP
+      - Cessna R172K Hawk XP II
+    - Cessna O-1 Bird Dog (O1):
+      - Cessna 305A Bird Dog
+      - Cessna O-1 Bird Dog (305/321/L-19/OE)
+      - Cessna TO-1D Bird Dog (305B/TL-19D)
+
+  - Cessna 180/182/185:
+    - Cessna 180 Skywagon (C180):
+      - Cessna 180
+      - Cessna 180 Skywagon
+      - Cessna 180A Skywagon
+      - Cessna 180D Skywagon
+      - Cessna 180E Skywagon
+      - Cessna 180H
+      - Cessna 180H Skywagon
+      - Cessna 180H Skywagon 180
+      - Cessna 180J Skywagon
+      - Cessna 180K Skywagon II
+    - Cessna 182 Skylane (C182/C82R/S/T):
+      - Cessna TR182 Turbo Skylane RG
+      - Reims F182Q Skylane II
+      - Cessna T182T Turbo Skylane
+      - Cessna T182T Turbo Skylane TC
+      - Cessna 182
+      - Cessna 182 Skylane
+      - Cessna 182A Skylane
+      - Cessna 182B Skylane
+      - Cessna 182C
+      - Cessna 182D
+      - Cessna 182D Skylane
+      - Cessna 182F Skylane
+      - Cessna 182G
+      - Cessna 182G Skylane
+      - Cessna 182H Skylane
+      - Cessna 182J Skylane
+      - Cessna 182K
+      - Cessna 182K Skylane
+      - Cessna 182L Skylane
+      - Cessna 182N
+      - Cessna 182P
+      - Cessna 182P Skylane
+      - Cessna 182P Skylane II
+      - Cessna 182Q Skylane
+      - Cessna 182Q Skylane II
+      - Cessna 182R Skylane
+      - Cessna 182R Skylane II
+      - Cessna 182RG Skylane II
+      - Cessna 182S Skylane
+      - Cessna 182T
+      - Cessna 182T Skylane
+      - Cessna 182T Skylane II
+      - Cessna 182T Turbo Skylane
+    - Cessna 185 Skywagon (C185):
+      - Cessna 185 Skywagon
+      - Cessna 185... Skywagon
+      - Cessna 185E Skywagon
+      - Cessna A.185F Skyvagon
+      - Cessna A185E Skywagon
+      - Cessna A185F Skywagon
+      - Cessna A185F Skywagon 185
+  - Cessna 205/206/207/210:
+    - Cessna 210 Centurion (C210/C10T/P210/T210):
+      - Cessna T210L Turbo Centurion
+      - Cessna T210M Centurion
+      - Cessna T210M Turbo Centurion II
+      - Cessna T210R Turbo Centurion II
+      - Cessna 210D Centurion
+      - Cessna 210N Centurion II
+      - Cessna P210 Silver Eagle
+      - Cessna P210N Pressurized Centurion
+      - Cessna P210N Pressurized Centurion II
+    - Cessna 205 (C205):
+    - Cessna 206 (C206/C06T/T206):
+      - Cessna T206H Stationair
+      - Cessna T206H Stationair HD
+      - Cessna T206H Turbo Stationair
+      - Cessna T206H Turbo Stationair II
+      - Cessna T206H Turbo Stationair TC
+      - Cessna 206 Stationair TC
+      - Cessna 206G Stationair
+      - Cessna 206H Stationair
+      - Cessna TU206G Stationair 6
+      - Cessna TU206G Turbo Stationair 6
+      - Cessna U206
+      - Cessna U206F Stationair
+      - Cessna U206G
+      - Cessna U206G Stationair
+      - Cessna U206G Stationair 6
+    - Cessna 207 (C207/C07T):
+      - Cessna 207 Skywagon 207
+  - Cessna 177:
+    - Cessna 177 Cardinal (C177/C77R):
+      - Reims F177RG Cardinal RG
+      - Cessna 177 Cardinal
+      - Cessna 177B Cardinal
+      - Cessna 177B Cardinal II
+      - Cessna 177RG Cardinal
+  - Cessna 208:
+    - Cessna 208 Caravan/Grand Caravan (C208):
+      - Cessna 208 Caravan
+      - Cessna 208 Caravan Amphibian
+      - Cessna 208 Caravan I
+      - Cessna 208A Caravan 675
+      - Cessna 208B Caravan I
+      - Cessna 208B Grand Caravan
+      - Cessna 208B Grand Caravan EX
+      - Cessna 208B Grand Caravan EX Anphibian
+      - Cessna 208B Super Cargomaster
+  - Cessna 408:
+    - Cessna 408 SkyCourier (C408):
+      - Cessna 408 SkyCourier
+      - Cessna 408F SkyCourier
+  - Cessna 350/400 Corvalis:
+    - Cessna 350 Corvalis (C350):
+    - Cessna 400 Corvalis (C400):
+      - Cessna 400 Corvalis TT
+
+  - Cessna Twin Pistons:
+    - Cessna 310 (C310):
+      - Cessna 310 Q
+      - Cessna 310 R
+      - Cessna 310D
+      - Cessna 310G
+      - Cessna 310P
+      - Cessna 310R
+      - Cessna U-3A Blue Canoe (310A/L-27A)
+
+    - Cessna 320 (C320):
+    - Cessna 335/340 (C340):
+      - Cessna 340A
+      - Cessna 340A III
+    - Cessna 401/402 (C402/C02T):
+      - Cessna 401A
+      - Cessna 402B
+      - Cessna 402C
+      - Cessna 402C ...
+      - Cessna 402C Businessliner
+      - Cessna 402C III
+    - Cessna 404 Titan (C404/C04T):
+      - Cessna 404 Titan
+      - Cessna 404 Titan Ambassador II
+    - Cessna-Reims F406 Caravan II (F406):
+      - Reims F406 Caravan II
+    - Cessna 411 (C411):
+      - Cessna 411A
+
+    - Cessna 414 Chancellor (C414/C14T):
+      - Cessna 414
+      - Cessna 414A Chancellor
+    - Cessna 421 Golden Eagle (C421/C21T):
+      - Cessna 421B Golden Eagle
+      - Cessna 421C
+      - Cessna 421C ...
+      - Cessna 421C Golden Eagle
+    - Cessna 425 Conquest I (C425):
+    - Cessna 441 Conquest II (C441):
+      - Cessna 441 Conquest
+      - Cessna 441 Conquest II
+  - Cessna Skymaster:
+    - Cessna 337 Skymaster (C337/P337):
+      - Cessna 337A Super Skymaster
+      - Cessna 337G Super Skymaster
+      - Cessna O-2A Super Skymaster (M337)
+      - Cessna P337H Pressurized Skymaster
+  - Cessna T-50 Bobcat:
+    - Cessna T-50 Bobcat (T50):
+      - Cessna T-50 Bobcat
+  - Cessna T-303 Crusader:
+    - Cessna T-303 Crusader (T303):
+      - Cessna T303 Crusader
+
+
+  - Cessna Citation I/II/V:
+    - Cessna 500/501 Citation I (C500/C501):
+      - Cessna 500 Citation
+      - Cessna 501 Citation I/SP
+    - Cessna 550 Citation II/Bravo (C550/C55B):
+      - Cessna 550 Citation II
+      - Cessna 550 Citation II Bravo
+      - Cessna 550B Citation Bravo
+      - Cessna 551 Citation II/SP
+    - Cessna 560 Citation V/Encore/Ultra (C560):
+      - Cessna 560 Citation Encore
+      - Cessna 560 Citation Encore+
+      - Cessna 560 Citation Ultra
+      - Cessna 560 Citation V
+  - Cessna Citation III/IV/VI/VII/X:
+    - Cessna 650 III/IV/VI/VII (C650):
+      - Cessna 650 Citation III
+      - Cessna 650 Citation VII
+    - Cessna 750 Citation X (C750):
+      - Cessna 750 Citation X
+  - Cessna CitationJet CJ:
+    - Cessna 525 CitationJet/CJ/M2 (C525):
+      - Cessna 525 Citation CJ1
+      - Cessna 525 Citation CJ1+
+      - Cessna 525 Citation M2
+      - Cessna 525 CitationJet
+      - Cessna 525 CitationJet M2
+      - Cessna 525A Citation CJ2
+      - Cessna 525A Citation CJ2+
+      - Cessna 525B Citation CJ3
+      - Cessna 525B Citation CJ3+
+      - Cessna 525C Citation CJ4
+      - Cessna 525C Citation CJ4 Gen2
+      - Cessna 526 citationjet M2
+  - Cessna Citation Excel/Sovereign/Latitude/Longtitude:
+    - Cessna 560XL Citation Excel/XLS (C56X):
+      - Cessna 560XL Citation Excel
+      - Cessna 560XL Citation XLS
+      - Cessna 560XL Citation XLS+
+    - Cessna 680 Citation Sovereign (C680):
+      - Cessna 680 Citation Sovereign
+      - Cessna 680 Citation Sovereign+
+    - Cessna 680A Citation Latitude (C68A):
+      - Cessna 680A Citation Latitude
+    - Cessna 700 Citation Longtitude (C700):
+      - Cessna 700 Citation Longitude
+      - Textron Aviation 700
+  - Cessna Citation Mustang:
+    - Cessna 510 Citation Mustang (C510):
+      - Cessna 510 Citation Mustang
+
 
 Cirrus:
   - Cirrus SR20/22:
@@ -1866,6 +2219,7 @@ Gulfstream Aerospace:
     - Gulfstream II (GLF2):
       - Gulfstream American G-1159 Gulfstream II
       - Gulfstream American G-1159B Gulfstream II-B
+      - Grumman G-1159 Gulfstream II
     - Gulfstream III (GLF3):
       - Gulfstream Aerospace G-1159A Gulfstream III
       - Gulfstream American G-1159A Gulfstream III
@@ -1907,9 +2261,20 @@ Gulfstream Aerospace:
       - Gulfstream Aerospace C-37D Gulfstream G700 (G-VIII)
       - Gulfstream Aerospace G700
       - Gulfstream G700
+      # Registration A7-CHD
+      - G-VIII
+      - G-700
 
     - Gulfstream G800 (GA8C):
       - Gulfstream Aerospace G-VIII G800
+
+Hawker/Hawker Siddeley:
+  - Hawker Siddeley Trident:
+    - Hawker Siddeley HS-121 Trident (TRID):
+      - Hawker Siddeley HS-121 Trident 1C
+      - Hawker Siddeley HS-121 Trident 2E
+      - Hawker Siddeley HS-121 Trident 3B
+
 
 
 Ilyushin:
@@ -1937,6 +2302,7 @@ Ilyushin:
       - Ilyushin Il-76TD-90SW
       - Ilyushin Il-76TD-90VD
       - Ilyushin Il-78M
+      - Beriev Be-976 (Il-76SKIP)
   - Ilyushin Il-86/96:
     - Ilyushin Il-86 (IL86):
       - Ilyushin Il-86
@@ -2235,6 +2601,7 @@ Pilatus:
       - Pilatus PC-21
     - Beechcraft T-6 Texan II (TEX2):
       - Hawker Beechcraft AT-6B Texan II
+      - Beechcraft T-6 Texan II (TEX2)
 
   - Pilatus PC-12:
     - Pilatus PC-12 (PC12):
@@ -2469,6 +2836,22 @@ Sukhoi:
       - Sukhoi SSJ-100-95B-LR Superjet 100 (RRJ-95B)
       - Sukhoi SSJ-100-95LR Superjet 100 (RRJ-95B)
       - Sukhoi SSJ-100-95LR Superjet 100 (RRJ-95LR)
+
+Swearingen:
+  - Swearingen Metroliner:
+    - Swearigen Metroliner SA226/227 (SW4):
+      - Fairchild SA-227AC Metro III
+      - Fairchild SA-227AT Merlin IVC
+      - Fairchild SA-227BC Metro III
+      - Fairchild SA-227DC Metro 23
+      - Fairchild SA-227TT Fairchild 300
+      - Fairchild Swearingen SA-227AC Metro III
+      - Swearingen SA-226T Merlin III
+      - Swearingen SA-226T(B) Merlin IIIB
+      - Swearingen SA-226TC Metro II
+      - Swearingen SA226-T Merlin IIIB
+      - Metro III
+
 
 Tupolev:
   - Tupolev 104:
