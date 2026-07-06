@@ -1,4 +1,6 @@
 
+# Separate NEOs from CEOs, MAXes from NGs if permissible
+
 Aero Vodochody:
   - Aero L-39 Albatros:
     - Aero L-39 Albatros (L-39):
@@ -13,6 +15,8 @@ Aerospatiale/British Aircraft Corporation:
     - Aerospatiale-British Aerospace Concorde (CONC):
       - Aerospatiale-British Aerospace Concorde 101
       - Aerospatiale-British Aerospace Concorde 102
+      - Sud-BAC Concorde
+
 
 Airbus:
   - Airbus A300/A310:
@@ -25,6 +29,7 @@ Airbus:
       - Airbus A300B4-203(F)
       - Airbus A300B4-2C
     - Airbus A300B/C/F4-600 (A306):
+    # N163UP on the metadata
       - Airbus A300-...
       - Airbus A300B4-603
       - Airbus A300B4-605R
@@ -217,6 +222,7 @@ Antonov:
     - Antonov An-24 (AN24):
       - Antonov An-24
       - Antonov An-24RV
+      - Xian Y-7-100C
     - Antonov An-26 (AN26):
       - Antonov An-26
       - Antonov An-26-100
@@ -303,6 +309,12 @@ Beechcraft:
       - Beechcraft F90 King Air
       - Raytheon C90A King Air
       - Raytheon C90GT King Air
+      - Hawker Beechcraft C90GTi King Air
+      - Hawker Beechcraft C90GTx King Air
+      - Beechcraft C90-1 King Air
+      - Beechcraft C90A King Air
+      - Beechcraft C90B King Air
+      - Beechcraft C90GTx King Air
     - Beechcraft 100 King Air (BE10):
       - Beech A100 King Air
       - Beech B100 King Air
@@ -323,6 +335,11 @@ Beechcraft:
       - Beechcraft B200GT Super King 260
       - Beechcraft B200GT Super King Air
       - Raytheon B200 King Air
+      - Hawker Beechcraft B200 King Air
+      - Hawker Beechcraft B200GT King Air
+      - Hawker Beechcraft B200GT/WL King Air
+      - Hawker Beechcraft 250 King Air
+      - B260 King Air
     - Beechcraft 300 Super King Air (BE30):
       - Beech Super King Air 300
       - Beech Super King Air 350 (B300)
@@ -332,6 +349,12 @@ Beechcraft:
       - Beechcraft B300 King Air 350i
       - Beechcraft B300C King Air 360CER
       - Raytheon 350 King Air (B300)
+      - Hawker Beechcraft 350 King Air (B300)
+      - Hawker Beechcraft 350C King Air (B300C)
+      - Hawker Beechcraft 350ER King Air (B300)
+      - Hawker Beechcraft 350i King Air (B300)
+      - Beechcraft King Air 360
+      - Beechcraft 360 King Air
 
 Boeing:
   - Boeing 377 Stratocruiser:
@@ -1358,10 +1381,96 @@ Boeing:
       - Boeing 787-10 Dreamliner
 
 
-Bombardier:
-  - Canadair Regional Jet (CRJ):
-    - CL-600 Regional Jet CRJ-900 (CRJ9):
+Bombardier/Canadair:
+  - Challenger/Canadian Regional Jet (CRJ)/Global:
+    - Canadian Regional Jet CRJ-100 (CRJ1):
+      - Bombardier CRJ-100ER (CL-600-2B19)
+      - Bombardier CRJ-100LR (CL-600-2B19)
+      - Canadair CRJ-100ER (CL-600-2B19)
+      - Canadair CRJ-100LR (CL-600-2B19)
+    - Canadian Regional Jet CRJ-200/-440/Challenger 800/850 (CRJ2):
+      - Bombardier CRJ-200ER (CL-600-2B19)
+      - Bombardier CRJ-200LR (CL-600-2B19)
+      - Bombardier CRJ-200PF (CL-600-2B19)
+      - Canadair CRJ-200LR (CL-600-2B19)
+      - Bombardier Challenger 850 (CRJ-200SE/CL-600-2B19)
+    - Canadian Regional Jet CRJ-700/-550/Challenger 870 (CRJ7):
+      - Bombardier CRJ-550 (CL-600-2C10)
+      - Bombardier CRJ-700 (CL-600-2C10)
+      - Bombardier CRJ-701 (CL-600-2C10)
+      - Bombardier CRJ-701ER (CL-600-2C10)
+      - Bombardier CRJ-702 (CL-600-2C10)
+      - Bombardier CRJ-702ER NG (CL-600-2C10)
+      - Bombardier Challenger 870 (CRJ-700/CL-600-2C10)
+      - CRJ-550
+    - Canadian Regional Jet CRJ-900/-705/Challenger 890 (CRJ9):
+      - Bombardier CRJ-705/900/Challenger 890
+      - Bombardier CRJ-705ER (CL-600-2D15)
+      - Bombardier CRJ-900 (CL-600-2D24)
+      - Bombardier CRJ-900 NG (CL-600-2D24)
+      - Bombardier CRJ-900ER (CL-600-2D24)
+      - Bombardier CRJ-900ER NG (CL-600-2D24)
+      - Bombardier CRJ-900LR (CL-600-2D24)
+      - Bombardier CRJ-900LR NG (CL-600-2D24)
       - (CL-600-2D24)
+    - Canadian Regional Jet CRJ-1000 (CRJX):
+      - Bombardier CRJ-1000EL NG (CL-600-2E25)
+      - Bombardier CRJ-1000ER NG (CL-600-2E25)
+    - Bombardier Challenger 300 (CL30):
+      - Bombardier Challenger 300 (BD-100-1A10)
+    - Bombardier Challenger 350/3500 (CL35):
+      - Bombardier Challenger 350 (BD-100-1A10)
+      - Bombardier Challenger 3500 (BD-100-1A10)
+    - Bombardier Challenger 600/650 (CL60):
+      - Bombardier CC-144C Challenger (604/CL-600-2B16)
+      - Bombardier CC-144D Challenger (CL-650)
+      - Canadair Challenger 601 (CL-600-2A12)
+      - Canadair Challenger 601-3A (CL-600-2B16)
+      - Canadair Challenger 601-3R (CL-600-2B16)
+      - Canadair Challenger 604 (CL-600-2B16)
+      - Canadair CL-600-2B16 Challenger 604
+      - Bombardier Challenger 601 (CL-600-2A12)
+      - Bombardier Challenger 604 (CL-600-2B16)
+      - Bombardier Challenger 605 (CL-600-2B16)
+      - Bombardier Challenger 650 (CL-600-2B16)
+      - Challenger 650
+      - Bombardier CL600-2B16 601 Challenger
+      - Bombardier Challenger 650 (CL-650)
+
+    - Bombardier Global 5000/5500 (GL5T):
+      - Global 5000
+      - Bombardier Global 5000 (BD-700-1A11)
+      - Bombardier Global 5500
+    - Bombardier Global 6000/6500/Global Express (GLEX):
+      - Bombardier BD-700-1A10 Global 6500
+      - Bombardier BD-700-1A10 Global Express XRS
+      - Bombardier Global 6000 (BD-700-1A10)
+      - Bombardier Global 6500
+      - Bombardier Global Express (BD-700-1A10)
+      - Bombardier Global Express XRS (BD-700-1A10)
+      - Bombardier E-11A (BD-700-1A10)
+
+    - Bombardier Global 7000/7500/8000 (GL7T):
+      - Bombardier BD-700-2A12 Global 7500
+      - Bombardier BD-700-2A12 Global 8000
+      - Global 7500
+      - Bombardier Global 7000 (BD-700-1A10)
+      - Bombardier Global 7000 (BD-700-2A12)
+      - Bombardier Global 7500 (BD-700-1A10)
+      - Bombardier Global 7500 (BD-700-2A12)
+      - Bombardier Global 8000 (BD-700-2A12)
+  - Canadair CL-215/-415:
+    - Canadair CL-215 Scooper (CL2P):
+      - Canadair CL-215-V (CL-215-1A10)
+    - Canadair CL-415 Super Scooper (CL2T):
+      - Bombardier CL-415 (CL-215-6B11)
+      - Bombardier CL-415MP (CL-215-6B11)
+      - Canadair CL-215T (CL-215-6B11)
+      - Canadair CL-415 (CL-215-6B11)
+  - Canadair CL-44 Yukon:
+    - Canadair CL-44 (CL44):
+      - Canadair CL-44D4-1
+
 
   - C-Series/Airbus A220:
     - Bombardier CS100/Airbus A220-100 (BCS1):
@@ -1406,6 +1515,61 @@ Cessna:
       - 172RG Cutlass RG
       - 172S Skyhawk SP
 
+Cirrus:
+  - Cirrus SR20/22:
+    - Cirrus SR20 (SR20):
+      - Cirrus SR-20
+      - Cirrus SR-20 G2
+      - Cirrus SR-20 G3
+      - Cirrus SR-20 G3 GTS
+      - Cirrus SR-20 G6
+      - Cirrus SR-20 GTS
+      - Cirrus SR-20 SRV G2
+      - Cirrus SR-20 TRAC
+      - Cirrus SR20 - G6 Platinum
+    - Cirrus SR22/T (SR22/S22T):
+      - Cirrus SR-22
+      - Cirrus SR-22 Australis
+      - Cirrus SR-22 Carbon
+      - Cirrus SR-22 G2
+      - Cirrus SR-22 G3 GTS
+      - Cirrus SR-22 G3-GTS
+      - Cirrus SR-22 G3-GTSX
+      - Cirrus SR-22 G5 Carbon
+      - Cirrus SR-22 G5-GTS Carbon
+      - Cirrus SR-22 G6 Turbo
+      - Cirrus SR-22 G6-GTS
+      - Cirrus SR-22 G6-GTS Carbon
+      - Cirrus SR-22 G6-GTS Rhodium
+      - Cirrus SR-22 G7 GTS
+      - Cirrus SR-22 G7+
+      - Cirrus SR-22 GTS
+      - Cirrus SR-22 GTS Carbon
+      - Cirrus SR-22 GTS-G7 Carbon
+      - Cirrus SR-22 GTSX Turbo
+      - Cirrus SR-22 SE Turbo
+      - Cirrus SR-22 T
+      - Cirrus SR-22 X
+      - Cirrus SR-22-G2 GTS
+      - Cirrus SR-22T
+      - Cirrus SR-22T G3-GTSx
+      - Cirrus SR-22T G5-GTS Platinum
+      - Cirrus SR-22T G6-GTS Carbon
+      - Cirrus SR-22T G6-GTS Platinum
+      - Cirrus SR-22T G7-GTS
+      - Cirrus SR-22T G7-GTS Arrivee
+      - Cirrus SR-22T GTS
+      - Cirrus SR-22T GTS Carbon
+      - Cirrus SR22T-GTS G6 Rhodium
+      - Cirrus SR22T-GTS G7 Carbon
+  - Cirrus Vision SF50:
+    - Cirrus Vision SF50 (SF50):
+      - Cirrus SF-50 Vision
+      - Cirrus SF-50 Vision G2
+      - Cirrus SF-50 Vision G2 Arrivee
+      - Cirrus SF-50 Vision G2+
+      - Cirrus SF-50 Vision G2+ Arrivee
+
 COMAC:
   - COMAC C909/ARJ-21:
     - COMAC C909/ARJ-21 (AR27):
@@ -1420,7 +1584,532 @@ COMAC:
       - C919-100
       - C919-100STD
 
+Dassault:
+  - Dassault Falcon:
+    - Dassault Falcon 10/100 (FA10):
+      - Dassault Falcon 10
+      - Dassault Falcon 100
+    - Dassault Falcon 20/200 (FA20):
+      - Dassault Falcon (Mystere) 20-5
+      - Dassault Falcon (Mystere) 20DC
+    - Dassault Falcon 50 (FA50):
+      - Dassault Falcon 50
+      - Dassault Falcon 50EX
+    - Dassault Falcon 900 (F900):
+      - Dassault Falcon 900
+      - Dassault Falcon 900 Mystere
+      - Dassault Falcon 900B
+      - Dassault Falcon 900C
+      - Dassault Falcon 900DX
+      - Dassault Falcon 900EX
+      - Dassault Falcon 900EX EASy
+      - Dassault Falcon 900LX
+    - Dassault Falcon 2000 (F2TH):
+      - Dassault Falcon 2000
+      - Dassault Falcon 2000EX
+      - Dassault Falcon 2000EX EASy
+      - Dassault Falcon 2000LX
+      - Dassault Falcon 2000LXS
+      - Dassault Falcon 2000S
+    - Dassault Falcon 6X (FA6X):
+      - Dassault Falcon 6X
+    - Dassault Falcon 7X (FA7X):
+      - Dassault Falcon 7X
+    - Dassault Falcon 8X (FA8X):
+      - Dassault Falcon 8X
+  - Dassault Mercure:
+    - Dassault Mercure 100 (DMER):
+      - Dassault Mercure 100
+
+
+De Havilland:
+  - De havilland DH.106 Comet:
+    - De havilland DH.106 Comet 2 (COMT):
+      - De Havilland DH-106 Comet 2R
+    - De havilland DH.106 Comet 4 (COMT):
+      - De Havilland DH-106 Comet 4B
+      - De Havilland DH-106 Comet 4C
+
+
+De Havilland Canada:
+  - De Havilland Canada DHC-1 Chipmunk:
+    - De Havilland Canada DHC-1 Chipmunk (DHC1):
+      - De Havilland Canada DHC-1 Chipmunk 22
+      - De Havilland Canada DHC-1 Chipmunk T Mk 10
+      - De Havilland Canada DHC-1A-1 Chipmunk
+      - De Havilland DHC-1 Chipmunk Mk20
+      - De Havilland DHC-1 Chipmunk Mk22
+      - De Havilland DHC-1 Chipmunk Mk22A
+      - De Havilland DHC-1 Chipmunk T10
+  - De Havilland Canada DHC-2 Beaver:
+    - De Havilland Canada DHC-2 Beaver/Turbine Beaver (DHC2/DH2T):
+      - De Havilland Canada DHC-2 Beaver Mk.I
+      - De Havilland Canada DHC-2 Beaver Mk1
+      - De Havilland Canada DHC-2 Turbine Beaver Mk3
+    
+  - De Havilland Canada DHC-3 Otter:
+    - De Havilland Canada DHC-3 Otter/Turbine Otter (DHC3/DH3T):
+      - De Havilland Canada DHC-3T Texas Turbine Super Otter
+      - De Havilland Canada DHC-3T Vazar Turbine Otter
+  - De Havilland Canada DHC-4 Caribou:
+    - De Havilland Canada DHC-4 Caribou (DHC4):
+      - De Havilland Canada DHC-4A Caribou
+  - De Havilland Canada DHC-5 Buffalo:
+    - De Havilland Canada DHC-5 Buffalo (DHC5):
+      - De Havilland Canada C-8A Buffalo/QSRA (DHC-5)
+
+  - De Havilland Canada DHC-6 Twin Otter:
+    - De Havilland Canada DHC-6 Twin Otter (DHC6):
+      - De Havilland Canada (Viking) DHC-6-400 Twin Otter
+      - De Havilland Canada DHC-6-100 Twin Otter
+      - De Havilland Canada DHC-6-200 Twin Otter
+      - De Havilland Canada DHC-6-300
+      - De Havilland Canada DHC-6-300 Twin Otter
+      - De Havilland Canada DHC-6-300 Twin Otter/VistaLiner
+      - De Havilland Canada DHC-6-300G
+      - De Havilland Canada DHC-6-400 Twin Otter
+  - De Havilland Canada DHC-7 Dash 7:
+    - De Havilland Canada DHC-7 Dash 7 (DHC7):
+      - De Havilland Canada DHC-7-100 Dash 7
+      - De Havilland Canada DHC-7-102 Dash 7
+      - De Havilland Canada DHC-7-103 Dash 7
+      - De Havilland Canada DHC-7-110 Dash 7
+  - De Havilland Canada DHC-8 Dash 8:
+    - De Havilland Canada DHC-8-100 Dash 8 (DH8A):
+      - Bombardier DHC-8-102F
+      - Bombardier DHC-8-103Q Dash 8
+      - De Havilland Canada DHC-8-100 Dash 8
+      - De Havilland Canada DHC-8-102 Dash 8
+      - De Havilland Canada DHC-8-102A
+      - De Havilland Canada DHC-8-103 Dash 8
+      - De Havilland Canada DHC-8-106 Dash 8
+    - De Havilland Canada DHC-8-200 Dash 8 (DH8B):
+      - Bombardier DHC-8-202Q Dash 8
+      - De Havilland Canada DHC-8-200 Dash 8
+      - De Havilland Canada DHC-8-201 Dash 8
+      - De Havilland Canada DHC-8-202Q Dash 8
+    - De Havilland Canada DHC-8-300 Dash 8 (DH8C):
+      - Bombardier DHC-8-311Q Dash 8
+      - Bombardier DHC-8-314Q Dash 8
+      - Bombardier DHC-8-315 Dash 8
+      - Bombardier DHC-8-315Q Dash 8
+      - De Havilland Canada DHC-8-311 Dash 8
+      - De Havilland Canada DHC-8-311Q Dash 8
+      - De Havilland Canada DHC-8-315 Dash 8
+    - De Havilland Canada DHC-8-400 Dash 8 (DH8D):
+      - Bombardier DHC-8-4... Q400
+      - Bombardier DHC-8-402 Q400
+      - Bombardier DHC-8-402 Q400-MR
+      - Bombardier DHC-8-402Q Combi Q400CC
+      - DHC-8-402 Q400-AT
+      - De Havilland Canada DHC-8-402 Dash 8 Q400
+      - De Havilland Canada DHC-8-402Q Dash 8
+
+Dornier:
+  - Dornier 228:
+    - Dornier Do-228 (D228):
+      - Dornier (Hindustan) 228-201
+      - Dornier (RUAG) 228NG
+      - Dornier 228-201
+      - Dornier 228-212
+      - Do228 NXT
+  - Dornier 328:
+    - Dornier Do-328-100 (D328):
+      - Dornier 328-100
+      - Dornier 328-110
+      - Dornier 328-120
+    - Fairchild Dornier Do-328JET-300 (J328):
+      - Dornier (Lockheed Martin) X-55A (328-300)
+      - Dornier 328-300 328JET Envoy 3
+      - Dornier 328-310 328JET
+      - Fairchild Dornier 328-310 328JET
+  - Dornier 27:
+    - Dornier Do-27 (DO27):
+      - Dornier Do-27A-4
+      - Dornier Do-27A-5
+      - Dornier Do-27B-1
+      - Dornier Do-27B-5
+  - Dornier 28:
+    - Dornier Do-28D (D28D):
+      - Dornier Do-28D-2 Skyservant
+
+
+
+Embraer:
+  - Embraer EMB 110 Bandeirante:
+    - Embraer EMB 110 Bandeirante (E110):
+      - Embraer EMB-110C Bandeirante
+      - Embraer EMB-110P1 Bandeirante
+      - Embraer EMB-110P1A Bandeirante
+      - Embraer EMB-110P2 Bandeirante
+  - Embraer EMB 120 Brasilia:
+    - Embraer EMB 120 Brasilia (E120):
+      - Embraer EMB-120 Brasilia
+      - Embraer EMB-120(ERF) Brasilia
+      - Embraer EMB-120ER Brasilia
+      - Embraer EMB-120RT Brasilia
+  - Embraer EMB 121 Xingu:
+    - Embraer EMB 121 Xingu (E121):
+      - Embraer EMB-121A1 Xingu II
+  - Embraer ERJ:
+    - Embraer ERJ 135/Legacy 600/Legacy 650 (E135):
+      - Embraer EMB-135BJ Legacy 600
+      - Embraer EMB-135BJ Legacy 650
+      - Embraer EMB-135BJ Legacy 650E
+      - Embraer Legacy 600 (EMB-135BJ)
+      - Embraer Legacy 650 (EMB-135BJ)
+      - Embraer ERJ-135BJ Legacy 600
+      - Embraer ERJ-135ER (EMB-135ER)
+      - Embraer ERJ-135LR (EMB-135LR)
+    - Embraer ERJ 140 (E135):
+      - Embraer ERJ-140LR (EMB-135KL)
+    - Embraer ERJ 145 (E145):
+      - Embraer ERJ-145EP (EMB-145EP)
+      - Embraer ERJ-145EU (EMB-145EU)
+      - Embraer ERJ-145LR (EMB-145ER)
+      - Embraer ERJ-145LR (EMB-145LR)
+      - Embraer ERJ-145LU (EMB-145LU)
+      - Embraer ERJ-145MP (EMB-145MP)
+      - Embraer ERJ-145XR (EMB-145XR)
+  - Embraer E-Jet/E-Jet E2:
+    - Embraer E170 (E70S/E70L):
+      - Embraer 170LR (ERJ-170-100LR)
+      - Embraer 170SE (ERJ-170-100SE)
+      - Embraer 170STD (ERJ-170-100STD)
+      - Embraer 170SU (ERJ-170-100SU)
+    - Embraer E175 (E75S/E75L):
+      - Embraer 175LL (ERJ-170-200LL)
+      - Embraer 175LR (ERJ-170-200LR)
+      - Embraer 175LT (ERJ-170-200LR)
+      - Embraer 175STD (ERJ-170-200STD)
+      - Embraer 175SU (ERJ-170-200SU)
+      - Embrarer 170-200LR
+      - Embraer ERJ-175
+    - Embraer E175-E2 (E275):
+    - Embraer E190/Embraer Lineage 1000 (E190):
+      - ERJ-190
+      - ERJ-190AR
+      - ERJ-190LR
+      - Embraer 190AR (ERJ-190-100IGW)
+      - Embraer 190AR (F) (ERJ-190-100IGW)
+      - Embraer 190LR (ERJ-190-100LR)
+      - Embraer 190SR (ERJ-190-100SR)
+      - Embraer 190STD (ERJ-190-100STD)
+      - Embraer Lineage 1000 (ERJ-190-100ECJ)
+      - Embraer Lineage 1000E (ERJ-190-100ECJ)
+      - Embraer ERJ-190-100STD
+      - Embraer ERJ-190AR(F)
+    - Embraer E195 (E195):
+      - Embraer 195AR (ERJ-190-200IGW)
+      - Embraer 195LR (ERJ-190-200LR)
+    - Embraer E190-E2 (E290):
+      - Embraer 190 E2 STD (ERJ-190-300STD)
+    - Embraer E195-E2 (E295):
+      - ERJ-190-400 STD
+      - Embraer 195 E2 STD (ERJ-190-400 STD)
+      - Embraer 195 E2 STD (ERJ-190-400STD)
+      - Enbraer 195 E2 STD (ERJ-190-400 STD)
+  - Embraer C-390 Millennium:
+    - Embraer C-390/KC-390 Millenium (E390):
+      - Embraer KC-390 (EMB-390)
+  - Embraer EMB 505 Phenom:
+    - Embraer EMB 505-100 Phenom 100 (E50P):
+      - Embraer EMB-500 Phenom 100
+      - Embraer EMB-500 Phenom 100E
+      - Embraer EMB-500 Phenom 100EV
+      - Embraer EMB-500 Phenom 100EX
+        # N100NV on metadata
+      - Embraer EMB-500/505 Phenom
+    - Embraer EMB 505-300 Phenom 300 (E55P):
+      - Embraer EMB-505 Phenom 300
+      - Embraer EMB-505 Phenom 300E
+      - Embraer EMB-505 Phenom
+  - Embraer Legacy/Praetor:
+    - Embraer EMB 545 Legacy 450/Praetor 500 (E545):
+      - Embraer EMB-545 Legacy 450
+      - Embraer EMB-545 Praetor 500
+      - Embraer EMB-545/550 Praetor 500
+      - Embraer EMB-Praetor 500
+
+    - Embraer EMB 550 Legacy 500/Praetor 600 (E550):
+      - Embraer EMB-550 Legacy 500
+      - Embraer EMB-550 Praetor 600
+      - Embraer Praetor 600
+
+Fokker:
+  - Fokker F27 Friendship/F50:
+    - Fokker F27 Friendship (F27):
+      - Fokker F-27-100 Friendship
+      - Fokker F-27-200 Friendship
+      - Fokker F-27-500 Friendship
+      - Fokker F-27-500CRF Friendship
+      - Fokker F-27-600 Friendship
+      - Fairchild F-27F
+      - Fairchild F-27J
+    - Fokker F50 (F50):
+      - Fokker 50
+  - Fokker F28 Fellowship/F70/F100:
+    - Fokker F28 Fellowship (F28):
+      - Fokker F-28-1000 Fellowship
+      - Fokker F-28-1000C Fellowship
+      - Fokker F-28-4000 Fellowship
+    - Fokker F70 (F70):
+      - Fokker 70 (F-28-0070)
+    - Fokker F100 (F100):
+      - Fokker 100 (F-28-0100)
+
+Gulfstream Aerospace:
+  - Gulfstream I:
+    - Gulfstream I (GLF1):
+      - Grumman G-159 Gulfstream I
+  - Gulfstream Jets:
+    - Gulfstream II (GLF2):
+      - Gulfstream American G-1159 Gulfstream II
+      - Gulfstream American G-1159B Gulfstream II-B
+    - Gulfstream III (GLF3):
+      - Gulfstream Aerospace G-1159A Gulfstream III
+      - Gulfstream American G-1159A Gulfstream III
+
+    - Gulfstream IV (GLF4):
+      - Gulfstream Aerospace C-20F Gulfstream IV (G-IV)
+      - Gulfstream Aerospace G-IV
+      - Gulfstream Aerospace G-IV Gulfstream G300
+      - Gulfstream Aerospace G-IV Gulfstream G450
+      - Gulfstream Aerospace G-IV Gulfstream IV
+      - Gulfstream Aerospace G-IV Gulfstream IV-SP
+      - Gulfstream Aerospace G-IV-X Gulfstream G450
+    - Gulfstream V (GLF5):
+      - Gulfstream Aerospace C-37A Gulfstream V (G-V)
+      - Gulfstream Aerospace G-V Gulfstream V
+      - Gulfstream Aerospace V
+
+    - Gulfstream G400 (GA4C):
+      - Gulfstream Aerospace G400
+    - Gulfstream G500/550 (GA5C):
+      - Gulfstream Aerospace G500
+      - Glufstream G550
+      - Gulstream Aerospace G-500
+      - Gulfstream Aerospace G-V-SP Gulfstream G500
+      - Gulfstream Aerospace G-V-SP Gulfstream G550
+      - Gulfstream Aerospace G-V-SP Gulfstream G550 (C-37B)
+      - Gulfstream Aerospace GVII-G500
+      - Gulfstream G500
+      - Gulfstream G550
+    - Gulfstream G600 (GA6C):
+      - Gulfstream Aerospace GVII-G600
+
+    - Gulfstream G650 (GLF6):
+      - Gulfstream Aerospace G650 (G-VI)
+      - Gulfstream Aerospace G650ER (G-VI)
+      - Gulfstream Aerospace VC-650A
+
+    - Gulfstream G700 (GA7C):
+      - Gulfstream Aerospace C-37D Gulfstream G700 (G-VIII)
+      - Gulfstream Aerospace G700
+      - Gulfstream G700
+
+    - Gulfstream G800 (GA8C):
+      - Gulfstream Aerospace G-VIII G800
+
+
+Ilyushin:
+  - Ilyushin Il-14:
+    - Ilyushin Il-14 (IL14):
+      - Ilyushin Il-14P
+  - Ilyushin Il-18:
+    - Ilyushin Il-18 (IL18):
+      - Ilyushin Il-18D
+      - Ilyushin Il-18DTs Tsyklon
+      - Ilyushin Il-18Gr
+      - Ilyushin Il-18GrM
+      - Ilyushin Il-18V
+  - Ilyushin Il-62:
+    - Ilyushin Il-62 (IL62):
+      - Ilyushin Il-62
+      - Ilyushin Il-62M
+      - Ilyushin Il-62MGr
+  - Ilyushin Il-76/-78:
+    - Ilyushin Il-76/-78 (IL76):
+      - Ilyushin Il-76MD
+      - Ilyushin Il-76MDK
+      - Ilyushin Il-76TD
+      - Ilyushin Il-76TD-90
+      - Ilyushin Il-76TD-90SW
+      - Ilyushin Il-76TD-90VD
+      - Ilyushin Il-78M
+  - Ilyushin Il-86/96:
+    - Ilyushin Il-86 (IL86):
+      - Ilyushin Il-86
+    - Ilyushin Il-96 (IL96):
+      - Ilyushin Il-96-300
+      - Ilyushin Il-96-300PU
+      - Ilyushin Il-96-400T
+
+
+Israel Aerospace Industries:
+  - IAI/Gulfstream Astra:
+    - IAI-1123/-1124 Westwind (WW23/WW24):
+      - Israel Aircraft Industries IAI-1124 Westwind
+    - IAI-1125 Astra/Gulfstream G100 (ASTR):
+      - Israel Aircraft Industries C-38A Astra SPX (IAI-1125A)
+      - Israel Aircraft Industries IAI-1125 Astra
+      - Gulfstream Aerospace G100
+    - Gulfstream G150 (G150):
+      - Gulfstream Aerospace G150
+      - Gulfstream G150
+
+  - IAI/Gulfstream Galaxy:
+    - IAI-1126 Galaxy/Gulfstream G200 (GALF):
+      - Israel Aircraft Industries IAI-1126 Galaxy
+      - Israel Aircraft Industries IAI-1126 Galaxy/ Gulfstream G200
+      - Gulfstream Aerospace G200
+      - Gulfstream G200
+    - Gulfstraem G280 (G280):
+      - Gulfstream Aerospace G280
+
+    - Gulfstream G300 (GA3C):
+
+Learjet:
+  - Learjet:
+    - Learjet 23 (LJ23):
+      - Lear Jet 23
+    - Learjet 24 (LJ24):
+      - Learjet 24D
+      - Gates Learjet 24D
+    - Learjet 25 (LJ25):
+      - Gates Learjet 25B
+      - Gates Learjet 25C
+    - Learjet 31 (LJ31):
+      - Learjet 31
+      - Learjet 31A
+    - Learjet 35/36 (LJ35):
+      - Gates Learjet 35
+      - Gates Learjet 35A
+      - Gates Learjet 36A
+      - Learjet 35A
+      - Learjet 35A/ZR
+      - Learjet 36A
+    - Learjet 40 (LJ40):
+      - Bombardier Learjet 40
+      - Learjet 40
+      - Learjet 40XR
+    - Learjet 45 (LJ45):
+      - Bombardier Learjet 45
+      - Bombardier Learjet 45XR
+      - Bombardier Learjet INC 45
+      - Learjet 45
+      - Learjet 45XR
+    - Learjet 55 (LJ55):
+      - Gates Learjet 55
+      - Learjet 55
+    - Learjet 60 (LJ60):
+      - Bombardier Learjet 60XR
+      - Learjet 60
+      - Learjet 60XR
+    - Learjet 70 (LJ70):
+      - Learjet 70
+
+    - Learjet 75 (LJ75):
+      - Bombardier Learjet 75
+      - Learjet 75
+
+Let:
+  Let L-410 Turbolet:
+    Let L-410 Turbolet (L410):
+      - Let L-410... Turbolet
+      - Let L-410NG Turbolet
+      - Let L-410UVP-E Turbolet
+      - Let L-410UVP-E10 Turbolet
+      - Let L-410UVP-E17 Turbolet
+      - Let L-410UVP-E20 Turbolet
+      - Let L-410UVP-E8D Turbolet
+
+Lockheed/Lockheed-Martin:
+  - Lockheed 10/12/14 Electra:
+    - Lockheed L-12 Electra Junior (L12):
+      - Lockheed 12-A Electra Junior
+
+  - Lockheed Constellation:
+    - Lockheed L-749 Constellation:
+      - Lockheed C-121A Constellation (L-749)
+      - Lockheed L-749A Constellation
+
+    - Lockheed L-1049 Super Constellation:
+      - Lockheed L-049 Constellation
+      - Lockheed L-1049F Super Constellation
+      - Lockheed L-1049G Super Constellation
+    - Lockheed L-1649 Starliner:
+      - Lockheed L-1649A Starliner
+  - Lockheed C-130 Hercules:
+    - Lockheed C-130 Hercules (C130):
+      - Lockheed C-130A Hercules (L-182)
+
+    - Lockheed C-130J Super Hercules (C30J):
+      - Lockheed C-130H-30 Hercules (L-382)
+      - Lockheed C-130K Hercules C1K (L-382)
+      - Lockheed KC-130H Hercules (L-382)
+      - Lockheed L-100-20 Hercules (L-382E)
+      - Lockheed L-100-30 Hercules (L-382G)
+      - Lockheed Martin LM-100J Hercules (L-382)
+
+  - Lockheed L-188 Electra:
+    - Lockheed L-188 Electra (L188):
+      - Lockheed L-188A Electra
+      - Lockheed L-188A(F) Electra
+      - Lockheed L-188C Electra
+      - Lockheed L-188C(AT) Electra
+      - Lockheed L-188C(F) Electra
+      - Lockheed P-3 AEW&C
+  - Lockheed L-1329 Jetstar:
+    - Lockheed L-1329 Jetstar (L29A/L29B):
+      - Lockheed C-140A JetStar (L-1329)
+      - Lockheed VC-140B JetStar (L-1329)
+      - Lockheed L-1329 JetStar II
+
+  - Lockheed L-1011 TriStar:
+    - Lockheed L-1011 TriStar (L101):
+      - Lockheed L-1011-385-1 TriStar 1
+      - Lockheed L-1011-385-1 TriStar 50
+      - Lockheed L-1011-385-1-15 TriStar 1
+      - Lockheed L-1011-385-1-15 TriStar 100
+      - Lockheed L-1011-385-1-15 TriStar 200
+      - Lockheed L-1011-385-1-15 TriStar 200(F)
+      - Lockheed L-1011-385-1-15 TriStar 250
+      - Lockheed L-1011-385-3 TriStar 500
+
 McDonnell-Douglas/Douglas:
+  - Douglas DC-3:
+    - Douglas DC-3 (DC3):
+      - Douglas C-47 Skytrain (DC-3)
+      - Douglas C-47A Skytrain
+      - Douglas C-47A Skytrain (DC-3)
+      - Douglas C-47B (DC-3)
+      - Douglas C-47B Dakota 4 (DC-3)
+      - Douglas C-47B Dakota Mk4 (DC-3)
+      - Douglas C-47B Skytrain
+      - Douglas C-47B Skytrain (DC-3)
+      - Douglas C-47D Skytrain (DC-3)
+      - Douglas C-53 Skytrooper (DC-3)
+      - Douglas C-53D Skytrooper (DC-3)
+      - Douglas (Lisunov) Li-2T (DC-3)
+      - Douglas DC-3(A)
+      - Douglas DC-3(C)
+      - Douglas DC-3-277D
+      - Douglas DC-3-G202A
+    - Basler BT-67 (DC3T):
+      - Douglas (Basler) BT-67 Turbo-67 (DC-3)
+
+  - Douglas DC-4/-6/-7:
+    - Douglas DC-4 (DC4):
+      - Douglas C-54A Skymaster (DC-4)
+      - Douglas C-54Q Skymaster (DC-4)
+      - Douglas C-54S Skymaster (DC-4)
+      - Douglas DC-4-1009
+    - Douglas DC-6 (DC6):
+      - Douglas DC-6A(C)
+      - Douglas DC-6B
+    - Douglas DC-7 (DC7):
+      - Douglas DC-7B
   - Douglas DC-8:
     - Douglas DC-8-10/-20/-30 (DC81/DC82/DC83):
       - Douglas DC-8-21
@@ -1521,3 +2210,331 @@ McDonnell-Douglas/Douglas:
       - McDonnell Douglas MD-11/ER
       - McDonnell Douglas MD-11C
       - McDonnell Douglas MD-11F
+
+
+
+Pilatus:
+  - Pilatus P-1/-2/-3:
+    - Pilatus P-2 (PP2):
+      - Pilatus P2-05
+    - Pilatus P-3 (PP3):
+      - Pilatus P-3-05
+  - Pilatus PC-6 Porter:
+    - Pilatus PC-6 Porter/Turbo Porter (PC6P/PC6T):
+      - Pilatus PC-6/B2-H4 Turbo Porter
+      - PC-6/B2-H4 Turbo Porter
+
+  - Pilatus PC-7/-9/-21:
+    - Pilatus PC-7 (PC7):
+      - Pilatus PC-7
+
+    - Pilatus PC-9 (PC9):
+      - Pilatus PC-9A
+
+    - Pilatus PC-21 (PC21):
+      - Pilatus PC-21
+    - Beechcraft T-6 Texan II (TEX2):
+      - Hawker Beechcraft AT-6B Texan II
+
+  - Pilatus PC-12:
+    - Pilatus PC-12 (PC12):
+      - Pilatus PC-12
+      - Pilatus PC-12 NG (PC-12/47E)
+      - Pilatus PC-12 NGX
+      - Pilatus PC-12/45
+      - Pilatus PC-12/47
+      - Pilatus PC-12/47 (PC-12 NGX)
+      - Pilatus PC-12/47E
+      - Pilatus PC-12/47E (PC-12 NG)
+      - Pilatus PC-12/47E (PC-12 NGX)
+      - Pilatus PC-12/47G PRO
+  - Pilatus PC-24:
+    - Pilatus PC-24 (PC24):
+      - Pilatus PC-24
+
+
+Piper:
+  - Piper Cub:
+    - Piper J-3 Cub (J3):
+      - Piper J-3... Cub
+      - Piper J-3C-65 Cub
+      - Piper J-3C-65 Cub (L-4A)
+      - Piper J-3C-90 Cub
+      - Piper L-4H Cub (J-3C-65D)
+      - Piper L-4H Grasshopper (J-3C-90)
+      - Piper L-4J Grasshopper (J-3C-65D)
+    - Piper J-4 Cub Coupe (J4):
+      - Piper J4A-S
+    - Piper J-5 Cub Cruiser (J5):
+      - Piper J-5A Cub Cruiser
+
+    - Piper PA-11 Cub Special (PA11):
+      - Piper PA-11-90 Cub Special
+
+    - Piper PA-12 Super Cruiser (PA12):
+      - Piper PA-12 Super Cruiser
+
+    - Piper PA-16 Clipper (PA16):
+      - Piper PA-16 Clipper
+
+    - Piper PA-18 Super Cub (PA18):
+      - Piper L-18C Super Cub
+      - Piper L-18C Super Cub (PA-18-95)
+      - Piper L-21B Super Cub (PA-18-150)
+      - Piper PA-18-125 Super Cub
+      - Piper PA-18-135 Super Cub
+      - Piper PA-18-150 Super Cub
+      - Piper PA-18-180M Super Cub
+      - Piper PA-18-95 Super Cub
+      - Piper PA-18A-150 Super Cub
+      - Piper (Cub Crafters) PA-18-150 Super Cub
+
+    - Piper PA-22 Tri-Pacer/Carribean/Colt (PA22):
+      - Piper PA-22-108 Colt
+      - Piper PA-22-135 Tri-Pacer
+      - Piper PA-22-150 Caribbean
+      - Piper PA-22-150 Pacer
+      - Piper PA-22-150 Tri-Pacer
+      - Piper PA-22-150/TD Tri-Pacer
+      - Piper PA-22-160 Tri-Pacer
+  - Piper Cherokee:
+    - Piper PA-28 Cherokee (P28A/B/R/S/T/U):
+      - Chincul PA-A-28-140 Cherokee Cruiser
+      - Chincul PA-A-28-181 Archer II
+      - Piper PA-28-140 Cherokee
+      - Piper PA-28-140 Cherokee B
+      - Piper PA-28-140 Cherokee C
+      - Piper PA-28-140 Cherokee Cruiser
+      - Piper PA-28-140 Cherokee E
+      - Piper PA-28-140 Cherokee Fliteliner
+      - Piper PA-28-150 Cherokee C
+      - Piper PA-28-151 Cherokee Warrior
+      - Piper PA-28-151 Cherokee Warrior II
+      - Piper PA-28-161 Cadet
+      - Piper PA-28-161 Cherokee Warrior II
+      - Piper PA-28-161 Warrior II
+      - Piper PA-28-161 Warrior III
+      - Piper PA-28-161 Warrior ll
+      - Piper PA-28-161(Centurion) Warrior II
+      - Piper PA-28-161(Centurion) Warrior III
+      - Piper PA-28-180 Archer
+      - Piper PA-28-180 Cherokee
+      - Piper PA-28-180 Cherokee Archer
+      - Piper PA-28-180 Cherokee B
+      - Piper PA-28-180 Cherokee C
+      - Piper PA-28-180 Cherokee Challenger
+      - Piper PA-28-180 Cherokee D
+      - Piper PA-28-180 Cherokee E
+      - Piper PA-28-180 Cherokee G
+      - Piper PA-28-180(mod) Cherokee Archer
+      - Piper PA-28-181 Archer
+      - Piper PA-28-181 Archer II
+      - Piper PA-28-181 Archer III
+      - Piper PA-28-181 Archer LX
+      - Piper PA-28-181 Archer TX
+      - Piper PA-28-181 Cherokee Archer II
+      - Piper PA-28-181 Pilot 100i
+      - Piper PA-28-201T Turbo Dakota
+      - Piper PA-28-235 Cherokee B
+      - Piper PA-28-235 Cherokee C
+      - Piper PA-28-235 Cherokee D
+      - Piper PA-28R-180 Cherokee Arrow
+      - Piper PA-28R-200 Arrow II
+      - Piper PA-28R-200 Cherokee Arrow
+      - Piper PA-28R-200 Cherokee Arrow II
+      - PA-28-181 Cherokee Archer II
+
+      - Piper PA-28R-201 Arrow
+      - Piper PA-28R-201 Arrow III
+      - Piper PA-28R-201T Turbo Arrow
+      - Piper PA-28R-201T Turbo Arrow III
+      - Piper PA-28RT-201 Arrow IV
+      - Piper PA-28RT-201 Cherokee Arrow IV
+      - Piper PA-28RT-201T Turbo Arrow IV
+    - Piper PA-32 Cherokee Six (PA32/P28R/T):
+      - Piper PA-32-260 Cherokee Six
+      - Piper PA-32-300 Cherokee Six
+      - Piper PA-32-300 Cherokee Six E
+      - Piper PA-32R-300 Cherokee Lance
+      - Piper PA-32R-301 Saratoga II HP
+      - Piper PA-32R-301 Saratoga SP
+      - Piper PA-32R-301T Saratoga II TC
+      - Piper PA-32RT-300 Lance II
+      - Piper PA-32RT-300T Turbo Lance II
+      - Embraer EMB-721C Sertanejo
+
+    - Piper PA-34 Seneca (PA34):
+      - PZL-Mielec M-20-03 Mewa
+      - Embraer EMB-810 Seneca II
+      - Embraer EMB-810D Seneca III
+      - Piper PA-34-200 Seneca
+      - Piper PA-34-200 Seneca II
+      - Piper PA-34-200T Seneca II
+      - Piper PA-34-200T Seneca III
+      - Piper PA-34-220T Seneca III
+      - Piper PA-34-220T Seneca V
+    - Piper PA-44 Seminole (PA44):
+      - Piper PA-44-180 Seminole
+
+  - Piper Comanche:
+    - Piper PA-24 Comanche (PA24):
+      - Piper PA-24 Comanche 180
+      - Piper PA-24-250 Comanche
+      - Piper PA-24-260 Comanche
+      - Piper PA-24-260 Comanche B
+    - Piper PA-30 Twin Comanche/PA-39 Turbo Twin Comanche (PA30):
+      - Piper PA-39-160 Turbo Twin Comanche C/R
+      - Piper PA-30 Twin Comanche B
+      - Piper PA-30-160 Twin Comanche
+      - Piper PA-30-160 Twin Comanche ...
+  - Piper Pawnee:
+    - Piper PA-25 Pawnee (PA25):
+      - PA-25-260 PUELCHE II
+
+  - Piper Apache:
+    - Piper PA-23 Apache/Aztec (PA23):
+      - Piper PA-23-160
+      - Piper PA-23-250 Aztec
+      - Piper PA-23-250 Aztec D
+      - Piper PA-23-250 Aztec E
+      - Piper PA-23-250 Aztec F
+  - Piper Navajo:
+    - Piper PA-31 Navajo/Cheyenne I/II (PA31/PAY1/PAY2):
+      - Piper PA-31 Navajo
+      - Piper PA-31-300 Navajo
+      - Piper PA-31-310 Navajo
+      - Piper PA-31-310 Navajo B
+      - Piper PA-31-310 Navajo C
+      - Piper PA-31-350 Chieftain
+      - Piper PA-31-350 Navajo Chieftain
+      - Piper PA-31T Cheyenne
+      - Piper PA-31T-620 Cheyenne II
+      - Piper PA-31T1 Cheyenne I
+      - Piper PA-31T1-500 Cheyenne I
+      - Piper PA-31T2 Cheyenne IIXL
+      - Piper PA-31T2-620 Cheyenne IIXL
+    - Piper PA-42 Cheyenne III (PAY3/4):
+      - Piper PA-42-720 Cheyenne III
+      - Piper PA-42-720 Cheyenne IIIA
+  - Piper Tomahawk:
+    - Piper PA-38 Tomahawk (PA38):
+      - Piper PA-38-112 Tomahawk
+      - Piper PA-38-112 Tomahawk ...
+  - Piper Malibu:
+    - Piper PA-46 Malibu (PA46/P46T/M600/M700):
+      - Piper PA-46 600M Meridian
+      - Piper PA-46 M500 Meridian
+      - Piper PA-46-310P Malibu
+      - Piper PA-46-350P M350
+      - Piper PA-46-350P Malibu Mirage
+      - Piper PA-46-350P Malibu Mirage/Jetprop DLX
+      - Piper PA-46-500TP Malibu Meridian
+      - Piper PA-46-500TP Meridian M500
+      - Piper PA-46-600TP (M600)
+      - Piper PA-46-600TP (M600) SLS
+      - Piper PA-46/Jetprop DLX
+      - PA-46-600TP M600 SLS
+      - Piper PA-46R-350T Malibu Matrix
+  - Piper Aerostar:
+    - Piper PA-60 Aerostar (AEST):
+      - Piper PA-60-602P Aerostar
+
+
+Saab:
+  - Saab 340/2000:
+    - Saab 340A/B (SF34):
+      - Saab 340A
+      - Saab 340A(F)
+      - Saab 340B
+      - Saab 340B/Plus
+      - Saab 340BPlus(F)
+      - Saab-Fairchild SF-340A
+      - Saab-Fairchild SF-340A(QC)
+    - Saab 2000 (SB20):
+      - Saab 2000
+
+Sud Aviation:
+  - Sud Aviation Caravelle:
+    - Sud Aviation SE-210 Caravell (S210):
+      - Sud SE-210 Caravelle 10B3 Super B
+      - Sud SE-210 Caravelle III
+      - Sud SE-210 Caravelle VI-N
+      - Sud SE-210 Caravelle VI-R
+
+Sukhoi:
+  - Sukhoi Superjet:
+    - Sukhoi SSJ-100-95 Superjet 100 (SU95):
+      - Sukhoi SSJ-100-95-LR-100 Superjet 100 (RRJ-95LR)
+      - Sukhoi SSJ-100-95B Superjet 100 (RRJ-95B)
+      - Sukhoi SSJ-100-95B-LR Superjet 100 (RRJ-95B)
+      - Sukhoi SSJ-100-95LR Superjet 100 (RRJ-95B)
+      - Sukhoi SSJ-100-95LR Superjet 100 (RRJ-95LR)
+
+Tupolev:
+  - Tupolev 104:
+    - Tupolev 104 (T104):
+      - Tupolev Tu-104B
+  - Tupolev 134:
+    - Tupolev 134 (T134):
+      - Tupolev Tu-134
+      - Tupolev Tu-134A
+      - Tupolev Tu-134A-3
+  - Tupolev 154:
+    - Tupolev 154 (T154):
+      - Tupolev Tu-154
+      - Tupolev Tu-154B
+      - Tupolev Tu-154B-1
+      - Tupolev Tu-154B-2
+      - Tupolev Tu-154M
+  - Tupolev 204/214:
+    - Tupolev 204/214 (T204):
+      - Tupolev Tu-204-100
+      - Tupolev Tu-204-100S (Tu-204C)
+      - Tupolev Tu-204-100V
+      - Tupolev Tu-204-300
+      - Tupolev Tu-214
+      - Tupolev Tu-214PU
+      - Tupolev Tu-214SR
+      - Tupolev Tu-214SUS
+
+
+Yakovlev:
+  - Yak-3:
+    - Yak-3 (YAK3):
+      - Yak 3 UA
+      - Yak 3 UPW
+      - Yakovlev Yak-3M
+  - Yak-7:
+    - Yak-7 (YAK7):
+      - Yak-7B
+
+  - Yak-10/-12:
+    - Yak-12 (YK12):
+      - Yakovlev Yak-12A
+
+  - Yak-18/-50/-52/-54/-55:
+    - Yak-18 (YK18):
+      - Yakovlev Yak-18
+      - Yakovlev Yak-18T
+    - Yak-50 (YK50):
+      - Yakovlev Yak-50
+    - Yak-52 (YK52):
+      - Yakovlev Yak-52
+      - Yakovlev (Aerostar) Yak-52
+      - Yakovlev (Aerostar) Yak-52TW
+      - Yakovlev (Bacau )Yak-52
+      - Yakovlev (Bacau) Yak-52
+      - Yakovlev (Bacau) Yak-52TD
+    - Yak-54 (YK54):
+      - Yakovlev Yak-54
+
+    - Yak-55 (YK55):
+      - Yak-55M
+
+  - Yak-40/-42:
+    - Yak-40 (YK40):
+      - Yakovlev Yak-40
+      - Yakovlev Yak-40K
+    - Yak-42 (YK42):
+      - Yakovlev Yak-42
+      - Yakovlev Yak-42D

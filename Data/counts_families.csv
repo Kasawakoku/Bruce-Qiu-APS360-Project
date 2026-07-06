@@ -1,9 +1,9 @@
 Family,Image Count
-ATR 42/72,251
+ATR 42/72,279
 AVIC AG-600 Kunlong,6
 Aero L-39 Albatros,18
-Aerospatiale-British Aerospace Concorde,5
-Airbus A300/A310,131
+Aerospatiale-British Aerospace Concorde,6
+Airbus A300/A310,132
 Airbus A320,5465
 Airbus A330,1214
 Airbus A340,151
@@ -14,13 +14,13 @@ Antonov An-124 Ruslan,20
 Antonov An-14/-22/-28,1
 Antonov An-148,3
 Antonov An-2/-3/-4/-6,30
-Antonov An-24/-26/-30/-32,26
+Antonov An-24/-26/-30/-32,27
 Antonov An-72/74,5
 Antonov An-8/-10/-12,28
 BAC 1-11 One-Eleven,4
 BAC 167 Strikemaster,2
 Beechcraft 1900,14
-Beechcraft King Air/Super King Air,80
+Beechcraft King Air/Super King Air,109
 Boeing 377 Stratocruiser,3
 Boeing 707/720/KC-135,63
 Boeing 727,105
@@ -34,9 +34,82 @@ British Aerospace BAe 146/Avro RJ,31
 C-Series/Airbus A220,329
 COMAC C909/ARJ-21,34
 COMAC C919,35
-Canadair Regional Jet (CRJ),1
+Canadair CL-215/-415,6
+Canadair CL-44 Yukon,1
 Cessna 172,3
+Challenger/Canadian Regional Jet (CRJ)/Global,717
+Cirrus SR20/22,105
+Cirrus Vision SF50,19
+Dassault Falcon,206
+Dassault Mercure,1
+De Havilland Canada DHC-1 Chipmunk,15
+De Havilland Canada DHC-2 Beaver,8
+De Havilland Canada DHC-3 Otter,11
+De Havilland Canada DHC-4 Caribou,1
+De Havilland Canada DHC-5 Buffalo,1
+De Havilland Canada DHC-6 Twin Otter,35
+De Havilland Canada DHC-7 Dash 7,4
+De Havilland Canada DHC-8 Dash 8,194
+De havilland DH.106 Comet,6
+Dornier 228,8
+Dornier 27,12
+Dornier 28,1
+Dornier 328,31
 Douglas DC-10/McDonnell Douglas MD-11,117
+Douglas DC-3,42
+Douglas DC-4/-6/-7,10
 Douglas DC-8,72
 Douglas DC-9/McDonnell Douglas MD-80/-90/Boeing 717,229
-Unknown Family,8077
+Embraer C-390 Millennium,1
+Embraer E-Jet/E-Jet E2,693
+Embraer EMB 110 Bandeirante,6
+Embraer EMB 120 Brasilia,9
+Embraer EMB 121 Xingu,2
+Embraer EMB 505 Phenom,111
+Embraer ERJ,131
+Embraer Legacy/Praetor,57
+Fokker F27 Friendship/F50,28
+Fokker F28 Fellowship/F70/F100,40
+Gulfstream I,2
+Gulfstream Jets,355
+IAI/Gulfstream Astra,11
+IAI/Gulfstream Galaxy,48
+Ilyushin Il-14,1
+Ilyushin Il-18,12
+Ilyushin Il-62,15
+Ilyushin Il-76/-78,35
+Ilyushin Il-86/96,17
+Learjet,89
+Lockheed 10/12/14 Electra,4
+Lockheed C-130 Hercules,36
+Lockheed Constellation,7
+Lockheed L-1011 TriStar,33
+Lockheed L-1329 Jetstar,4
+Lockheed L-188 Electra,18
+Pilatus P-1/-2/-3,2
+Pilatus PC-12,113
+Pilatus PC-24,46
+Pilatus PC-6 Porter,4
+Pilatus PC-7/-9/-21,5
+Piper Aerostar,1
+Piper Apache,7
+Piper Cherokee,213
+Piper Comanche,12
+Piper Cub,63
+Piper Malibu,33
+Piper Navajo,23
+Piper Pawnee,1
+Piper Tomahawk,3
+Saab 340/2000,57
+Sud Aviation Caravelle,26
+Sukhoi Superjet,58
+Tupolev 104,1
+Tupolev 134,13
+Tupolev 154,30
+Tupolev 204/214,12
+Unknown Family,4036
+Yak-10/-12,1
+Yak-18/-50/-52/-54/-55,34
+Yak-3,3
+Yak-40/-42,21
+Yak-7,1

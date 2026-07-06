@@ -79,7 +79,7 @@ def generate_reports():
 
     # Define the groupings we want to count
     reports = {
-        'counts_merged_airlines.csv': ('merged_airline', 'Airline'),
+        'counts_airlines_merged.csv': ('merged_airline', 'Airline'),
         'counts_variants.csv': ('variant', 'Variant'),
         'counts_families.csv': ('family', 'Family'),
         'counts_manufacturers.csv': ('manufacturer', 'Manufacturer')

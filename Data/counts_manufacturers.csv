@@ -1,15 +1,34 @@
 Manufacturer,Image Count
-ATR,251
+ATR,279
 AVIC,6
 Aero Vodochody,18
-Aerospatiale/British Aircraft Corporation,5
-Airbus,8063
-Antonov,113
-Beechcraft,94
+Aerospatiale/British Aircraft Corporation,6
+Airbus,8064
+Antonov,114
+Beechcraft,123
 Boeing,8622
-Bombardier,330
+Bombardier/Canadair,1053
 British Aircraft Corporation/British Aerospace,37
 COMAC,69
 Cessna,3
-McDonnell-Douglas/Douglas,418
-Unknown Manufacturer,8077
+Cirrus,124
+Dassault,207
+De Havilland,6
+De Havilland Canada,269
+Dornier,52
+Embraer,1010
+Fokker,68
+Gulfstream Aerospace,357
+Ilyushin,80
+Israel Aerospace Industries,59
+Learjet,89
+Lockheed/Lockheed-Martin,102
+McDonnell-Douglas/Douglas,470
+Pilatus,170
+Piper,356
+Saab,57
+Sud Aviation,26
+Sukhoi,58
+Tupolev,56
+Unknown Manufacturer,4036
+Yakovlev,60
