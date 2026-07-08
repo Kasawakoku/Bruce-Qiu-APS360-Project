@@ -388,11 +388,62 @@ train_df, val_df, test_df = generate_parameterized_splits(
     '../data/metadata/airliners_metadata_trimmed_symmetric_diff.csv',
     '../data/metadata/counts_airlines_merged_trimmed.csv',
     '../data/metadata/counts_variants_trimmed.csv',
-    0.25,
-    0.25,
+    0.2,
+    0.2,
     5,
     42
 )
+
+
+
+
+
+def load_split_dataframes(train_csv_path, val_csv_path, test_csv_path):
+    """
+    Utility function to load the generated split CSVs back into pandas DataFrames.
+    Useful for feeding directly into the PyTorch custom Dataset class.
+    """
+    print("Loading generated splits from disk...")
+    train_df = pd.read_csv(train_csv_path)
+    val_df = pd.read_csv(val_csv_path)
+    test_df = pd.read_csv(test_csv_path)
+    
+    # Optional: Fill NaNs as '-100' string just in case pandas parsed empty columns as floats
+    train_df.fillna('-100', inplace=True)
+    val_df.fillna('-100', inplace=True)
+    test_df.fillna('-100', inplace=True)
+    
+    return train_df, val_df, test_df
+
+# ==========================================
+# EXAMPLE EXECUTION
+# ==========================================
+if __name__ == "__main__":
+    # 1. Run this once to generate the physical files
+    '''
+    generate_split_csvs(
+        intersection_csv_path='path/to/intersection.csv', 
+        union_only_csv_path='path/to/union_intersection.csv',
+        intersection_summary_csv_path='path/to/intersection_counts_summary.csv',
+        valid_airlines_path='path/to/valid_airlines.csv', 
+        valid_variants_path='path/to/valid_variants.csv',
+        out_train_path='train_split.csv',
+        out_val_path='val_split.csv',
+        out_test_path='test_split.csv',
+        val_pct=0.10, 
+        test_pct=0.10, 
+        min_count=5
+    )
+    '''
+    
+    # 2. Run this inside your main training script to load them back up
+    '''
+    train_df, val_df, test_df = load_split_dataframes(
+        'train_split.csv', 'val_split.csv', 'test_split.csv'
+    )
+    '''
+
+
 
 
 
