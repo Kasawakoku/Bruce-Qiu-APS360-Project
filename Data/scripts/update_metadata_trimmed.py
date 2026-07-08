@@ -94,10 +94,11 @@ def generate_trimmed_datasets():
     mask_variant = df['aircraft_variant'].isin(valid_variants)
 
     datasets = {
-        'airliners_metadata_trimmed_airline_only.csv': df[mask_airline],
-        'airliners_metadata_trimmed_variant_only.csv': df[mask_variant],
-        'airliners_metadata_trimmed_intersection.csv': df[mask_airline & mask_variant], # BOTH are valid
-        'airliners_metadata_trimmed_union.csv': df[mask_airline | mask_variant]         # EITHER is valid
+        '../metadata/airliners_metadata_trimmed_airline_only.csv': df[mask_airline],
+        '../metadata/airliners_metadata_trimmed_variant_only.csv': df[mask_variant],
+        '../metadata/airliners_metadata_trimmed_intersection.csv': df[mask_airline & mask_variant], # BOTH are valid
+        '../metadata/airliners_metadata_trimmed_union.csv': df[mask_airline | mask_variant],         # EITHER is valid
+        '../metadata/airliners_metadata_trimmed_symmetric_diff.csv': df[mask_airline ^ mask_variant] # Only ONE is valid. ie. Union - Intersection
     }
 
     print("\n" + "="*50)

@@ -19,6 +19,7 @@ from torchvision.models import (
 # Other packages
 import numpy as np
 import time
+import math
 import pandas as pd
 import matplotlib.pyplot as plt
 from collections import Counter
@@ -116,7 +117,7 @@ def split_intersection_dataset(
 # val_df.to_csv('val_metadata.csv', index=False)
 # test_df.to_csv('test_metadata.csv', index=False)
 '''
-
+'''
 def generate_splits_with_union(
     master_csv_path, 
     intersection_csv_path, 
@@ -211,7 +212,191 @@ def generate_splits_with_union(
 #     valid_airlines_path='valid_airlines.csv',
 #     valid_variants_path='valid_variants.csv'
 # )
+'''
 
+
+
+
+def generate_simplified_splits(
+    intersection_csv_path, 
+    union_only_csv_path, # Your "union-intersection" CSV
+    valid_airlines_path, 
+    valid_variants_path,
+    val_size=0.10, 
+    test_size=0.10, 
+    random_state=42
+):
+    # 1. Load your pre-processed datasets and valid class lists
+    df_inter = pd.read_csv(intersection_csv_path)
+    df_union_only = pd.read_csv(union_only_csv_path)
+    
+    valid_airlines = set(pd.read_csv(valid_airlines_path)['Airline'].dropna().unique())
+    valid_variants = set(pd.read_csv(valid_variants_path)['Variant'].dropna().unique())
+    
+    # 2. FAILSAFE LOGIC: Smooth rare combinations in the intersection set
+    # This prevents scikit-learn from crashing on singletons (like your Boeing 737-400)
+    df_inter['split_key'] = df_inter['airline'].astype(str) + "_" + df_inter['aircraft_variant'].astype(str)
+    counts = df_inter['split_key'].value_counts()
+    rare_classes = counts[counts < 2].index
+    df_inter['split_key'] = df_inter['split_key'].apply(lambda x: 'rare' if x in rare_classes else x)
+    
+    # Calculate relative validation size for the second split
+    remaining_size = 1.0 - test_size
+    relative_val_size = val_size / remaining_size
+    
+    # 3. Perform splits on the pristine intersection data
+    inter_train_val, test_df = train_test_split(
+        df_inter, test_size=test_size, stratify=df_inter['split_key'], random_state=random_state
+    )
+    inter_train_df, val_df = train_test_split(
+        inter_train_val, test_size=relative_val_size, stratify=inter_train_val['split_key'], random_state=random_state
+    )
+    
+    # 4. Apply the ignore_index mask to the union-only data
+    # If an airline or variant isn't in your locked valid lists, map it to '-100'
+    df_union_only.loc[~df_union_only['airline'].isin(valid_airlines), 'airline'] = '-100'
+    df_union_only.loc[~df_union_only['aircraft_variant'].isin(valid_variants), 'aircraft_variant'] = '-100'
+    
+    # 5. Merge the clean training slice with the masked union leftovers
+    keep_cols = ['photo_id', 'airline', 'aircraft_variant', 'image_filename']
+    
+    final_train_df = pd.concat([
+        inter_train_df[keep_cols], 
+        df_union_only[keep_cols]
+    ], ignore_index=True)
+    
+    final_val_df = val_df[keep_cols].copy()
+    final_test_df = test_df[keep_cols].copy()
+    
+    print("--- Simplified Multi-Task Split Summary ---")
+    print(f"Pristine Validation Set Size:   {len(final_val_df)}")
+    print(f"Pristine Test Set Size:         {len(final_test_df)}")
+    print(f"Final Augmented Training Size:  {len(final_train_df)}")
+    print(f" -> From clean pairs:           {len(inter_train_df)}")
+    print(f" -> From single-task union:     {len(df_union_only)}")
+    
+    return final_train_df, final_val_df, final_test_df
+
+# Example Execution:
+# train_df, val_df, test_df = generate_simplified_splits(
+#     'intersection.csv', 'union_intersection.csv', 'valid_airlines.csv', 'valid_variants.csv'
+# )
+
+
+
+def generate_parameterized_splits(
+    intersection_csv_path, 
+    union_only_csv_path, 
+    valid_airlines_path, 
+    valid_variants_path,
+    val_pct=0.10, 
+    test_pct=0.10, 
+    min_count=5,          # Parameterized threshold for the rare group
+    random_state=42
+):
+    print("Loading data...")
+    df_inter = pd.read_csv(intersection_csv_path)
+    df_union_only = pd.read_csv(union_only_csv_path)
+    
+    valid_airlines = set(pd.read_csv(valid_airlines_path)['Airline'].dropna().unique())
+    valid_variants = set(pd.read_csv(valid_variants_path)['Variant'].dropna().unique())
+    
+    # 1. Create the joint class key
+    df_inter['split_key'] = df_inter['airline'].astype(str) + "_" + df_inter['aircraft_variant'].astype(str)
+    
+    # 2. IDENTIFY AND GROUP RARE CLASSES
+    counts = df_inter['split_key'].value_counts()
+    rare_classes = counts[counts < min_count].index
+    
+    # Reassign the split_key to a unified bucket for anything below min_count
+    df_inter['split_key'] = df_inter['split_key'].apply(
+        lambda x: 'RARE_GROUP' if x in rare_classes else x
+    )
+    
+    # 3. Custom Groupby Split Logic
+    def split_group(group):
+        n_total = len(group)
+        
+        # Calculate Val and Test sizes (rounding up)
+        n_val = math.ceil(n_total * val_pct)
+        n_test = math.ceil(n_total * test_pct)
+        
+        # Failsafe: Ensure at least 1 image remains for Training 
+        # (in case a user sets min_count=2, meaning a group of 2 might get fully consumed)
+        if n_val + n_test >= n_total and n_total >= 3:
+            n_val = max(1, math.floor(n_total * val_pct))
+            n_test = max(1, math.floor(n_total * test_pct))
+            if n_val + n_test >= n_total:
+                n_val, n_test = 1, 1
+                
+        # If the total group size is somehow 1 or 2 (e.g. all rare items combined only total 2)
+        if n_total < 3:
+            n_val, n_test = 0, 0
+            
+        # Shuffle rows to randomize selection
+        shuffled = group.sample(frac=1, random_state=random_state).copy()
+        
+        # Assign splits
+        shuffled['split_label'] = 'train'
+        split_col_idx = shuffled.columns.get_loc('split_label')
+        
+        if n_val > 0:
+            shuffled.iloc[0 : n_val, split_col_idx] = 'val'
+        if n_test > 0:
+            shuffled.iloc[n_val : n_val + n_test, split_col_idx] = 'test'
+        
+        return shuffled
+
+    print("Splitting intersection dataset...")
+    split_df = df_inter.groupby('split_key', group_keys=False).apply(split_group)
+    
+    # 4. Separate the carved splits
+    inter_train_df = split_df[split_df['split_label'] == 'train'].copy()
+    final_val_df = split_df[split_df['split_label'] == 'val'].copy()
+    final_test_df = split_df[split_df['split_label'] == 'test'].copy()
+    
+    print("Masking union dataset labels...")
+    # 5. Apply the ignore_index (-100) mask to the union-only data
+    df_union_only.loc[~df_union_only['airline'].isin(valid_airlines), 'airline'] = '-100'
+    df_union_only.loc[~df_union_only['aircraft_variant'].isin(valid_variants), 'aircraft_variant'] = '-100'
+    
+    # 6. Merge and Clean
+    keep_cols = ['photo_id', 'airline', 'aircraft_variant', 'image_filename']
+    
+    final_train_df = pd.concat([
+        inter_train_df[keep_cols], 
+        df_union_only[keep_cols]
+    ], ignore_index=True)
+    
+    final_val_df = final_val_df[keep_cols]
+    final_test_df = final_test_df[keep_cols]
+    
+    print("\n--- Parameterized Multi-Task Split Summary ---")
+    print(f"Pristine Validation Set Size:   {len(final_val_df)}")
+    print(f"Pristine Test Set Size:         {len(final_test_df)}")
+    print(f"Final Augmented Training Size:  {len(final_train_df)}")
+    print(f" -> From clean pairs:           {len(inter_train_df)}")
+    print(f" -> From masked union labels:   {len(df_union_only)}")
+    
+    return final_train_df, final_val_df, final_test_df
+
+
+
+
+train_df, val_df, test_df = generate_parameterized_splits(
+    '../data/metadata/airliners_metadata_trimmed_intersection.csv',
+    '../data/metadata/airliners_metadata_trimmed_symmetric_diff.csv',
+    '../data/metadata/counts_airlines_merged_trimmed.csv',
+    '../data/metadata/counts_variants_trimmed.csv',
+    0.25,
+    0.25,
+    5,
+    42
+)
+
+
+
+'''
 
 # Neural Net Modules
 
@@ -484,3 +669,6 @@ def train_net(net, train_loader, val_loader, batch_size=64, learning_rate=0.01, 
   np.savetxt("{}_val_loss.csv".format(model_base_path), val_loss)
 
   return model_base_path
+
+
+'''

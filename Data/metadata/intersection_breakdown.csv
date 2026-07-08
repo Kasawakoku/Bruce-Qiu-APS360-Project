@@ -1,0 +1,506 @@
+Airline,Aircraft Variant,Image Count
+AJet,Airbus A320-100/-200/A320 NEO (A320/A20N),7
+AJet,Airbus A321-100/-200/A321 NEO (A321/A21N),20
+AJet,Boeing 737-800/Boeing 737 MAX 8 (B738/B38M),75
+Aeroflot,Airbus A320-100/-200/A320 NEO (A320/A20N),25
+Aeroflot,Airbus A321-100/-200/A321 NEO (A321/A21N),17
+Aeroflot,Airbus A330-300/-900 NEO (A333/A339),4
+Aeroflot,Airbus A350-900 XWB (A359),5
+Aeroflot,Boeing 737-800/Boeing 737 MAX 8 (B738/B38M),6
+Aeroflot,Boeing 767-300/-300ER (B763),1
+Aeroflot,Boeing 777-300/-300ER (B773/B77W),8
+Air Canada,Airbus A319-100/A319 NEO (A319/A19N),4
+Air Canada,Airbus A320-100/-200/A320 NEO (A320/A20N),8
+Air Canada,Airbus A321-100/-200/A321 NEO (A321/A21N),16
+Air Canada,Airbus A330-300/-900 NEO (A333/A339),16
+Air Canada,Boeing 737-800/Boeing 737 MAX 8 (B738/B38M),29
+Air Canada,Boeing 767-300/-300ER (B763),5
+Air Canada,Boeing 777-200/-200ER/-200LR/F (B772/B77L),5
+Air Canada,Boeing 777-300/-300ER (B773/B77W),14
+Air Canada,Boeing 787-8 (B788),7
+Air Canada,Boeing 787-9 (B789),27
+Air Canada,Bombardier CS300/Airbus A220-300 (BCS3),24
+Air Canada,Canadian Regional Jet CRJ-900/-705/Challenger 890 (CRJ9),20
+Air Canada,De Havilland Canada DHC-8-400 Dash 8 (DH8D),5
+Air Canada,Embraer E175 (E75S/E75L),5
+Air China,Airbus A319-100/A319 NEO (A319/A19N),3
+Air China,Airbus A320-100/-200/A320 NEO (A320/A20N),14
+Air China,Airbus A321-100/-200/A321 NEO (A321/A21N),27
+Air China,Airbus A330-200/-800 NEO (A332/A338),15
+Air China,Airbus A330-300/-900 NEO (A333/A339),11
+Air China,Airbus A350-900 XWB (A359),16
+Air China,Boeing 737-700/Boeing 737 MAX 7 (B737/B37M),2
+Air China,Boeing 737-800/Boeing 737 MAX 8 (B738/B38M),25
+Air China,Boeing 747-400 (B744),10
+Air China,Boeing 747-8 (B748),3
+Air China,Boeing 777-200/-200ER/-200LR/F (B772/B77L),20
+Air China,Boeing 777-300/-300ER (B773/B77W),12
+Air China,Boeing 787-9 (B789),11
+Air France,ATR 72 (AT72/AT73/AT74/AT75/AT76),2
+Air France,Airbus A319-100/A319 NEO (A319/A19N),6
+Air France,Airbus A320-100/-200/A320 NEO (A320/A20N),18
+Air France,Airbus A321-100/-200/A321 NEO (A321/A21N),10
+Air France,Airbus A330-200/-800 NEO (A332/A338),5
+Air France,Airbus A340-300 (A343),5
+Air France,Airbus A350-900 XWB (A359),20
+Air France,Boeing 747-400 (B744),1
+Air France,Boeing 777-200/-200ER/-200LR/F (B772/B77L),16
+Air France,Boeing 777-300/-300ER (B773/B77W),14
+Air France,Boeing 787-9 (B789),2
+Air France,Bombardier CS300/Airbus A220-300 (BCS3),46
+Air France,Embraer E190/Embraer Lineage 1000 (E190),25
+AirAsia,Airbus A320-100/-200/A320 NEO (A320/A20N),109
+AirAsia,Airbus A321-100/-200/A321 NEO (A321/A21N),5
+AirAsia,Airbus A330-300/-900 NEO (A333/A339),27
+Alaska Airlines,Airbus A320-100/-200/A320 NEO (A320/A20N),1
+Alaska Airlines,Airbus A321-100/-200/A321 NEO (A321/A21N),1
+Alaska Airlines,Boeing 737-700/Boeing 737 MAX 7 (B737/B37M),1
+Alaska Airlines,Boeing 737-800/Boeing 737 MAX 8 (B738/B38M),28
+Alaska Airlines,Boeing 737-900/-900ER/Boeing 737 MAX 9 (B739/B39M),67
+Alaska Airlines,Boeing 787-9 (B789),14
+Alaska Airlines,De Havilland Canada DHC-8-400 Dash 8 (DH8D),3
+Alaska Airlines,Embraer E175 (E75S/E75L),32
+Alaska Airlines,McDonnell Douglas MD-81/-82/-83/-88 (MD81/MD82/MD83/MD88),2
+All Nippon Airways - ANA,Airbus A320-100/-200/A320 NEO (A320/A20N),10
+All Nippon Airways - ANA,Airbus A321-100/-200/A321 NEO (A321/A21N),17
+All Nippon Airways - ANA,Airbus A380-800 (A388),14
+All Nippon Airways - ANA,Boeing 737-700/Boeing 737 MAX 7 (B737/B37M),2
+All Nippon Airways - ANA,Boeing 737-800/Boeing 737 MAX 8 (B738/B38M),38
+All Nippon Airways - ANA,Boeing 747-400 (B744),3
+All Nippon Airways - ANA,Boeing 767-300/-300ER (B763),31
+All Nippon Airways - ANA,Boeing 777-200/-200ER/-200LR/F (B772/B77L),42
+All Nippon Airways - ANA,Boeing 777-300/-300ER (B773/B77W),21
+All Nippon Airways - ANA,Boeing 787-10 (B78X),23
+All Nippon Airways - ANA,Boeing 787-8 (B788),36
+All Nippon Airways - ANA,Boeing 787-9 (B789),40
+All Nippon Airways - ANA,De Havilland Canada DHC-8-400 Dash 8 (DH8D),22
+American Airlines,ATR 72 (AT72/AT73/AT74/AT75/AT76),2
+American Airlines,Airbus A319-100/A319 NEO (A319/A19N),25
+American Airlines,Airbus A320-100/-200/A320 NEO (A320/A20N),10
+American Airlines,Airbus A321-100/-200/A321 NEO (A321/A21N),78
+American Airlines,Airbus A330-200/-800 NEO (A332/A338),1
+American Airlines,Boeing 737-800/Boeing 737 MAX 8 (B738/B38M),134
+American Airlines,Boeing 757-200 (B752),5
+American Airlines,Boeing 767-300/-300ER (B763),10
+American Airlines,Boeing 777-200/-200ER/-200LR/F (B772/B77L),29
+American Airlines,Boeing 777-300/-300ER (B773/B77W),32
+American Airlines,Boeing 787-8 (B788),37
+American Airlines,Boeing 787-9 (B789),21
+American Airlines,Canadian Regional Jet CRJ-900/-705/Challenger 890 (CRJ9),15
+American Airlines,Embraer E175 (E75S/E75L),35
+American Airlines,McDonnell Douglas MD-81/-82/-83/-88 (MD81/MD82/MD83/MD88),10
+Atlas Air,Boeing 747-400 (B744),62
+Atlas Air,Boeing 747-8 (B748),17
+Atlas Air,Boeing 767-300/-300ER (B763),9
+Atlas Air,Boeing 777-200/-200ER/-200LR/F (B772/B77L),14
+Austrian Airlines,Airbus A319-100/A319 NEO (A319/A19N),1
+Austrian Airlines,Airbus A320-100/-200/A320 NEO (A320/A20N),38
+Austrian Airlines,Airbus A321-100/-200/A321 NEO (A321/A21N),3
+Austrian Airlines,Boeing 767-300/-300ER (B763),4
+Austrian Airlines,Boeing 777-200/-200ER/-200LR/F (B772/B77L),11
+Austrian Airlines,Boeing 787-9 (B789),4
+Austrian Airlines,De Havilland Canada DHC-8-400 Dash 8 (DH8D),5
+Austrian Airlines,Embraer E195 (E195),12
+Austrian Airlines,McDonnell Douglas MD-81/-82/-83/-88 (MD81/MD82/MD83/MD88),2
+British Airways,Airbus A319-100/A319 NEO (A319/A19N),33
+British Airways,Airbus A320-100/-200/A320 NEO (A320/A20N),92
+British Airways,Airbus A321-100/-200/A321 NEO (A321/A21N),36
+British Airways,Airbus A350-1000 XWB (A351),21
+British Airways,Airbus A380-800 (A388),13
+British Airways,Boeing 737-300 (B733),3
+British Airways,Boeing 737-400 (B734),5
+British Airways,Boeing 747-400 (B744),12
+British Airways,Boeing 747-8 (B748),1
+British Airways,Boeing 757-200 (B752),7
+British Airways,Boeing 767-300/-300ER (B763),5
+British Airways,Boeing 777-200/-200ER/-200LR/F (B772/B77L),24
+British Airways,Boeing 777-300/-300ER (B773/B77W),15
+British Airways,Boeing 787-10 (B78X),10
+British Airways,Boeing 787-8 (B788),10
+British Airways,Boeing 787-9 (B789),12
+British Airways,Embraer E190/Embraer Lineage 1000 (E190),22
+Brussels Airlines,Airbus A319-100/A319 NEO (A319/A19N),16
+Brussels Airlines,Airbus A320-100/-200/A320 NEO (A320/A20N),65
+Brussels Airlines,Airbus A330-300/-900 NEO (A333/A339),10
+Brussels Airlines,Boeing 737-400 (B734),1
+Cathay Pacific Airways,Airbus A321-100/-200/A321 NEO (A321/A21N),12
+Cathay Pacific Airways,Airbus A330-300/-900 NEO (A333/A339),31
+Cathay Pacific Airways,Airbus A340-300 (A343),3
+Cathay Pacific Airways,Airbus A350-1000 XWB (A351),13
+Cathay Pacific Airways,Airbus A350-900 XWB (A359),66
+Cathay Pacific Airways,Boeing 747-400 (B744),13
+Cathay Pacific Airways,Boeing 747-8 (B748),21
+Cathay Pacific Airways,Boeing 777-200/-200ER/-200LR/F (B772/B77L),3
+Cathay Pacific Airways,Boeing 777-300/-300ER (B773/B77W),78
+China Airlines,Airbus A321-100/-200/A321 NEO (A321/A21N),20
+China Airlines,Airbus A330-300/-900 NEO (A333/A339),17
+China Airlines,Airbus A340-300 (A343),1
+China Airlines,Airbus A350-900 XWB (A359),24
+China Airlines,Boeing 737-800/Boeing 737 MAX 8 (B738/B38M),6
+China Airlines,Boeing 747-400 (B744),6
+China Airlines,Boeing 777-300/-300ER (B773/B77W),24
+China Airlines,Boeing 787-9 (B789),2
+China Eastern Airlines,Airbus A319-100/A319 NEO (A319/A19N),3
+China Eastern Airlines,Airbus A320-100/-200/A320 NEO (A320/A20N),53
+China Eastern Airlines,Airbus A321-100/-200/A321 NEO (A321/A21N),21
+China Eastern Airlines,Airbus A330-200/-800 NEO (A332/A338),18
+China Eastern Airlines,Airbus A330-300/-900 NEO (A333/A339),25
+China Eastern Airlines,Airbus A340-300 (A343),1
+China Eastern Airlines,Airbus A350-900 XWB (A359),13
+China Eastern Airlines,Boeing 737-700/Boeing 737 MAX 7 (B737/B37M),9
+China Eastern Airlines,Boeing 737-800/Boeing 737 MAX 8 (B738/B38M),32
+China Eastern Airlines,Boeing 747-400 (B744),13
+China Eastern Airlines,Boeing 777-200/-200ER/-200LR/F (B772/B77L),14
+China Eastern Airlines,Boeing 777-300/-300ER (B773/B77W),21
+China Eastern Airlines,Boeing 787-9 (B789),9
+China Eastern Airlines,McDonnell Douglas MD-81/-82/-83/-88 (MD81/MD82/MD83/MD88),2
+China Southern Airlines,Airbus A319-100/A319 NEO (A319/A19N),3
+China Southern Airlines,Airbus A320-100/-200/A320 NEO (A320/A20N),32
+China Southern Airlines,Airbus A321-100/-200/A321 NEO (A321/A21N),43
+China Southern Airlines,Airbus A330-200/-800 NEO (A332/A338),1
+China Southern Airlines,Airbus A330-300/-900 NEO (A333/A339),4
+China Southern Airlines,Airbus A350-900 XWB (A359),19
+China Southern Airlines,Airbus A380-800 (A388),1
+China Southern Airlines,Boeing 737-300 (B733),3
+China Southern Airlines,Boeing 737-700/Boeing 737 MAX 7 (B737/B37M),1
+China Southern Airlines,Boeing 737-800/Boeing 737 MAX 8 (B738/B38M),19
+China Southern Airlines,Boeing 757-200 (B752),2
+China Southern Airlines,Boeing 777-200/-200ER/-200LR/F (B772/B77L),10
+China Southern Airlines,Boeing 777-300/-300ER (B773/B77W),31
+China Southern Airlines,Boeing 787-8 (B788),6
+China Southern Airlines,Boeing 787-9 (B789),31
+Condor,Airbus A319-100/A319 NEO (A319/A19N),5
+Condor,Airbus A320-100/-200/A320 NEO (A320/A20N),85
+Condor,Airbus A321-100/-200/A321 NEO (A321/A21N),73
+Condor,Airbus A330-300/-900 NEO (A333/A339),50
+Condor,Boeing 757-200 (B752),3
+Condor,Boeing 767-300/-300ER (B763),2
+DHL,Airbus A330-200/-800 NEO (A332/A338),3
+DHL,Airbus A330-300/-900 NEO (A333/A339),2
+DHL,Boeing 737-400 (B734),1
+DHL,Boeing 737-800/Boeing 737 MAX 8 (B738/B38M),3
+DHL,Boeing 757-200 (B752),13
+DHL,Boeing 767-300/-300ER (B763),33
+DHL,Boeing 777-200/-200ER/-200LR/F (B772/B77L),37
+Delta Air Lines,Airbus A319-100/A319 NEO (A319/A19N),14
+Delta Air Lines,Airbus A320-100/-200/A320 NEO (A320/A20N),11
+Delta Air Lines,Airbus A321-100/-200/A321 NEO (A321/A21N),61
+Delta Air Lines,Airbus A330-200/-800 NEO (A332/A338),4
+Delta Air Lines,Airbus A330-300/-900 NEO (A333/A339),51
+Delta Air Lines,Airbus A350-900 XWB (A359),74
+Delta Air Lines,Boeing 737-300 (B733),1
+Delta Air Lines,Boeing 737-800/Boeing 737 MAX 8 (B738/B38M),19
+Delta Air Lines,Boeing 737-900/-900ER/Boeing 737 MAX 9 (B739/B39M),31
+Delta Air Lines,Boeing 747-400 (B744),3
+Delta Air Lines,Boeing 757-200 (B752),37
+Delta Air Lines,Boeing 767-300/-300ER (B763),32
+Delta Air Lines,Boeing 777-200/-200ER/-200LR/F (B772/B77L),1
+Delta Air Lines,Bombardier CS300/Airbus A220-300 (BCS3),5
+Delta Air Lines,Canadian Regional Jet CRJ-900/-705/Challenger 890 (CRJ9),18
+Delta Air Lines,Embraer E175 (E75S/E75L),21
+Delta Air Lines,McDonnell Douglas MD-81/-82/-83/-88 (MD81/MD82/MD83/MD88),12
+EVA Air,ATR 72 (AT72/AT73/AT74/AT75/AT76),6
+EVA Air,Airbus A321-100/-200/A321 NEO (A321/A21N),10
+EVA Air,Airbus A330-300/-900 NEO (A333/A339),19
+EVA Air,Boeing 747-400 (B744),1
+EVA Air,Boeing 777-200/-200ER/-200LR/F (B772/B77L),11
+EVA Air,Boeing 777-300/-300ER (B773/B77W),31
+EVA Air,Boeing 787-10 (B78X),20
+EVA Air,Boeing 787-9 (B789),13
+EasyJet Airline,Airbus A319-100/A319 NEO (A319/A19N),81
+EasyJet Airline,Airbus A320-100/-200/A320 NEO (A320/A20N),216
+EasyJet Airline,Airbus A321-100/-200/A321 NEO (A321/A21N),28
+EasyJet Airline,Boeing 737-300 (B733),3
+EasyJet Airline,Boeing 737-700/Boeing 737 MAX 7 (B737/B37M),3
+Emirates,Airbus A330-200/-800 NEO (A332/A338),1
+Emirates,Airbus A340-300 (A343),2
+Emirates,Airbus A350-900 XWB (A359),29
+Emirates,Airbus A380-800 (A388),109
+Emirates,Boeing 747-400 (B744),1
+Emirates,Boeing 777-200/-200ER/-200LR/F (B772/B77L),37
+Emirates,Boeing 777-300/-300ER (B773/B77W),55
+Etihad Airways,Airbus A320-100/-200/A320 NEO (A320/A20N),1
+Etihad Airways,Airbus A321-100/-200/A321 NEO (A321/A21N),12
+Etihad Airways,Airbus A350-1000 XWB (A351),20
+Etihad Airways,Airbus A380-800 (A388),11
+Etihad Airways,Boeing 777-200/-200ER/-200LR/F (B772/B77L),6
+Etihad Airways,Boeing 777-300/-300ER (B773/B77W),8
+Etihad Airways,Boeing 787-10 (B78X),11
+Etihad Airways,Boeing 787-9 (B789),31
+Eurowings,Airbus A319-100/A319 NEO (A319/A19N),33
+Eurowings,Airbus A320-100/-200/A320 NEO (A320/A20N),87
+Eurowings,Airbus A321-100/-200/A321 NEO (A321/A21N),18
+Eurowings,Airbus A330-300/-900 NEO (A333/A339),3
+Eurowings,Boeing 737-800/Boeing 737 MAX 8 (B738/B38M),6
+Eurowings,Canadian Regional Jet CRJ-900/-705/Challenger 890 (CRJ9),1
+Eurowings,De Havilland Canada DHC-8-400 Dash 8 (DH8D),4
+FedEx - Federal Express,ATR 72 (AT72/AT73/AT74/AT75/AT76),1
+FedEx - Federal Express,Boeing 737-800/Boeing 737 MAX 8 (B738/B38M),4
+FedEx - Federal Express,Boeing 757-200 (B752),5
+FedEx - Federal Express,Boeing 767-300/-300ER (B763),22
+FedEx - Federal Express,Boeing 777-200/-200ER/-200LR/F (B772/B77L),34
+Hainan Airlines,Airbus A320-100/-200/A320 NEO (A320/A20N),22
+Hainan Airlines,Airbus A321-100/-200/A321 NEO (A321/A21N),8
+Hainan Airlines,Airbus A330-200/-800 NEO (A332/A338),13
+Hainan Airlines,Airbus A330-300/-900 NEO (A333/A339),36
+Hainan Airlines,Airbus A350-900 XWB (A359),2
+Hainan Airlines,Boeing 737-800/Boeing 737 MAX 8 (B738/B38M),56
+Hainan Airlines,Boeing 747-400 (B744),8
+Hainan Airlines,Boeing 767-300/-300ER (B763),2
+Hainan Airlines,Boeing 777-200/-200ER/-200LR/F (B772/B77L),6
+Hainan Airlines,Boeing 787-8 (B788),3
+Hainan Airlines,Boeing 787-9 (B789),28
+ITA Airways,Airbus A319-100/A319 NEO (A319/A19N),8
+ITA Airways,Airbus A320-100/-200/A320 NEO (A320/A20N),47
+ITA Airways,Airbus A321-100/-200/A321 NEO (A321/A21N),9
+ITA Airways,Airbus A330-200/-800 NEO (A332/A338),1
+ITA Airways,Airbus A330-300/-900 NEO (A333/A339),12
+ITA Airways,Airbus A350-900 XWB (A359),16
+ITA Airways,Boeing 777-200/-200ER/-200LR/F (B772/B77L),1
+ITA Airways,Bombardier CS300/Airbus A220-300 (BCS3),10
+ITA Airways,McDonnell Douglas MD-81/-82/-83/-88 (MD81/MD82/MD83/MD88),4
+Iberia,ATR 72 (AT72/AT73/AT74/AT75/AT76),21
+Iberia,Airbus A319-100/A319 NEO (A319/A19N),7
+Iberia,Airbus A320-100/-200/A320 NEO (A320/A20N),43
+Iberia,Airbus A321-100/-200/A321 NEO (A321/A21N),19
+Iberia,Airbus A330-200/-800 NEO (A332/A338),5
+Iberia,Airbus A330-300/-900 NEO (A333/A339),2
+Iberia,Airbus A340-300 (A343),1
+Iberia,Airbus A350-900 XWB (A359),16
+Iberia,McDonnell Douglas MD-81/-82/-83/-88 (MD81/MD82/MD83/MD88),3
+Japan Airlines - JAL,ATR 72 (AT72/AT73/AT74/AT75/AT76),1
+Japan Airlines - JAL,Airbus A350-1000 XWB (A351),31
+Japan Airlines - JAL,Airbus A350-900 XWB (A359),42
+Japan Airlines - JAL,Boeing 737-400 (B734),1
+Japan Airlines - JAL,Boeing 737-800/Boeing 737 MAX 8 (B738/B38M),53
+Japan Airlines - JAL,Boeing 747-400 (B744),14
+Japan Airlines - JAL,Boeing 767-300/-300ER (B763),41
+Japan Airlines - JAL,Boeing 777-200/-200ER/-200LR/F (B772/B77L),8
+Japan Airlines - JAL,Boeing 777-300/-300ER (B773/B77W),14
+Japan Airlines - JAL,Boeing 787-8 (B788),27
+Japan Airlines - JAL,Boeing 787-9 (B789),25
+Japan Airlines - JAL,De Havilland Canada DHC-8-400 Dash 8 (DH8D),2
+Japan Airlines - JAL,Embraer E190/Embraer Lineage 1000 (E190),10
+Japan Airlines - JAL,McDonnell Douglas MD-81/-82/-83/-88 (MD81/MD82/MD83/MD88),1
+JetBlue Airways,Airbus A320-100/-200/A320 NEO (A320/A20N),43
+JetBlue Airways,Airbus A321-100/-200/A321 NEO (A321/A21N),37
+JetBlue Airways,Bombardier CS300/Airbus A220-300 (BCS3),19
+JetBlue Airways,Embraer E190/Embraer Lineage 1000 (E190),3
+KLM - Royal Dutch Airlines,Airbus A321-100/-200/A321 NEO (A321/A21N),28
+KLM - Royal Dutch Airlines,Airbus A330-200/-800 NEO (A332/A338),3
+KLM - Royal Dutch Airlines,Airbus A330-300/-900 NEO (A333/A339),5
+KLM - Royal Dutch Airlines,Boeing 737-400 (B734),1
+KLM - Royal Dutch Airlines,Boeing 737-700/Boeing 737 MAX 7 (B737/B37M),15
+KLM - Royal Dutch Airlines,Boeing 737-800/Boeing 737 MAX 8 (B738/B38M),21
+KLM - Royal Dutch Airlines,Boeing 737-900/-900ER/Boeing 737 MAX 9 (B739/B39M),1
+KLM - Royal Dutch Airlines,Boeing 747-400 (B744),13
+KLM - Royal Dutch Airlines,Boeing 777-200/-200ER/-200LR/F (B772/B77L),12
+KLM - Royal Dutch Airlines,Boeing 777-300/-300ER (B773/B77W),23
+KLM - Royal Dutch Airlines,Boeing 787-10 (B78X),19
+KLM - Royal Dutch Airlines,Boeing 787-9 (B789),18
+KLM - Royal Dutch Airlines,Embraer E175 (E75S/E75L),19
+KLM - Royal Dutch Airlines,Embraer E190/Embraer Lineage 1000 (E190),22
+Korean Air,Airbus A321-100/-200/A321 NEO (A321/A21N),28
+Korean Air,Airbus A330-300/-900 NEO (A333/A339),18
+Korean Air,Airbus A350-900 XWB (A359),9
+Korean Air,Airbus A380-800 (A388),9
+Korean Air,Boeing 737-800/Boeing 737 MAX 8 (B738/B38M),8
+Korean Air,Boeing 737-900/-900ER/Boeing 737 MAX 9 (B739/B39M),13
+Korean Air,Boeing 747-400 (B744),6
+Korean Air,Boeing 747-8 (B748),19
+Korean Air,Boeing 777-200/-200ER/-200LR/F (B772/B77L),17
+Korean Air,Boeing 777-300/-300ER (B773/B77W),43
+Korean Air,Boeing 787-10 (B78X),32
+Korean Air,Boeing 787-9 (B789),15
+Korean Air,Bombardier CS300/Airbus A220-300 (BCS3),2
+Korean Air,Bombardier Global 6000/6500/Global Express (GLEX),1
+LATAM Airlines,Airbus A319-100/A319 NEO (A319/A19N),6
+LATAM Airlines,Airbus A320-100/-200/A320 NEO (A320/A20N),35
+LATAM Airlines,Airbus A321-100/-200/A321 NEO (A321/A21N),12
+LATAM Airlines,Boeing 767-300/-300ER (B763),28
+LATAM Airlines,Boeing 777-300/-300ER (B773/B77W),13
+LATAM Airlines,Boeing 787-8 (B788),3
+LATAM Airlines,Boeing 787-9 (B789),14
+LOT - Polish Airlines / Polskie Linie Lotnicze,ATR 72 (AT72/AT73/AT74/AT75/AT76),2
+LOT - Polish Airlines / Polskie Linie Lotnicze,Boeing 737-400 (B734),3
+LOT - Polish Airlines / Polskie Linie Lotnicze,Boeing 737-800/Boeing 737 MAX 8 (B738/B38M),30
+LOT - Polish Airlines / Polskie Linie Lotnicze,Boeing 767-300/-300ER (B763),1
+LOT - Polish Airlines / Polskie Linie Lotnicze,Boeing 787-8 (B788),6
+LOT - Polish Airlines / Polskie Linie Lotnicze,Boeing 787-9 (B789),8
+LOT - Polish Airlines / Polskie Linie Lotnicze,De Havilland Canada DHC-8-400 Dash 8 (DH8D),4
+LOT - Polish Airlines / Polskie Linie Lotnicze,Embraer E175 (E75S/E75L),9
+LOT - Polish Airlines / Polskie Linie Lotnicze,Embraer E190/Embraer Lineage 1000 (E190),7
+LOT - Polish Airlines / Polskie Linie Lotnicze,Embraer E195 (E195),14
+Lufthansa,Airbus A319-100/A319 NEO (A319/A19N),31
+Lufthansa,Airbus A320-100/-200/A320 NEO (A320/A20N),120
+Lufthansa,Airbus A321-100/-200/A321 NEO (A321/A21N),101
+Lufthansa,Airbus A330-200/-800 NEO (A332/A338),1
+Lufthansa,Airbus A330-300/-900 NEO (A333/A339),3
+Lufthansa,Airbus A340-300 (A343),9
+Lufthansa,Airbus A350-900 XWB (A359),46
+Lufthansa,Airbus A380-800 (A388),24
+Lufthansa,Boeing 737-300 (B733),2
+Lufthansa,Boeing 747-400 (B744),27
+Lufthansa,Boeing 747-8 (B748),56
+Lufthansa,Boeing 777-200/-200ER/-200LR/F (B772/B77L),8
+Lufthansa,Boeing 787-9 (B789),35
+Lufthansa,Canadian Regional Jet CRJ-900/-705/Challenger 890 (CRJ9),22
+Lufthansa,Embraer E190/Embraer Lineage 1000 (E190),2
+Lufthansa,Embraer E195 (E195),1
+Norwegian Air,Boeing 737-300 (B733),2
+Norwegian Air,Boeing 737-800/Boeing 737 MAX 8 (B738/B38M),102
+Norwegian Air,Boeing 787-9 (B789),3
+Qantas,Airbus A320-100/-200/A320 NEO (A320/A20N),1
+Qantas,Airbus A321-100/-200/A321 NEO (A321/A21N),17
+Qantas,Airbus A330-200/-800 NEO (A332/A338),18
+Qantas,Airbus A330-300/-900 NEO (A333/A339),13
+Qantas,Airbus A380-800 (A388),14
+Qantas,Boeing 737-800/Boeing 737 MAX 8 (B738/B38M),83
+Qantas,Boeing 747-400 (B744),9
+Qantas,Boeing 767-300/-300ER (B763),2
+Qantas,Boeing 787-9 (B789),22
+Qantas,Bombardier CS300/Airbus A220-300 (BCS3),11
+Qantas,De Havilland Canada DHC-8-400 Dash 8 (DH8D),6
+Qantas,Embraer E190/Embraer Lineage 1000 (E190),6
+Qatar Airways,Airbus A320-100/-200/A320 NEO (A320/A20N),4
+Qatar Airways,Airbus A330-200/-800 NEO (A332/A338),5
+Qatar Airways,Airbus A330-300/-900 NEO (A333/A339),5
+Qatar Airways,Airbus A340-300 (A343),1
+Qatar Airways,Airbus A350-1000 XWB (A351),15
+Qatar Airways,Airbus A350-900 XWB (A359),4
+Qatar Airways,Airbus A380-800 (A388),14
+Qatar Airways,Boeing 747-8 (B748),1
+Qatar Airways,Boeing 777-200/-200ER/-200LR/F (B772/B77L),32
+Qatar Airways,Boeing 777-300/-300ER (B773/B77W),52
+Qatar Airways,Boeing 787-8 (B788),9
+Qatar Airways,Boeing 787-9 (B789),19
+Ryanair,Boeing 737-700/Boeing 737 MAX 7 (B737/B37M),3
+Ryanair,Boeing 737-800/Boeing 737 MAX 8 (B738/B38M),351
+Scandinavian Airlines - SAS,ATR 72 (AT72/AT73/AT74/AT75/AT76),7
+Scandinavian Airlines - SAS,Airbus A319-100/A319 NEO (A319/A19N),8
+Scandinavian Airlines - SAS,Airbus A320-100/-200/A320 NEO (A320/A20N),76
+Scandinavian Airlines - SAS,Airbus A321-100/-200/A321 NEO (A321/A21N),2
+Scandinavian Airlines - SAS,Airbus A330-300/-900 NEO (A333/A339),11
+Scandinavian Airlines - SAS,Airbus A350-900 XWB (A359),11
+Scandinavian Airlines - SAS,Boeing 737-700/Boeing 737 MAX 7 (B737/B37M),3
+Scandinavian Airlines - SAS,Boeing 737-800/Boeing 737 MAX 8 (B738/B38M),7
+Scandinavian Airlines - SAS,Canadian Regional Jet CRJ-900/-705/Challenger 890 (CRJ9),12
+Scandinavian Airlines - SAS,De Havilland Canada DHC-8-400 Dash 8 (DH8D),2
+Scandinavian Airlines - SAS,Embraer E195 (E195),12
+Scandinavian Airlines - SAS,McDonnell Douglas MD-81/-82/-83/-88 (MD81/MD82/MD83/MD88),7
+Singapore Airlines,Airbus A340-300 (A343),3
+Singapore Airlines,Airbus A350-900 XWB (A359),49
+Singapore Airlines,Airbus A380-800 (A388),15
+Singapore Airlines,Boeing 737-800/Boeing 737 MAX 8 (B738/B38M),15
+Singapore Airlines,Boeing 747-400 (B744),15
+Singapore Airlines,Boeing 777-200/-200ER/-200LR/F (B772/B77L),1
+Singapore Airlines,Boeing 777-300/-300ER (B773/B77W),18
+Singapore Airlines,Boeing 787-10 (B78X),33
+Southwest Airlines,Boeing 737-300 (B733),2
+Southwest Airlines,Boeing 737-700/Boeing 737 MAX 7 (B737/B37M),113
+Southwest Airlines,Boeing 737-800/Boeing 737 MAX 8 (B738/B38M),229
+Spirit Airlines,Airbus A319-100/A319 NEO (A319/A19N),6
+Spirit Airlines,Airbus A320-100/-200/A320 NEO (A320/A20N),54
+Spirit Airlines,Airbus A321-100/-200/A321 NEO (A321/A21N),30
+Star Alliance,Airbus A319-100/A319 NEO (A319/A19N),9
+Star Alliance,Airbus A320-100/-200/A320 NEO (A320/A20N),25
+Star Alliance,Airbus A321-100/-200/A321 NEO (A321/A21N),12
+Star Alliance,Airbus A330-200/-800 NEO (A332/A338),1
+Star Alliance,Airbus A330-300/-900 NEO (A333/A339),17
+Star Alliance,Airbus A340-300 (A343),10
+Star Alliance,Airbus A350-900 XWB (A359),5
+Star Alliance,Boeing 737-300 (B733),1
+Star Alliance,Boeing 737-800/Boeing 737 MAX 8 (B738/B38M),10
+Star Alliance,Boeing 757-200 (B752),2
+Star Alliance,Boeing 767-300/-300ER (B763),4
+Star Alliance,Boeing 777-200/-200ER/-200LR/F (B772/B77L),8
+Star Alliance,Boeing 777-300/-300ER (B773/B77W),14
+Star Alliance,Boeing 787-10 (B78X),2
+Star Alliance,Boeing 787-8 (B788),3
+Star Alliance,Boeing 787-9 (B789),7
+Star Alliance,Embraer E175 (E75S/E75L),2
+Star Alliance,Embraer E195 (E195),5
+Star Alliance,McDonnell Douglas MD-81/-82/-83/-88 (MD81/MD82/MD83/MD88),3
+SunExpress,Airbus A320-100/-200/A320 NEO (A320/A20N),2
+SunExpress,Boeing 737-800/Boeing 737 MAX 8 (B738/B38M),95
+Swiss International Air Lines,Airbus A319-100/A319 NEO (A319/A19N),2
+Swiss International Air Lines,Airbus A320-100/-200/A320 NEO (A320/A20N),15
+Swiss International Air Lines,Airbus A321-100/-200/A321 NEO (A321/A21N),17
+Swiss International Air Lines,Airbus A330-300/-900 NEO (A333/A339),13
+Swiss International Air Lines,Airbus A340-300 (A343),5
+Swiss International Air Lines,Airbus A350-900 XWB (A359),17
+Swiss International Air Lines,Boeing 777-300/-300ER (B773/B77W),9
+Swiss International Air Lines,Bombardier CS300/Airbus A220-300 (BCS3),37
+Swiss International Air Lines,McDonnell Douglas MD-81/-82/-83/-88 (MD81/MD82/MD83/MD88),3
+TAP Air Portugal,ATR 72 (AT72/AT73/AT74/AT75/AT76),1
+TAP Air Portugal,Airbus A319-100/A319 NEO (A319/A19N),10
+TAP Air Portugal,Airbus A320-100/-200/A320 NEO (A320/A20N),23
+TAP Air Portugal,Airbus A321-100/-200/A321 NEO (A321/A21N),16
+TAP Air Portugal,Airbus A330-200/-800 NEO (A332/A338),5
+TAP Air Portugal,Airbus A330-300/-900 NEO (A333/A339),22
+TAP Air Portugal,Embraer E190/Embraer Lineage 1000 (E190),11
+TAP Air Portugal,Embraer E195 (E195),3
+TUI,Boeing 737-300 (B733),4
+TUI,Boeing 737-400 (B734),1
+TUI,Boeing 737-700/Boeing 737 MAX 7 (B737/B37M),3
+TUI,Boeing 737-800/Boeing 737 MAX 8 (B738/B38M),105
+TUI,Boeing 757-200 (B752),4
+TUI,Boeing 767-300/-300ER (B763),3
+TUI,Boeing 787-8 (B788),19
+TUI,Boeing 787-9 (B789),1
+TUI,Embraer E190/Embraer Lineage 1000 (E190),1
+Thai Airways International,Airbus A320-100/-200/A320 NEO (A320/A20N),15
+Thai Airways International,Airbus A321-100/-200/A321 NEO (A321/A21N),5
+Thai Airways International,Airbus A330-300/-900 NEO (A333/A339),6
+Thai Airways International,Airbus A350-900 XWB (A359),33
+Thai Airways International,Airbus A380-800 (A388),2
+Thai Airways International,Boeing 737-400 (B734),1
+Thai Airways International,Boeing 747-400 (B744),7
+Thai Airways International,Boeing 777-200/-200ER/-200LR/F (B772/B77L),4
+Thai Airways International,Boeing 777-300/-300ER (B773/B77W),19
+Thai Airways International,Boeing 787-8 (B788),5
+Thai Airways International,Boeing 787-9 (B789),7
+Transavia,Airbus A320-100/-200/A320 NEO (A320/A20N),40
+Transavia,Airbus A321-100/-200/A321 NEO (A321/A21N),30
+Transavia,Boeing 737-300 (B733),1
+Transavia,Boeing 737-700/Boeing 737 MAX 7 (B737/B37M),13
+Transavia,Boeing 737-800/Boeing 737 MAX 8 (B738/B38M),53
+Turkish Airlines,Airbus A319-100/A319 NEO (A319/A19N),1
+Turkish Airlines,Airbus A320-100/-200/A320 NEO (A320/A20N),7
+Turkish Airlines,Airbus A321-100/-200/A321 NEO (A321/A21N),70
+Turkish Airlines,Airbus A330-200/-800 NEO (A332/A338),21
+Turkish Airlines,Airbus A330-300/-900 NEO (A333/A339),56
+Turkish Airlines,Airbus A340-300 (A343),2
+Turkish Airlines,Airbus A350-900 XWB (A359),36
+Turkish Airlines,Boeing 737-800/Boeing 737 MAX 8 (B738/B38M),71
+Turkish Airlines,Boeing 737-900/-900ER/Boeing 737 MAX 9 (B739/B39M),6
+Turkish Airlines,Boeing 777-200/-200ER/-200LR/F (B772/B77L),11
+Turkish Airlines,Boeing 777-300/-300ER (B773/B77W),17
+Turkish Airlines,Boeing 787-9 (B789),17
+United Airlines,Airbus A319-100/A319 NEO (A319/A19N),18
+United Airlines,Airbus A320-100/-200/A320 NEO (A320/A20N),15
+United Airlines,Airbus A321-100/-200/A321 NEO (A321/A21N),20
+United Airlines,Boeing 737-300 (B733),1
+United Airlines,Boeing 737-700/Boeing 737 MAX 7 (B737/B37M),7
+United Airlines,Boeing 737-800/Boeing 737 MAX 8 (B738/B38M),71
+United Airlines,Boeing 737-900/-900ER/Boeing 737 MAX 9 (B739/B39M),113
+United Airlines,Boeing 747-400 (B744),12
+United Airlines,Boeing 757-200 (B752),30
+United Airlines,Boeing 767-300/-300ER (B763),17
+United Airlines,Boeing 777-200/-200ER/-200LR/F (B772/B77L),68
+United Airlines,Boeing 777-300/-300ER (B773/B77W),10
+United Airlines,Boeing 787-10 (B78X),18
+United Airlines,Boeing 787-8 (B788),8
+United Airlines,Boeing 787-9 (B789),46
+United Airlines,De Havilland Canada DHC-8-400 Dash 8 (DH8D),1
+United Airlines,Embraer E175 (E75S/E75L),60
+United Airlines,McDonnell Douglas MD-81/-82/-83/-88 (MD81/MD82/MD83/MD88),2
+United Parcel Service - UPS,Boeing 747-400 (B744),16
+United Parcel Service - UPS,Boeing 747-8 (B748),25
+United Parcel Service - UPS,Boeing 757-200 (B752),8
+United Parcel Service - UPS,Boeing 767-300/-300ER (B763),30
+Vueling Airlines,Airbus A319-100/A319 NEO (A319/A19N),8
+Vueling Airlines,Airbus A320-100/-200/A320 NEO (A320/A20N),174
+Vueling Airlines,Airbus A321-100/-200/A321 NEO (A321/A21N),34
+Wizz Air,Airbus A320-100/-200/A320 NEO (A320/A20N),30
+Wizz Air,Airbus A321-100/-200/A321 NEO (A321/A21N),207
