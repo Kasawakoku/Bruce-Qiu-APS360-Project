@@ -7,9 +7,10 @@ import torch.nn.functional as F
 import torch.optim as optim
 import torchvision
 from torch.utils.data.sampler import SubsetRandomSampler
-from torch.utils.data import random_split, DataLoader, Subset, TensorDataset
+from torch.utils.data import random_split, DataLoader, Subset, TensorDataset, Dataset
 import torchvision.transforms as transforms
 import torchvision.datasets as datasets
+import torchvision.transforms.functional as F
 from torchvision.models import ( 
     efficientnet_b3, EfficientNet_B3_Weights, 
     resnet50, ResNet50_Weights,
@@ -27,374 +28,141 @@ import natsort
 from natsort import natsorted
 import random
 import os
+from PIL import Image
 from sklearn.model_selection import train_test_split
+from sklearn.metrics import f1_score
+from tqdm import tqdm
 
 
+
+
+
+
+# PARAMETERS
+BATCH_SIZE = 16
+
+# File paths
+image_folder_path = r"D:\Bruce-Qiu-APS360-Project\Data\airliners_images"
+
+
+airline_csv_path = r"D:\Bruce-Qiu-APS360-Project\Data\metadata\counts_airlines_merged_trimmed.csv"
+variant_csv_path = r"D:\Bruce-Qiu-APS360-Project\Data\metadata\counts_variants_trimmed.csv"
+
+checkpoints_path = r"D:\Bruce-Qiu-APS360-Project\training\checkpoints"
 
 # Data Loading
 
-'''
-def split_intersection_dataset(
-    csv_path, 
-    val_size=0.10, 
-    test_size=0.10, 
-    random_state=42, 
-    min_stratify_count=2
-):
+class PadToSquare:
     """
-    Splits the intersection dataset into train, val, and test sets using
-    stratification on a combined (airline + variant) key.
-    
-    Parameters:
-    -----------
-    csv_path : str
-        Path to the intersection metadata CSV file.
-    val_size : float
-        Proportion of the dataset to include in the validation split.
-    test_size : float
-        Proportion of the dataset to include in the test split.
-    random_state : int
-        Controls the shuffling applied to the data before the split.
-    min_stratify_count : int
-        Minimum occurrences of a combined class to be stratified. Pairs 
-        with counts below this will be grouped together into a fallback class.
+    Custom PyTorch Transform that pads a rectangular image to make it a square,
+    maintaining the original aspect ratio.
     """
-    # 1. Load data
-    df = pd.read_csv(csv_path)
-    print(f"Loaded dataset with {len(df)} rows.")
-    
-    # 2. Create a composite key for stratification
-    # We use both airline and variant to capture the multi-task nature
-    df['stratify_key'] = df['airline'].astype(str) + "_" + df['aircraft_variant'].astype(str)
-    
-    # 3. Handle rare combinations that would break stratification
-    counts = df['stratify_key'].value_counts()
-    rare_classes = counts[counts < min_stratify_count].index
-    
-    # Group rare combinations into a single fallback category for splitting purposes
-    df['split_key'] = df['stratify_key'].apply(lambda x: 'rare_combination' if x in rare_classes else x)
-    
-    # 4. First Split: Isolate the Test Set
-    # To get a true test_size proportion of the total, adjust the remainder budget
-    remaining_size = 1.0 - test_size
-    relative_val_size = val_size / remaining_size
-    
-    train_val_df, test_df = train_test_split(
-        df,
-        test_size=test_size,
-        stratify=df['split_key'],
-        random_state=random_state
-    )
-    
-    # 5. Second Split: Separate Train and Validation
-    train_df, val_df = train_test_split(
-        train_val_df,
-        test_size=relative_val_size,
-        stratify=train_val_df['split_key'],
-        random_state=random_state
-    )
-    
-    # Clean up the temporary helper columns before saving
-    for target_df in [train_df, val_df, test_df]:
-        target_df.drop(columns=['stratify_key', 'split_key'], inplace=True, errors='ignore')
+
+    # In the future, may implement to remove any images with extreme dimensions
+
+
+    def __init__(self, fill=255): # fill=255 is white space, fill=0 is black
+        self.fill = fill
+
+    def __call__(self, img):
+        # img is a PIL Image
+        w, h = img.size
+        max_dim = max(w, h)
         
-    print("\n--- Split Results ---")
-    print(f"Train set size:      {len(train_df)} ({len(train_df)/len(df)*100:.1f}%)")
-    print(f"Validation set size: {len(val_df)} ({len(val_df)/len(df)*100:.1f}%)")
-    print(f"Test set size:       {len(test_df)} ({len(test_df)/len(df)*100:.1f}%)")
-    
-    return train_df, val_df, test_df
-
-# Example Usage (uncomment to run when ready):
-# train_df, val_df, test_df = split_intersection_dataset(
-#     csv_path='path_to_your_intersection.csv', 
-#     val_size=0.10, 
-#     test_size=0.10
-# )
-# 
-# # Save the splits to new CSVs which your PyTorch Dataset can read directly
-# train_df.to_csv('train_metadata.csv', index=False)
-# val_df.to_csv('val_metadata.csv', index=False)
-# test_df.to_csv('test_metadata.csv', index=False)
-'''
-'''
-def generate_splits_with_union(
-    master_csv_path, 
-    intersection_csv_path, 
-    valid_airlines_path, 
-    valid_variants_path,
-    val_size=0.10, 
-    test_size=0.10, 
-    random_state=42
-):
-    """
-    Splits the clean intersection data for pristine validation/testing,
-    then combines the training remainder with any valid single-task images
-    from the messy union dataset, mapping missing labels to -100.
-    """
-    # 1. Load your locked-down trimmed classes to determine what is "valid"
-    valid_airlines_df = pd.read_csv(valid_airlines_path)
-    valid_variants_df = pd.read_csv(valid_variants_path)
-    
-    # Create sets for O(1) lookups
-    valid_airlines = set(valid_airlines_df['Airline'].dropna().unique())
-    valid_variants = set(valid_variants_df['Variant'].dropna().unique())
-    
-    # 2. Load Dataframes
-    df_master = pd.read_csv(master_csv_path)
-    df_inter = pd.read_csv(intersection_csv_path)
-    
-    # 3. Stratify and split the clean intersection set first
-    # Create a temporary joint column just to ensure balanced splits
-    df_inter['split_key'] = df_inter['airline'].astype(str) + "_" + df_inter['aircraft_variant'].astype(str)
-    
-    # Smooth rare combinations that appear only once in the intersection set
-    counts = df_inter['split_key'].value_counts()
-    rare_classes = counts[counts < 2].index
-    df_inter['split_key'] = df_inter['split_key'].apply(lambda x: 'rare' if x in rare_classes else x)
-    
-    # Calculate relative validation size for the second split
-    remaining_size = 1.0 - test_size
-    relative_val_size = val_size / remaining_size
-    
-    # Perform splits
-    inter_train_val, test_df = train_test_split(
-        df_inter, test_size=test_size, stratify=df_inter['split_key'], random_state=random_state
-    )
-    inter_train_df, val_df = train_test_split(
-        inter_train_val, test_size=relative_val_size, stratify=inter_train_val['split_key'], random_state=random_state
-    )
-    
-    # 4. Isolate the "Union-Only" entries from the master dataframe
-    # We want images that are NOT in the intersection set, but possess at least ONE valid label
-    allocated_photo_ids = set(df_inter['photo_id'])
-    df_leftovers = df_master[~df_master['photo_id'].isin(allocated_photo_ids)].copy()
-    
-    # Check validity against your trimmed cutoff criteria
-    df_leftovers['has_valid_airline'] = df_leftovers['airline'].isin(valid_airlines)
-    df_leftovers['has_valid_variant'] = df_leftovers['aircraft_variant'].isin(valid_variants)
-    
-    # Keep only rows that have at least one useful valid attribute
-    union_train_reinforcements = df_leftovers[df_leftovers['has_valid_airline'] | df_leftovers['has_valid_variant']].copy()
-    
-    # Mask invalid/dropped categorical values right in the dataframe so your Dataset handles them seamlessly
-    union_train_reinforcements.loc[~union_train_reinforcements['has_valid_airline'], 'airline'] = '-100'
-    union_train_reinforcements.loc[~union_train_reinforcements['has_valid_variant'], 'aircraft_variant'] = '-100'
-    
-    # 5. Merge the clean training slice with the masked union leftovers
-    # Keep only the essential columns to match schemas
-    keep_cols = ['photo_id', 'airline', 'aircraft_variant', 'image_filename']
-    
-    final_train_df = pd.concat([
-        inter_train_df[keep_cols], 
-        union_train_reinforcements[keep_cols]
-    ], ignore_index=True)
-    
-    # Clean up evaluation dataframes
-    final_val_df = val_df[keep_cols].copy()
-    final_test_df = test_df[keep_cols].copy()
-    
-    print("--- Multi-Task Split Summary ---")
-    print(f"Total Master Scraped Images:    {len(df_master)}")
-    print(f"Clean Intersection Sub-budget:  {len(df_inter)}")
-    print(f"Pristine Validation Set Size:   {len(final_val_df)}")
-    print(f"Pristine Test Set Size:         {len(final_test_df)}")
-    print(f"Final Augmented Training Size:  {len(final_train_df)}")
-    print(f" -> From clean pairs:           {len(inter_train_df)}")
-    print(f" -> From single-task union:     {len(union_train_reinforcements)}")
-    
-    return final_train_df, final_val_df, final_test_df
-
-# To use this when ready, execute:
-# train_df, val_df, test_df = generate_splits_with_union(
-#     master_csv_path='master_metadata.csv',
-#     intersection_csv_path='intersection_metadata.csv',
-#     valid_airlines_path='valid_airlines.csv',
-#     valid_variants_path='valid_variants.csv'
-# )
-'''
-
-
-
-
-def generate_simplified_splits(
-    intersection_csv_path, 
-    union_only_csv_path, # Your "union-intersection" CSV
-    valid_airlines_path, 
-    valid_variants_path,
-    val_size=0.10, 
-    test_size=0.10, 
-    random_state=42
-):
-    # 1. Load your pre-processed datasets and valid class lists
-    df_inter = pd.read_csv(intersection_csv_path)
-    df_union_only = pd.read_csv(union_only_csv_path)
-    
-    valid_airlines = set(pd.read_csv(valid_airlines_path)['Airline'].dropna().unique())
-    valid_variants = set(pd.read_csv(valid_variants_path)['Variant'].dropna().unique())
-    
-    # 2. FAILSAFE LOGIC: Smooth rare combinations in the intersection set
-    # This prevents scikit-learn from crashing on singletons (like your Boeing 737-400)
-    df_inter['split_key'] = df_inter['airline'].astype(str) + "_" + df_inter['aircraft_variant'].astype(str)
-    counts = df_inter['split_key'].value_counts()
-    rare_classes = counts[counts < 2].index
-    df_inter['split_key'] = df_inter['split_key'].apply(lambda x: 'rare' if x in rare_classes else x)
-    
-    # Calculate relative validation size for the second split
-    remaining_size = 1.0 - test_size
-    relative_val_size = val_size / remaining_size
-    
-    # 3. Perform splits on the pristine intersection data
-    inter_train_val, test_df = train_test_split(
-        df_inter, test_size=test_size, stratify=df_inter['split_key'], random_state=random_state
-    )
-    inter_train_df, val_df = train_test_split(
-        inter_train_val, test_size=relative_val_size, stratify=inter_train_val['split_key'], random_state=random_state
-    )
-    
-    # 4. Apply the ignore_index mask to the union-only data
-    # If an airline or variant isn't in your locked valid lists, map it to '-100'
-    df_union_only.loc[~df_union_only['airline'].isin(valid_airlines), 'airline'] = '-100'
-    df_union_only.loc[~df_union_only['aircraft_variant'].isin(valid_variants), 'aircraft_variant'] = '-100'
-    
-    # 5. Merge the clean training slice with the masked union leftovers
-    keep_cols = ['photo_id', 'airline', 'aircraft_variant', 'image_filename']
-    
-    final_train_df = pd.concat([
-        inter_train_df[keep_cols], 
-        df_union_only[keep_cols]
-    ], ignore_index=True)
-    
-    final_val_df = val_df[keep_cols].copy()
-    final_test_df = test_df[keep_cols].copy()
-    
-    print("--- Simplified Multi-Task Split Summary ---")
-    print(f"Pristine Validation Set Size:   {len(final_val_df)}")
-    print(f"Pristine Test Set Size:         {len(final_test_df)}")
-    print(f"Final Augmented Training Size:  {len(final_train_df)}")
-    print(f" -> From clean pairs:           {len(inter_train_df)}")
-    print(f" -> From single-task union:     {len(df_union_only)}")
-    
-    return final_train_df, final_val_df, final_test_df
-
-# Example Execution:
-# train_df, val_df, test_df = generate_simplified_splits(
-#     'intersection.csv', 'union_intersection.csv', 'valid_airlines.csv', 'valid_variants.csv'
-# )
-
-
-
-def generate_parameterized_splits(
-    intersection_csv_path, 
-    union_only_csv_path, 
-    valid_airlines_path, 
-    valid_variants_path,
-    val_pct=0.10, 
-    test_pct=0.10, 
-    min_count=5,          # Parameterized threshold for the rare group
-    random_state=42
-):
-    print("Loading data...")
-    df_inter = pd.read_csv(intersection_csv_path)
-    df_union_only = pd.read_csv(union_only_csv_path)
-    
-    valid_airlines = set(pd.read_csv(valid_airlines_path)['Airline'].dropna().unique())
-    valid_variants = set(pd.read_csv(valid_variants_path)['Variant'].dropna().unique())
-    
-    # 1. Create the joint class key
-    df_inter['split_key'] = df_inter['airline'].astype(str) + "_" + df_inter['aircraft_variant'].astype(str)
-    
-    # 2. IDENTIFY AND GROUP RARE CLASSES
-    counts = df_inter['split_key'].value_counts()
-    rare_classes = counts[counts < min_count].index
-    
-    # Reassign the split_key to a unified bucket for anything below min_count
-    df_inter['split_key'] = df_inter['split_key'].apply(
-        lambda x: 'RARE_GROUP' if x in rare_classes else x
-    )
-    
-    # 3. Custom Groupby Split Logic
-    def split_group(group):
-        n_total = len(group)
+        # Calculate padding for all 4 sides to center the image
+        pad_left = (max_dim - w) // 2
+        pad_top = (max_dim - h) // 2
+        pad_right = max_dim - w - pad_left
+        pad_bottom = max_dim - h - pad_top
         
-        # Calculate Val and Test sizes (rounding up)
-        n_val = math.ceil(n_total * val_pct)
-        n_test = math.ceil(n_total * test_pct)
+        return F.pad(img, (pad_left, pad_top, pad_right, pad_bottom), fill=self.fill)
+
+# Transform pipelines
+# Use 224 x 224 initially as proof of concept
+train_transforms = transforms.Compose([
+    PadToSquare(fill=255),                  # 1. Add white space to make it a perfect square
+    transforms.Resize((224, 224)),          # 2. Safely shrink the square down to 300x300
+    transforms.RandomHorizontalFlip(),      # 3. Augment data
+    transforms.ToTensor(),                  # 4. Convert to tensor
+    transforms.Normalize(                   # 5. Normalize colors
+        mean=[0.485, 0.456, 0.406], 
+        std=[0.229, 0.224, 0.225]
+    )
+])
+
+eval_transforms = transforms.Compose([ # Shared transform for eval and test
+    PadToSquare(fill=255),
+    transforms.Resize((224, 224)),
+    transforms.ToTensor(),
+    transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+])
+
+
+
+
+class AirlinerDataset(Dataset):
+    def __init__(self, dataframe, image_dir, airline_to_idx, variant_to_idx, transform=None):
+        """
+        Args:
+            dataframe (Pandas DataFrame): The loaded split dataframe (Train, Val, or Test).
+            image_dir (str): The root folder path where all your scraped images are stored.
+            airline_to_idx (dict): Dictionary mapping valid airline names to integers.
+            variant_to_idx (dict): Dictionary mapping valid variant names to integers.
+            transform (callable, optional): PyTorch transforms to standardize the image.
+        """
+        self.dataframe = dataframe
+
+        '''
+        existing = self.dataframe["image_filename"].apply(
+            lambda x: os.path.exists(os.path.join(image_dir, str(x)))
+        )
+
+        missing = (~existing).sum()
+        if missing:
+            print(f"Removed {missing} missing images.")
+
+        self.dataframe = self.dataframe[existing].reset_index(drop=True)
+        '''
+
+
+        self.image_dir = image_dir
+        self.transform = transform
+        self.airline_to_idx = airline_to_idx
+        self.variant_to_idx = variant_to_idx
+
+    def __len__(self):
+        return len(self.dataframe)
+
+    def __getitem__(self, idx):
+        # 1. Get the row
+        row = self.dataframe.iloc[idx]
         
-        # Failsafe: Ensure at least 1 image remains for Training 
-        # (in case a user sets min_count=2, meaning a group of 2 might get fully consumed)
-        if n_val + n_test >= n_total and n_total >= 3:
-            n_val = max(1, math.floor(n_total * val_pct))
-            n_test = max(1, math.floor(n_total * test_pct))
-            if n_val + n_test >= n_total:
-                n_val, n_test = 1, 1
-                
-        # If the total group size is somehow 1 or 2 (e.g. all rare items combined only total 2)
-        if n_total < 3:
-            n_val, n_test = 0, 0
+        # 2. Construct the full image path and load it
+        img_name = str(row['image_filename'])
+        img_path = os.path.join(self.image_dir, img_name)
+
+        try:
+            image = Image.open(img_path).convert("RGB")
+        except (FileNotFoundError, OSError) as e:
+            print(f"Skipping {img_name}: {e}")
+            return self.__getitem__((idx + 1) % len(self))
+        
+        
+        
+        # 3. Apply transformations (Resizing, normalizing, converting to tensor)
+        if self.transform:
+            image = self.transform(image)
             
-        # Shuffle rows to randomize selection
-        shuffled = group.sample(frac=1, random_state=random_state).copy()
+        # 4. Handle Labels (Map to integer, defaulting to 'OTHERS')
+        airline_str = str(row['airline'])
+        variant_str = str(row['aircraft_variant'])
         
-        # Assign splits
-        shuffled['split_label'] = 'train'
-        split_col_idx = shuffled.columns.get_loc('split_label')
+        # .get() looks up the string, and if it's missing, it returns the index for 'OTHERS'
+        airline_label = self.airline_to_idx.get(airline_str, self.airline_to_idx['OTHERS'])
+        variant_label = self.variant_to_idx.get(variant_str, self.variant_to_idx['OTHERS'])
         
-        if n_val > 0:
-            shuffled.iloc[0 : n_val, split_col_idx] = 'val'
-        if n_test > 0:
-            shuffled.iloc[n_val : n_val + n_test, split_col_idx] = 'test'
-        
-        return shuffled
-
-    print("Splitting intersection dataset...")
-    split_df = df_inter.groupby('split_key', group_keys=False).apply(split_group)
-    
-    # 4. Separate the carved splits
-    inter_train_df = split_df[split_df['split_label'] == 'train'].copy()
-    final_val_df = split_df[split_df['split_label'] == 'val'].copy()
-    final_test_df = split_df[split_df['split_label'] == 'test'].copy()
-    
-    print("Masking union dataset labels...")
-    # 5. Apply the ignore_index (-100) mask to the union-only data
-    df_union_only.loc[~df_union_only['airline'].isin(valid_airlines), 'airline'] = '-100'
-    df_union_only.loc[~df_union_only['aircraft_variant'].isin(valid_variants), 'aircraft_variant'] = '-100'
-    
-    # 6. Merge and Clean
-    keep_cols = ['photo_id', 'airline', 'aircraft_variant', 'image_filename']
-    
-    final_train_df = pd.concat([
-        inter_train_df[keep_cols], 
-        df_union_only[keep_cols]
-    ], ignore_index=True)
-    
-    final_val_df = final_val_df[keep_cols]
-    final_test_df = final_test_df[keep_cols]
-    
-    print("\n--- Parameterized Multi-Task Split Summary ---")
-    print(f"Pristine Validation Set Size:   {len(final_val_df)}")
-    print(f"Pristine Test Set Size:         {len(final_test_df)}")
-    print(f"Final Augmented Training Size:  {len(final_train_df)}")
-    print(f" -> From clean pairs:           {len(inter_train_df)}")
-    print(f" -> From masked union labels:   {len(df_union_only)}")
-    
-    return final_train_df, final_val_df, final_test_df
-
-
-
-
-train_df, val_df, test_df = generate_parameterized_splits(
-    '../data/metadata/airliners_metadata_trimmed_intersection.csv',
-    '../data/metadata/airliners_metadata_trimmed_symmetric_diff.csv',
-    '../data/metadata/counts_airlines_merged_trimmed.csv',
-    '../data/metadata/counts_variants_trimmed.csv',
-    0.2,
-    0.2,
-    5,
-    42
-)
-
-
+        # Return the processed image and both labels as tensors
+        return image, torch.tensor(variant_label, dtype=torch.long), torch.tensor(airline_label, dtype=torch.long)
 
 
 
@@ -408,46 +176,39 @@ def load_split_dataframes(train_csv_path, val_csv_path, test_csv_path):
     val_df = pd.read_csv(val_csv_path)
     test_df = pd.read_csv(test_csv_path)
     
-    # Optional: Fill NaNs as '-100' string just in case pandas parsed empty columns as floats
-    train_df.fillna('-100', inplace=True)
-    val_df.fillna('-100', inplace=True)
-    test_df.fillna('-100', inplace=True)
+    # Fill NaNs as 'OTHERS' string just in case pandas parsed empty columns as floats
+    train_df.fillna('OTHERS', inplace=True)
+    val_df.fillna('OTHERS', inplace=True)
+    test_df.fillna('OTHERS', inplace=True)
     
     return train_df, val_df, test_df
 
-# ==========================================
-# EXAMPLE EXECUTION
-# ==========================================
-if __name__ == "__main__":
-    # 1. Run this once to generate the physical files
-    '''
-    generate_split_csvs(
-        intersection_csv_path='path/to/intersection.csv', 
-        union_only_csv_path='path/to/union_intersection.csv',
-        intersection_summary_csv_path='path/to/intersection_counts_summary.csv',
-        valid_airlines_path='path/to/valid_airlines.csv', 
-        valid_variants_path='path/to/valid_variants.csv',
-        out_train_path='train_split.csv',
-        out_val_path='val_split.csv',
-        out_test_path='test_split.csv',
-        val_pct=0.10, 
-        test_pct=0.10, 
-        min_count=5
-    )
-    '''
+
+
+
+
+
+# Assuming train_df, val_df, test_df are already loaded
+
+
+def build_mapping_from_csv(csv_path, column_name):
+    """Reads a CSV and builds a dictionary mapping strings to integers."""
+    df = pd.read_csv(csv_path)
     
-    # 2. Run this inside your main training script to load them back up
-    '''
-    train_df, val_df, test_df = load_split_dataframes(
-        'train_split.csv', 'val_split.csv', 'test_split.csv'
-    )
-    '''
+    # Extract unique names and drop any empty rows
+    class_list = df[column_name].dropna().unique().tolist()
+    
+    # Ensure 'OTHERS' is a valid class in our list
+    if 'OTHERS' not in class_list:
+        class_list.append('OTHERS')
+        
+    # Create the dictionary: {'AJet': 0, 'Aeroflot': 1, ..., 'OTHERS': N}
+    return {name: idx for idx, name in enumerate(class_list)}
 
 
 
 
 
-'''
 
 # Neural Net Modules
 
@@ -561,165 +322,459 @@ class DualBranchNet(nn.Module):
 
 
 
+def get_model_name(name, batch_size, learning_rate, epoch, checkpoint_dir="checkpoints"):
+    """
+    Generate a path for saving the model checkpoints.
+    Allows specifying a custom directory (e.g., 'D:\\Bruce-Qiu-APS360-Project\\checkpoints')
+    """
+    if not os.path.exists(checkpoint_dir):
+        os.makedirs(checkpoint_dir)
+        
+    # Use os.path.join for safe Windows/Mac/Linux path formatting
+    filename = f"model_{name}_bs{batch_size}_lr{learning_rate}_epoch{epoch}.pt"
+    path = os.path.join(checkpoint_dir, filename)
+    return path
 
 
+def evaluate(net, loader, criterion, device, is_multitask=True):
+    """
+    Evaluate network on validation or test set.
+    Computes loss and weighted F1-Scores for either multi-task or single-task models.
+    """
+    total_loss = 0.0
+    
+    # Store all predictions and true labels for F1 calculation
+    all_var_preds = []
+    all_var_labels = []
+    
+    if is_multitask:
+        all_air_preds = []
+        all_air_labels = []
+
+    net.eval() # set to evaluation mode
+    with torch.no_grad(): # reduce memory and runtime length
+        for data in loader:
+            # Unpack the 3 items returned by your custom AirlinerDataset
+            inputs, variant_labels, airline_labels = data
+            inputs = inputs.to(device)
+            variant_labels = variant_labels.to(device)
+            airline_labels = airline_labels.to(device)
+
+            if is_multitask:
+                # Primary Model: Returns two branches
+                var_outputs, air_outputs = net(inputs)
+                
+                # Combined Multi-Task Loss
+                # Right now just equal weights, can make updatable weights for future update
+                # Try: Uncertainty-Based Adaptive Weighting (Kendall et al 2018)
+                loss = criterion(var_outputs, variant_labels) + criterion(air_outputs, airline_labels)
+                
+                # Get predictions
+                _, var_preds = torch.max(var_outputs.data, 1)
+                _, air_preds = torch.max(air_outputs.data, 1)
+                
+                # Append for F1 computation
+                all_air_preds.extend(air_preds.cpu().numpy())
+                all_air_labels.extend(airline_labels.cpu().numpy())
+                
+            else:
+                # Baseline Model: Returns single branch (Variant only)
+                var_outputs = net(inputs)
+                loss = criterion(var_outputs, variant_labels)
+                
+                # Get predictions
+                _, var_preds = torch.max(var_outputs.data, 1)
+
+            total_loss += loss.item()
+            all_var_preds.extend(var_preds.cpu().numpy())
+            all_var_labels.extend(variant_labels.cpu().numpy())
+
+    # Compute Weighted F1-Scores (handles imbalanced classes)
+    var_f1 = f1_score(all_var_labels, all_var_preds, average='weighted')
+    avg_loss = float(total_loss) / len(loader)
+
+    if is_multitask:
+        air_f1 = f1_score(all_air_labels, all_air_preds, average='weighted')
+        return var_f1, air_f1, avg_loss
+    else:
+        return var_f1, avg_loss
 
 
-def get_model_name(name, batch_size, learning_rate, epoch):
-  # Generate name for model containing all hyperparameters
-  path = "/content/checkpoints/model_{0}_bs{1}_lr{2}_epoch{3}".format(name, batch_size,learning_rate, epoch)
-  return path
+def plot_training_curve(path, is_multitask=True):
+    """
+    Plot training curves for F1-Scores and Loss.
+    Dynamically adjusts layout based on whether it was a baseline or primary model run.
+    """
+    # Load Variant F1 metrics
+    train_var_f1 = np.loadtxt(f"{path}_train_var_f1.csv")
+    val_var_f1 = np.loadtxt(f"{path}_val_var_f1.csv")
+    
+    # Load Loss metrics
+    train_loss = np.loadtxt(f"{path}_train_loss.csv")
+    val_loss = np.loadtxt(f"{path}_val_loss.csv")
+    
+    if is_multitask:
+        # Load Airline F1 metrics if primary model
+        train_air_f1 = np.loadtxt(f"{path}_train_air_f1.csv")
+        val_air_f1 = np.loadtxt(f"{path}_val_air_f1.csv")
 
-# Need to change...
-def evaluate(net, loader, criterion, device):
-  # Evaluate network on validation set
-  total_loss = 0.0
-  total_err = 0.0
-  total_epoch = 0
+    n = len(train_var_f1) # num of epochs
 
-  net.eval() # set to evaluation mode
-  with torch.no_grad(): # reduce memory and runtime length
-    for i, data in enumerate(loader, 0):
-      inputs, labels = data
-      inputs, labels = inputs.to(device), labels.to(device) # need to do this for multi-class
+    # Make the figure wider if we have 3 plots (Multi-task) instead of 2 (Baseline)
+    plt.figure(figsize=(15 if is_multitask else 10, 4))
 
-      outputs = net(inputs)
-      loss = criterion(outputs, labels)
+    # Plot Variant F1-Score
+    plt.subplot(1, 3 if is_multitask else 2, 1)
+    plt.title("Variant Weighted F1-Score")
+    plt.plot(range(1, n+1), train_var_f1, label="Train")
+    plt.plot(range(1, n+1), val_var_f1, label="Validation")
+    plt.xlabel("Epoch")
+    plt.ylabel("F1-Score")
+    plt.legend(loc='best')
 
-      # Find class with highest score
-      _, predicted = torch.max(outputs.data, 1)
-      corr = (predicted != labels)
+    # Plot Airline F1-Score (Only if Multi-Task)
+    if is_multitask:
+        plt.subplot(1, 3, 2)
+        plt.title("Airline Weighted F1-Score")
+        plt.plot(range(1, n+1), train_air_f1, label="Train")
+        plt.plot(range(1, n+1), val_air_f1, label="Validation")
+        plt.xlabel("Epoch")
+        plt.ylabel("F1-Score")
+        plt.legend(loc='best')
 
-      # Get total error, loss, epoch
-      total_err += int(corr.sum())
-      total_loss += loss.item()
-      total_epoch += len(labels)
+    # Plot Total Loss
+    plt.subplot(1, 3 if is_multitask else 2, 3 if is_multitask else 2)
+    plt.title("Train vs Validation Loss")
+    plt.plot(range(1, n+1), train_loss, label="Train")
+    plt.plot(range(1, n+1), val_loss, label="Validation")
+    plt.xlabel("Epoch")
+    plt.ylabel("Loss")
+    plt.legend(loc='best')
 
-
-  err = float(total_err) / total_epoch
-  loss = float(total_loss) / (i + 1)
-  return err, loss
-
-def plot_training_curve(path):
-  # Plot training curve for a model run
-  train_err = np.loadtxt("{}_train_err.csv".format(path))
-  val_err = np.loadtxt("{}_val_err.csv".format(path))
-  train_loss = np.loadtxt("{}_train_loss.csv".format(path))
-  val_loss = np.loadtxt("{}_val_loss.csv".format(path))
-
-  n = len(train_err) # num of epochs
-
-  plt.figure(figsize=(10, 4))
-
-  # Plot Error
-  plt.subplot(1, 2, 1)
-  plt.title("Train vs Validation Error")
-  plt.plot(range(1,n+1), train_err, label="Train")
-  plt.plot(range(1,n+1), val_err, label="Validation")
-  plt.xlabel("Epoch")
-  plt.ylabel("Error")
-  plt.legend(loc='best')
-
-  # Plot Loss
-  plt.subplot(1, 2, 2)
-  plt.title("Train vs Validation Loss")
-  plt.plot(range(1,n+1), train_loss, label="Train")
-  plt.plot(range(1,n+1), val_loss, label="Validation")
-  plt.xlabel("Epoch")
-  plt.ylabel("Loss")
-  plt.legend(loc='best')
-
-  plt.tight_layout()
-  plt.show()
-
-# Need to change...
-def train_net(net, train_loader, val_loader, batch_size=64, learning_rate=0.01, num_epochs=30, checkpoint_freq=5):
-  # Trains multi-class PyTorch model
-
-  # Setup Device (Use GPU if available)
-  device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-  print(f"Training on device: {device}")
-  net.to(device)
-
-  # Fixed PyTorch random seed for reproducible result
-  torch.manual_seed(1000)
-
-  # multi-class loss and Adam Optimizer
-  # Use cross entropy loss for multi-class loss (explain...)
-  # Use Adam for optimizer (explain...)
-  criterion = nn.CrossEntropyLoss()
-  optimizer = optim.Adam(net.parameters(), lr=learning_rate)
-
-  # Arrays to store metrics
-  train_err = np.zeros(num_epochs)
-  train_loss = np.zeros(num_epochs)
-  val_err = np.zeros(num_epochs)
-  val_loss = np.zeros(num_epochs)
-
-  start_time = time.time()
-
-  for epoch in range(num_epochs):
-    # Training
-    net.train() # Training mode
-    total_train_loss = 0.0
-    total_train_err = 0.0
-    total_epoch = 0
-
-    for i, data in enumerate(train_loader, 0):
-      inputs, labels = data
-      inputs, labels = inputs.to(device), labels.to(device) # need to do this for multi-class
-
-      # Zero
-      optimizer.zero_grad()
-
-      # Forward
-      outputs = net(inputs)
-      loss = criterion(outputs, labels)
-
-      # Backward
-      loss.backward()
-
-      # Optimize
-      optimizer.step()
-
-      # Calculate error
-      _, predicted = torch.max(outputs, 1)
-      corr = (predicted != labels)
-
-      total_train_err += int(corr.sum())
-      total_train_loss += loss.item()
-      total_epoch += len(labels)
-
-    train_err[epoch] = float(total_train_err) / total_epoch
-    train_loss[epoch] = float(total_train_loss) / (i+1)
-
-    # Evaluate on validation set
-    val_err[epoch], val_loss[epoch] = evaluate(net, val_loader, criterion, device)
-    print(("Epoch {}: Train err: {}, Train loss: {} |"+
-                "Validation err: {}, Validation loss: {}").format(
-                    epoch + 1,
-                    train_err[epoch],
-                    train_loss[epoch],
-                    val_err[epoch],
-                    val_loss[epoch]))
-
-  # Checkpointing
-    if (epoch + 1) % checkpoint_freq == 0 or (epoch + 1) == num_epochs:
-      model_path = get_model_name(net.name, batch_size, learning_rate, epoch)
-      torch.save(net.state_dict(), model_path)
-
-  print('Finished Training')
-  end_time = time.time()
-  print("Total time elapsed: {:.2f} seconds".format(end_time - start_time))
-
-  # Write the train/test loss/err into CSV file for plotting later
-  model_base_path = get_model_name(net.name, batch_size, learning_rate, "final")
-  np.savetxt("{}_train_err.csv".format(model_base_path), train_err)
-  np.savetxt("{}_train_loss.csv".format(model_base_path), train_loss)
-  np.savetxt("{}_val_err.csv".format(model_base_path), val_err)
-  np.savetxt("{}_val_loss.csv".format(model_base_path), val_loss)
-
-  return model_base_path
+    plt.tight_layout()
+    plt.show()
 
 
-'''
+def train_net(net, train_loader, val_loader, batch_size=64, learning_rate=0.01, num_epochs=30, checkpoint_freq=1, 
+              is_multitask=True, checkpoint_dir="D:\Bruce-Qiu-APS360-Project\training\checkpoints",
+              optimizer=None, start_epoch=0):
+    """
+    Trains the neural network. Supports both dual-branch (multitask) and single-branch models.
+    """
+    # Setup Device (Use GPU if available)
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    print(f"Training on device: {device}")
+    net.to(device)
+
+    # Fixed PyTorch random seed for reproducible result
+    torch.manual_seed(1000)
+
+    # multi-class loss and Adam Optimizer
+    criterion = nn.CrossEntropyLoss()
+
+    if optimizer is None:
+        optimizer = optim.Adam(
+            net.parameters(),
+            lr=learning_rate
+        )
+
+    # Arrays to store metrics
+    train_var_f1 = np.zeros(num_epochs)
+    train_loss = np.zeros(num_epochs)
+    val_var_f1 = np.zeros(num_epochs)
+    val_loss = np.zeros(num_epochs)
+
+    if is_multitask:
+        train_air_f1 = np.zeros(num_epochs)
+        val_air_f1 = np.zeros(num_epochs)
+
+    start_time = time.time()
+    print("Start training...")
+
+    for epoch in range(start_epoch, num_epochs): 
+        print(f"Epoch {epoch + 1}...")
+        # Training
+        net.train() # Training mode
+        total_train_loss = 0.0
+        
+        # Track predictions over the epoch for F1 calculation
+        all_var_preds = []
+        all_var_labels = []
+        if is_multitask:
+            all_air_preds = []
+            all_air_labels = []
+
+        progress = tqdm(train_loader, desc=f"Epoch {epoch+1}/{num_epochs}")
+
+        for i, data in enumerate(progress):
+            # Unpack 3 items
+            inputs, variant_labels, airline_labels = data
+            inputs = inputs.to(device)
+            variant_labels = variant_labels.to(device)
+            airline_labels = airline_labels.to(device)
+
+            # Zero gradients
+            optimizer.zero_grad()
+
+            # print(inputs.shape)
+            # print(inputs.dtype)
+            # print(torch.isnan(inputs).any())
+            # print(torch.isinf(inputs).any())
+
+            # print("Start forward pass")
+            # Forward pass
+            if is_multitask:
+                var_outputs, air_outputs = net(inputs)
+                loss = criterion(var_outputs, variant_labels) + criterion(air_outputs, airline_labels)
+                
+                _, var_preds = torch.max(var_outputs.data, 1)
+                _, air_preds = torch.max(air_outputs.data, 1)
+                
+                all_air_preds.extend(air_preds.cpu().numpy())
+                all_air_labels.extend(airline_labels.cpu().numpy())
+            else:
+                #print("Ribbit")
+                var_outputs = net(inputs)
+                '''
+
+                print("before features")
+                x = net.model.features(inputs)
+                print("after features")
+
+                print("before avgpool")
+                x = net.model.avgpool(x)
+                print("after avgpool")
+
+                print("before flatten")
+                x = torch.flatten(x, 1)
+                print("after flatten")
+
+                print("before classifier")
+                var_outputs = net.model.classifier(x)
+                print("after classifier")
+                '''
+
+                #print("Rogget")
+                loss = criterion(var_outputs, variant_labels)
+                #print("Croak")
+                _, var_preds = torch.max(var_outputs.data, 1)
+            #print("Forward pass complete")
+
+            # Backward pass
+            loss.backward()
+            #print("Backward pass complete")
+
+            # Optimize
+            optimizer.step()
+            #print("Optimizer complete")
+
+            '''
+            if (i + 1) % 10 == 0 or (i + 1) == len(train_loader):
+                print(
+                    f"Epoch [{epoch+1}/{num_epochs}] "
+                    f"Batch [{i+1}/{len(train_loader)}] "
+                    f"Loss: {loss.item():.4f}"
+                )
+            '''
+
+            # Tally metrics
+            total_train_loss += loss.item()
+            all_var_preds.extend(var_preds.cpu().numpy())
+            all_var_labels.extend(variant_labels.cpu().numpy())
+
+            progress.set_postfix(loss=f"{loss.item():.4f}")
+
+        # Calculate epoch metrics
+        train_var_f1[epoch] = f1_score(all_var_labels, all_var_preds, average='weighted')
+        train_loss[epoch] = float(total_train_loss) / len(train_loader)
+        
+        if is_multitask:
+            train_air_f1[epoch] = f1_score(all_air_labels, all_air_preds, average='weighted')
+
+        # Evaluate on validation set
+        if is_multitask:
+            val_var_f1[epoch], val_air_f1[epoch], val_loss[epoch] = evaluate(net, val_loader, criterion, device, is_multitask)
+            print(f"Epoch {epoch + 1}: Train Loss: {train_loss[epoch]:.4f} | Train Var F1: {train_var_f1[epoch]:.4f} | Train Air F1: {train_air_f1[epoch]:.4f}")
+            print(f"          Val Loss: {val_loss[epoch]:.4f} | Val Var F1: {val_var_f1[epoch]:.4f} | Val Air F1: {val_air_f1[epoch]:.4f}")
+        else:
+            val_var_f1[epoch], val_loss[epoch] = evaluate(net, val_loader, criterion, device, is_multitask)
+            print(f"Epoch {epoch + 1}: Train Loss: {train_loss[epoch]:.4f} | Train Var F1: {train_var_f1[epoch]:.4f}")
+            print(f"          Val Loss: {val_loss[epoch]:.4f} | Val Var F1: {val_var_f1[epoch]:.4f}")
+
+        # Checkpointing
+        if (epoch + 1) % checkpoint_freq == 0 or (epoch + 1) == num_epochs:
+            model_name = getattr(net, 'name', 'model') # Safely fallback if 'name' isn't set
+            model_path = get_model_name(model_name, batch_size, learning_rate, epoch + 1, checkpoint_dir)
+            # torch.save(net.state_dict(), model_path)
+            torch.save({
+                "epoch": epoch + 1, # "conventional" index, so it can be used as start_epoch
+                "model_state_dict": net.state_dict(),
+                "optimizer_state_dict": optimizer.state_dict(),
+                "train_loss": train_loss,
+                "val_loss": val_loss,
+            }, model_path)
+
+    print('Finished Training')
+    end_time = time.time()
+    print("Total time elapsed: {:.2f} seconds".format(end_time - start_time))
+
+    # Write the train/val loss and f1 into CSV files for plotting later
+    model_name = getattr(net, 'name', 'model')
+    model_base_path = get_model_name(model_name, batch_size, learning_rate, "final", checkpoint_dir).replace('.pt', '')
+    
+    np.savetxt(f"{model_base_path}_train_var_f1.csv", train_var_f1)
+    np.savetxt(f"{model_base_path}_val_var_f1.csv", val_var_f1)
+    np.savetxt(f"{model_base_path}_train_loss.csv", train_loss)
+    np.savetxt(f"{model_base_path}_val_loss.csv", val_loss)
+    
+    if is_multitask:
+        np.savetxt(f"{model_base_path}_train_air_f1.csv", train_air_f1)
+        np.savetxt(f"{model_base_path}_val_air_f1.csv", val_air_f1)
+
+    return model_base_path
+
+
+# Final Execution
+if __name__ == "__main__":
+    # =========================================================================
+    # PREREQUISITE SETUP
+    # Assume `train_loader` and `val_loader` have already been instantiated 
+    # here using your AirlinerDataset logic.
+    # 
+    # Also assume `variant_mapping` and `airline_mapping` are defined here.
+    # Example:
+    # NUM_VARIANT_CLASSES = len(variant_mapping)
+    # NUM_AIRLINE_CLASSES = len(airline_mapping)
+    # =========================================================================
+    
+    train_df, val_df, test_df = load_split_dataframes(
+        r'D:\Bruce-Qiu-APS360-Project\Data\metadata\train\train_metadata.csv', 
+        r'D:\Bruce-Qiu-APS360-Project\Data\metadata\val\val_metadata.csv', 
+        r'D:\Bruce-Qiu-APS360-Project\Data\metadata\test\test_metadata.csv'
+    )
+    print("Load split data frame complete")
+
+    # Automatically build the mappings (Ensure the column names exactly match your CSVs)
+    airline_mapping = build_mapping_from_csv(airline_csv_path, column_name='Airline')
+    variant_mapping = build_mapping_from_csv(variant_csv_path, column_name='Variant')
+
+    # (Optional) Print to verify the mappings and total class counts
+    print(f"Total Airline Classes (including OTHERS): {len(airline_mapping)}")
+    print(f"Total Variant Classes (including OTHERS): {len(variant_mapping)}")
+
+    # 1. Instantiate the Datasets
+    train_dataset = AirlinerDataset(train_df, image_folder_path, airline_mapping, variant_mapping, transform=train_transforms)
+    val_dataset = AirlinerDataset(val_df, image_folder_path, airline_mapping, variant_mapping, transform=eval_transforms)
+    test_dataset = AirlinerDataset(test_df, image_folder_path, airline_mapping, variant_mapping, transform=eval_transforms)
+
+    # 2. Wrap them in DataLoaders (this handles batching and shuffling)
+    train_loader = DataLoader(train_dataset, batch_size=BATCH_SIZE, shuffle=True, num_workers=2)
+    val_loader = DataLoader(val_dataset, batch_size=BATCH_SIZE, shuffle=False, num_workers=2)
+    test_loader = DataLoader(test_dataset, batch_size=BATCH_SIZE, shuffle=False, num_workers=2)
+
+    print("Loaders complete")
+
+    # Example constants (replace with the lengths of your mapping dictionaries)
+    NUM_VARIANT_CLASSES = len(variant_mapping)
+    NUM_AIRLINE_CLASSES = len(airline_mapping)
+
+    '''
+    # ==========================================================
+    # LOAD MODEL
+    # ==========================================================
+    print("Initializing Baseline Model...")
+    baseline_model = BaselineEfficientNet(
+        num_variant_classes=NUM_VARIANT_CLASSES
+    )
+
+    # Device (must match train_net)
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    baseline_model.to(device)
+
+    # Optimizer (must be identical to the original one)
+    optimizer = optim.Adam(
+        baseline_model.parameters(),
+        lr=0.001
+    )
+
+    # Load checkpoint
+    checkpoint_path = r"checkpoints\model_model_bs8_lr0.001_epoch5.pt"
+
+    checkpoint = torch.load(
+        checkpoint_path,
+        map_location=device
+    )
+
+    baseline_model.load_state_dict(checkpoint["model_state_dict"])
+    optimizer.load_state_dict(checkpoint["optimizer_state_dict"])
+
+    start_epoch = checkpoint["epoch"]
+
+    print(f"Successfully loaded checkpoint from epoch {start_epoch}.")
+
+    saved_base_path = train_net(
+        net=baseline_model, 
+        train_loader=train_loader,    # Pass your actual train DataLoader here
+        val_loader=val_loader,        # Pass your actual val DataLoader here
+        batch_size=BATCH_SIZE, 
+        learning_rate=0.001, 
+        num_epochs=5, 
+        checkpoint_freq=1, 
+        is_multitask=False,           # CRITICAL: Set to False for the Baseline
+        checkpoint_dir="checkpoints",
+        optimizer=optimizer,
+        start_epoch = start_epoch
+    )
+    
+    '''
+
+    # ---------------------------------------------------------
+    # 1. RUNNING THE BASELINE MODEL
+    # ---------------------------------------------------------
+    print("Initializing Baseline Model...")
+    baseline_model = BaselineEfficientNet(num_variant_classes=NUM_VARIANT_CLASSES)
+    
+    print("Starting Baseline Training...")
+    
+    saved_base_path = train_net(
+        net=baseline_model, 
+        train_loader=train_loader,    # Pass your actual train DataLoader here
+        val_loader=val_loader,        # Pass your actual val DataLoader here
+        batch_size=BATCH_SIZE, 
+        learning_rate=0.001, 
+        num_epochs=5, 
+        checkpoint_freq=1, 
+        is_multitask=False,           # CRITICAL: Set to False for the Baseline
+        checkpoint_dir="checkpoints"
+    )
+    
+    # Plot results!
+    plot_training_curve(saved_base_path, is_multitask=False)
+    
+
+    # ---------------------------------------------------------
+    # 2. RUNNING YOUR DUAL BRANCH MULTI-TASK MODEL LATER
+    # ---------------------------------------------------------
+    """
+    print("Initializing Dual-Branch Model...")
+    primary_model = DualBranchNet(
+        num_variant_classes=NUM_VARIANT_CLASSES, 
+        num_airline_classes=NUM_AIRLINE_CLASSES
+    )
+    
+    print("Starting Multi-Task Training...")
+    saved_multi_path = train_net(
+        net=primary_model, 
+        train_loader=train_loader, 
+        val_loader=val_loader, 
+        batch_size=32, 
+        learning_rate=0.001, 
+        num_epochs=30, 
+        checkpoint_freq=5, 
+        is_multitask=True,             # CRITICAL: Set to True for Dual-Branch
+        checkpoint_dir="checkpoints"
+    )
+    
+    # Plot results!
+    plot_training_curve(saved_multi_path, is_multitask=True)
+    """

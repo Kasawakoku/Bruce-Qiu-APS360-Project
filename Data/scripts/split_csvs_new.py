@@ -1,6 +1,8 @@
 import math
 import pandas as pd
 
+# In the future, may implement to remove any images with extreme dimensions
+
 def generate_split_csvs(
     intersection_csv_path, 
     union_only_csv_path,
@@ -16,7 +18,7 @@ def generate_split_csvs(
 ):
     """
     Reads raw data, assigns temporary 'OTHER' categories to invalid labels to 
-    include them in the split stratification, applies the -100 mask for training,
+    include them in the split stratification, applies the OTHERS mask for training,
     carves out validation and test sets, and exports the final splits to CSVs.
     """
     print("Loading datasets...")
@@ -87,11 +89,12 @@ def generate_split_csvs(
     final_val_df = split_df[split_df['split_label'] == 'val'].copy()
     final_test_df = split_df[split_df['split_label'] == 'test'].copy()
     
-    print("Applying -100 ignore_index masks to final data...")
+    # print("Applying -100 ignore_index masks to final data...")
     # 6. MASK INVALID LABELS WITH -100 FOR PYTORCH
+    # CHANGED: keep the class as "OTHERS"
     for df in [final_train_df, final_val_df, final_test_df]:
-        df.loc[~df['airline'].isin(valid_airlines), 'airline'] = '-100'
-        df.loc[~df['aircraft_variant'].isin(valid_variants), 'aircraft_variant'] = '-100'
+        df.loc[~df['airline'].isin(valid_airlines), 'airline'] = 'OTHERS'
+        df.loc[~df['aircraft_variant'].isin(valid_variants), 'aircraft_variant'] = 'OTHERS'
     
     # 7. MERGE AND CLEAN COLUMNS
     keep_cols = [

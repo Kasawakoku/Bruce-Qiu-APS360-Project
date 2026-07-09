@@ -139,12 +139,12 @@ def analyze_skew():
         
     master_df = pd.concat(dataframes, ignore_index=True)
     
-    # 2. Map invalid/rare classes to "-100"
+    # 2. Map invalid/rare classes to "OTHERS"
     master_df['mapped_airline'] = master_df['airline'].apply(
-        lambda x: str(x) if str(x) in valid_airlines else "-100"
+        lambda x: str(x) if str(x) in valid_airlines else "OTHERS"
     )
     master_df['mapped_variant'] = master_df['aircraft_variant'].apply(
-        lambda x: str(x) if str(x) in valid_variants else "-100"
+        lambda x: str(x) if str(x) in valid_variants else "OTHERS"
     )
     
     # --- HELPER FUNCTION FOR ANALYSIS ---
@@ -167,11 +167,11 @@ def analyze_skew():
         cross_tab['Val_%'] = (cross_tab['Val'] / cross_tab['Total']) * 100
         cross_tab['Test_%'] = (cross_tab['Test'] / cross_tab['Total']) * 100
         
-        # Separate the "-100" row so it doesn't compete in the Top 3 rankings
+        # Separate the "OTHERS" row so it doesn't compete in the Top 3 rankings
         other_stats = None
-        if "-100" in cross_tab.index:
-            other_stats = cross_tab.loc["-100"]
-            cross_tab = cross_tab.drop("-100")
+        if "OTHERS" in cross_tab.index:
+            other_stats = cross_tab.loc["OTHERS"]
+            cross_tab = cross_tab.drop("OTHERS")
             
         # Top 3 Skewed to Train
         top_train = cross_tab.sort_values(by='Train_%', ascending=False).head(3)
@@ -191,15 +191,15 @@ def analyze_skew():
         for idx, row in top_test.iterrows():
             print(f"  {idx:<35} | {row['Test_%']:>5.1f}% Test  ({int(row['Test'])}/{int(row['Total'])} images)")
 
-        # Report "-100" stats
-        print("\n--- Statistics for '-100' (Other/Trimmed) ---")
+        # Report "OTHERS" stats
+        print("\n--- Statistics for 'OTHERS' (Other/Trimmed) ---")
         if other_stats is not None:
             print(f"  Total Images: {int(other_stats['Total'])}")
             print(f"  Train:        {other_stats['Train_%']:>5.1f}% ({int(other_stats['Train'])})")
             print(f"  Val:          {other_stats['Val_%']:>5.1f}% ({int(other_stats['Val'])})")
             print(f"  Test:         {other_stats['Test_%']:>5.1f}% ({int(other_stats['Test'])})")
         else:
-            print("  No '-100' records found in the dataset.")
+            print("  No 'OTHERS' records found in the dataset.")
 
     # 3. Run Analysis
     process_column('mapped_airline', 'Airline')
