@@ -39,7 +39,8 @@ from tqdm import tqdm
 
 
 # PARAMETERS
-BATCH_SIZE = 16
+BATCH_SIZE = 16 # do not go above 16 for cpu
+IMAGE_SIZE = 300
 
 # File paths
 image_folder_path = r"D:\Bruce-Qiu-APS360-Project\Data\airliners_images"
@@ -48,7 +49,7 @@ image_folder_path = r"D:\Bruce-Qiu-APS360-Project\Data\airliners_images"
 airline_csv_path = r"D:\Bruce-Qiu-APS360-Project\Data\metadata\counts_airlines_merged_trimmed.csv"
 variant_csv_path = r"D:\Bruce-Qiu-APS360-Project\Data\metadata\counts_variants_trimmed.csv"
 
-checkpoints_path = r"D:\Bruce-Qiu-APS360-Project\training\checkpoints"
+checkpoints_path = r"D:\Bruce-Qiu-APS360-Project\training\checkpoints_path"
 
 # Data Loading
 
@@ -81,7 +82,7 @@ class PadToSquare:
 # Use 224 x 224 initially as proof of concept
 train_transforms = transforms.Compose([
     PadToSquare(fill=255),                  # 1. Add white space to make it a perfect square
-    transforms.Resize((224, 224)),          # 2. Safely shrink the square down to 300x300
+    transforms.Resize((IMAGE_SIZE, IMAGE_SIZE)),          # 2. Safely shrink the square down to 300x300
     transforms.RandomHorizontalFlip(),      # 3. Augment data
     transforms.ToTensor(),                  # 4. Convert to tensor
     transforms.Normalize(                   # 5. Normalize colors
@@ -92,7 +93,7 @@ train_transforms = transforms.Compose([
 
 eval_transforms = transforms.Compose([ # Shared transform for eval and test
     PadToSquare(fill=255),
-    transforms.Resize((224, 224)),
+    transforms.Resize((IMAGE_SIZE, IMAGE_SIZE)),
     transforms.ToTensor(),
     transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
 ])
@@ -456,7 +457,7 @@ def plot_training_curve(path, is_multitask=True):
 
 
 def train_net(net, train_loader, val_loader, batch_size=64, learning_rate=0.01, num_epochs=30, checkpoint_freq=1, 
-              is_multitask=True, checkpoint_dir="D:\Bruce-Qiu-APS360-Project\training\checkpoints",
+              is_multitask=True, checkpoint_dir=r"D:\Bruce-Qiu-APS360-Project\training\checkpoints",
               optimizer=None, start_epoch=0):
     """
     Trains the neural network. Supports both dual-branch (multitask) and single-branch models.
@@ -558,15 +559,15 @@ def train_net(net, train_loader, val_loader, batch_size=64, learning_rate=0.01, 
                 loss = criterion(var_outputs, variant_labels)
                 #print("Croak")
                 _, var_preds = torch.max(var_outputs.data, 1)
-            #print("Forward pass complete")
+            # print("Forward pass complete")
 
             # Backward pass
             loss.backward()
-            #print("Backward pass complete")
+            # print("Backward pass complete")
 
             # Optimize
             optimizer.step()
-            #print("Optimizer complete")
+            # print("Optimizer complete")
 
             '''
             if (i + 1) % 10 == 0 or (i + 1) == len(train_loader):
@@ -698,10 +699,10 @@ if __name__ == "__main__":
     )
 
     # Load checkpoint
-    checkpoint_path = r"checkpoints\model_model_bs8_lr0.001_epoch5.pt"
+    # loaded_checkpoint_path = r"checkpoints\model_model_bs8_lr0.001_epoch5.pt"
 
     checkpoint = torch.load(
-        checkpoint_path,
+        loaded_checkpoint_path,
         map_location=device
     )
 
@@ -731,6 +732,7 @@ if __name__ == "__main__":
     # ---------------------------------------------------------
     # 1. RUNNING THE BASELINE MODEL
     # ---------------------------------------------------------
+    """
     print("Initializing Baseline Model...")
     baseline_model = BaselineEfficientNet(num_variant_classes=NUM_VARIANT_CLASSES)
     
@@ -750,12 +752,12 @@ if __name__ == "__main__":
     
     # Plot results!
     plot_training_curve(saved_base_path, is_multitask=False)
-    
+    """
 
     # ---------------------------------------------------------
     # 2. RUNNING YOUR DUAL BRANCH MULTI-TASK MODEL LATER
     # ---------------------------------------------------------
-    """
+    
     print("Initializing Dual-Branch Model...")
     primary_model = DualBranchNet(
         num_variant_classes=NUM_VARIANT_CLASSES, 
@@ -767,14 +769,14 @@ if __name__ == "__main__":
         net=primary_model, 
         train_loader=train_loader, 
         val_loader=val_loader, 
-        batch_size=32, 
+        batch_size=BATCH_SIZE, 
         learning_rate=0.001, 
-        num_epochs=30, 
-        checkpoint_freq=5, 
+        num_epochs=1, 
+        checkpoint_freq=1, 
         is_multitask=True,             # CRITICAL: Set to True for Dual-Branch
-        checkpoint_dir="checkpoints"
+        checkpoint_dir="checkpoints_path"
     )
     
     # Plot results!
     plot_training_curve(saved_multi_path, is_multitask=True)
-    """
+    
