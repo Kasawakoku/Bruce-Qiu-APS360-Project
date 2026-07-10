@@ -1834,12 +1834,12 @@ if __name__ == "__main__":
     plot_training_curve(saved_base_path, is_multitask=False)
     """
 
-    """
+    
     baseline_variant_model = BaselineVariantCNN(
         NUM_VARIANT_CLASSES
     )
 
-    checkpoint_path = r"D:\Bruce-Qiu-APS360-Project\training\checkpoints_variant_baseline\model_Baseline_Variant_Scratch_bs16_lr0.001_epoch15.pt"
+    checkpoint_path = r"D:\Bruce-Qiu-APS360-Project\training\checkpoints_variant_baseline\model_Baseline_Variant_Scratch_bs16_lr0.001_epoch25.pt"
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     baseline_variant_model = BaselineVariantCNN(num_variant_classes=NUM_VARIANT_CLASSES).to(device)
@@ -1861,7 +1861,7 @@ if __name__ == "__main__":
         val_loader=val_loader,
         batch_size=BATCH_SIZE,
         learning_rate=1e-3,
-        num_epochs=20,
+        num_epochs=30,
         
         is_multitask=False,
         checkpoint_freq = 1,
@@ -1875,12 +1875,12 @@ if __name__ == "__main__":
     )
 
     plot_training_curve(saved_multi_path, is_multitask=False)
-    """
+    
 
     # ---------------------------------------------------------
     # 2. RUNNING YOUR DUAL BRANCH MULTI-TASK MODEL LATER
     # ---------------------------------------------------------
-    
+    '''
     print("Initializing Dual-Branch Model...")
     primary_model = DualBranchNet(
         num_variant_classes=NUM_VARIANT_CLASSES, 
@@ -1908,7 +1908,7 @@ if __name__ == "__main__":
     )
     
 
-    # Baseline
+    
     saved_multi_path = train_net(
         #net=baseline_variant_model,
         net=primary_model,
@@ -1930,7 +1930,7 @@ if __name__ == "__main__":
     )
 
     plot_training_curve(saved_multi_path, is_multitask=True)
-    
+    '''
     '''
     print("Starting Multi-Task Training...")
     saved_multi_path = train_net(
