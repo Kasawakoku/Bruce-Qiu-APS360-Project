@@ -2,6 +2,7 @@
 *.png
 *.jpeg
 
+*.pt
 *.tar.gz
 sample.html
 
