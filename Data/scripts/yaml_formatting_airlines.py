@@ -1,3 +1,5 @@
+# automatically format airlines yaml file
+
 import re
 
 def format_airline_list(input_filepath, output_filepath):

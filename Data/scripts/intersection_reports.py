@@ -1,3 +1,5 @@
+# outputs how many images per "intersection" of each variant class and airline class
+
 import pandas as pd
 import os
 

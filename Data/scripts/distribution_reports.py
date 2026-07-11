@@ -1,3 +1,5 @@
+# outputs list of all models and airlines and how many images per each
+
 import pandas as pd
 import os
 

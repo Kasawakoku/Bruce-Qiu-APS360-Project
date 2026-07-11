@@ -1,3 +1,5 @@
+# For analyzing train/val/test splitting among classes
+
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
@@ -209,25 +211,12 @@ def analyze_skew():
 
 
 if __name__ == "__main__":
-    # analyze_skew()
-    # Ensure you update the Configuration paths at the top of the file to match your CSV names.
-
-    # Example 1: View the entire dataset split
-    # print("\n--- Testing Entire Dataset ---")
-    # visualize_split()
-    #visualize_split(airline_filter="Spirit Airlines")
+    analyze_skew()
     
-    # Example 2: View split for a specific airline only
-    # visualize_split(airline_filter="Delta Air Lines")
-    
-    # Example 3: View split for a specific variant only
     visualize_split(variant_filter="Boeing 737-300 (B733)")
 
     visualize_split(airline_filter="Austrian Airlines")
 
     visualize_split(airline_filter="OTHERS")
 
-    # visualize_split(variant_filter="Canadian Regional Jet CRJ-900/-705/Challenger 890 (CRJ9)")
     
-    # Example 4: View split for a specific airline AND variant
-    # visualize_split(airline_filter="Delta Air Lines", variant_filter="Boeing 737-800")

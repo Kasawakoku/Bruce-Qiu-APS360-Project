@@ -1,3 +1,6 @@
+# outputs list of all manufacturers, families, variants, models, airlines, and how many images per each
+# after trimming out classes with low number of images
+
 import pandas as pd
 import yaml
 import os

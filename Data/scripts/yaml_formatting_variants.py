@@ -1,3 +1,6 @@
+# automatically format aircraft yaml file
+
+
 import re
 
 def format_aircraft_list(input_filepath, output_filepath):

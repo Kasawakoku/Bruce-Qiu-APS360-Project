@@ -52,6 +52,234 @@ variant_csv_path = r"D:\Bruce-Qiu-APS360-Project\Data\metadata\counts_variants_t
 
 checkpoints_path = r"D:\Bruce-Qiu-APS360-Project\training\checkpoints_path"
 
+
+
+# Neural Net Modules
+
+    
+# Primary Model for Multi-Task Classification (Variant + Airline Classification)
+
+class DualBranchNet(nn.Module):
+    def __init__(self, num_variant_classes, num_airline_classes):
+        super(DualBranchNet, self).__init__()
+        
+        # 1. Shared Convolutional Backbone (Remove default classifier)
+        base_model = efficientnet_b3(weights=EfficientNet_B3_Weights.DEFAULT)
+        self.features = base_model.features
+        
+        # 1536 is the output channel size for EfficientNet-B3
+        feature_dim = 1536 
+        
+        # 2. Structural Head (Global Average Pooling for Variant)
+        self.gap = nn.AdaptiveAvgPool2d(1)
+        self.structural_mlp = nn.Sequential(
+            nn.Linear(feature_dim, 512),
+            nn.ReLU(),
+            nn.Dropout(0.3),
+            nn.Linear(512, num_variant_classes)
+        )
+        
+        # 3. Branding Head (Adaptive Max Pooling for Airline Livery)
+        self.amp = nn.AdaptiveMaxPool2d(1)
+        self.branding_mlp = nn.Sequential(
+            nn.Linear(feature_dim, 512),
+            nn.ReLU(),
+            nn.Dropout(0.3),
+            nn.Linear(512, num_airline_classes)
+        )
+
+    def forward(self, x):
+        # Shared feature extraction
+        shared_features = self.features(x)
+        
+        # Branch 1: Variant Prediction
+        v = self.gap(shared_features).view(shared_features.size(0), -1)
+        variant_pred = self.structural_mlp(v)
+        
+        # Branch 2: Airline Prediction
+        a = self.amp(shared_features).view(shared_features.size(0), -1)
+        airline_pred = self.branding_mlp(a)
+        
+        return variant_pred, airline_pred
+
+# CNN baseline for variants 
+
+class BaselineVariantCNN(nn.Module):
+    """
+    From-scratch Baseline CNN for Structural Variant Classification.
+    Uses Global Average Pooling to capture overall structural shapes.
+    """
+    def __init__(self, num_variant_classes):
+        super(BaselineVariantCNN, self).__init__()
+        self.name = "Baseline_Variant_Scratch"
+        
+        # Lightweight Convolutional Feature Extractor
+        self.features = nn.Sequential(
+            # Block 1
+            nn.Conv2d(3, 32, kernel_size=3, stride=2),
+            nn.BatchNorm2d(32),
+            nn.ReLU(inplace=True),
+            # nn.MaxPool2d(kernel_size=2, stride=2), # 300 -> 150
+            
+            # Block 2
+            nn.Conv2d(32, 64, kernel_size=3, stride=2),
+            nn.BatchNorm2d(64),
+            nn.ReLU(inplace=True),
+            # nn.MaxPool2d(kernel_size=2, stride=2), # 150 -> 75
+            
+            # Block 3
+            nn.Conv2d(64, 128, kernel_size=3, stride=2),
+            nn.BatchNorm2d(128),
+            nn.ReLU(inplace=True),
+            # nn.MaxPool2d(kernel_size=2, stride=2), # 75 -> 37
+            
+            # Block 4
+            nn.Conv2d(128, 256, kernel_size=3, stride=2),
+            nn.BatchNorm2d(256),
+            nn.ReLU(inplace=True),
+            # nn.MaxPool2d(kernel_size=2, stride=2), # 37 -> 18
+        )
+        
+        # Structural Head: Global Average Pooling
+        self.pool = nn.AdaptiveAvgPool2d(1)
+        
+        # MLP Classifier
+        self.classifier = nn.Sequential(
+            nn.Dropout(p=0.4),
+            nn.Linear(256, 128),
+            nn.ReLU(inplace=True),
+            nn.Dropout(p=0.4),
+            nn.Linear(128, num_variant_classes)
+        )
+
+    def forward(self, x):
+        x = self.features(x)
+        x = self.pool(x)
+        x = torch.flatten(x, 1)
+        x = self.classifier(x)
+        return x
+
+# CNN baseline for airlines (unused) 
+
+class BaselineAirlineCNN(nn.Module):
+    """
+    From-scratch Baseline CNN for Airline Livery Classification.
+    Uses Adaptive Max Pooling to capture sharp, localized branding features.
+    """
+    def __init__(self, num_airline_classes):
+        super(BaselineAirlineCNN, self).__init__()
+        self.name = "Baseline_Airline_Scratch"
+        
+        # Lightweight Convolutional Feature Extractor (Identical Architecture)
+        self.features = nn.Sequential(
+            # Block 1
+            nn.Conv2d(3, 32, kernel_size=3, stride=2),
+            nn.BatchNorm2d(32),
+            nn.ReLU(inplace=True),
+            # nn.MaxPool2d(kernel_size=2, stride=2),
+            
+            # Block 2
+            nn.Conv2d(32, 64, kernel_size=3, stride=2),
+            nn.BatchNorm2d(64),
+            nn.ReLU(inplace=True),
+            # nn.MaxPool2d(kernel_size=2, stride=2),
+            
+            # Block 3
+            nn.Conv2d(64, 128, kernel_size=3, stride=2),
+            nn.BatchNorm2d(128),
+            nn.ReLU(inplace=True),
+            # nn.MaxPool2d(kernel_size=2, stride=2),
+            
+            # Block 4
+            nn.Conv2d(128, 256, kernel_size=3, stride=2),
+            nn.BatchNorm2d(256),
+            nn.ReLU(inplace=True),
+            # nn.MaxPool2d(kernel_size=2, stride=2),
+        )
+        
+        # Branding Head: Adaptive Max Pooling
+        self.pool = nn.AdaptiveMaxPool2d(1)
+        
+        # MLP Classifier
+        self.classifier = nn.Sequential(
+            nn.Dropout(p=0.4),
+            nn.Linear(256, 128),
+            nn.ReLU(inplace=True),
+            nn.Dropout(p=0.4),
+            nn.Linear(128, num_airline_classes)
+        )
+
+    def forward(self, x):
+        x = self.features(x)
+        x = self.pool(x)
+        x = torch.flatten(x, 1)
+        x = self.classifier(x)
+        return x
+
+# Models for Future Ablation study
+
+class BaselineEfficientNet(nn.Module):
+    def __init__(self, num_variant_classes):
+        super(BaselineEfficientNet, self).__init__()
+        # Load the off-the-shelf backbone
+        self.model = efficientnet_b3(weights=EfficientNet_B3_Weights.DEFAULT)
+        
+        # Replace the final classifier head for the single task
+        in_features = self.model.classifier[1].in_features
+        self.model.classifier = nn.Sequential(
+            nn.Dropout(p=0.3, inplace=True),
+            nn.Linear(in_features, num_variant_classes)
+        )
+
+    def forward(self, x):
+        return self.model(x)
+
+
+class BaselineResNet(nn.Module):
+    def __init__(self, num_variant_classes):
+        super(BaselineResNet, self).__init__()
+        # 1. Load the model
+        self.model = resnet50(weights=ResNet50_Weights.DEFAULT)
+        
+        # 2. Extract the input features of the final layer
+        # Note: For ResNet, the final layer is called 'fc', not 'classifier'
+        in_features = self.model.fc.in_features 
+        
+        # 3. Replace the final layer
+        self.model.fc = nn.Linear(in_features, num_variant_classes)
+
+    def forward(self, x):
+        return self.model(x)
+
+
+class BaselineMobileNet(nn.Module):
+    def __init__(self, num_variant_classes):
+        super(BaselineMobileNet, self).__init__()
+        self.model = mobilenet_v3_large(weights=MobileNet_V3_Large_Weights.DEFAULT)
+        
+        # MobileNet uses a 'classifier' sequential block like EfficientNet
+        # The linear layer is at index 3
+        in_features = self.model.classifier[3].in_features
+        
+        self.model.classifier[3] = nn.Linear(in_features, num_variant_classes)
+
+    def forward(self, x):
+        return self.model(x)
+    
+class BaselineConvNeXt(nn.Module):
+    def __init__(self, num_variant_classes):
+        super(BaselineConvNeXt, self).__init__()
+        self.model = convnext_tiny(weights=ConvNeXt_Tiny_Weights.DEFAULT)
+        
+        # ConvNeXt uses a 'classifier' block, the linear layer is at index 2
+        in_features = self.model.classifier[2].in_features
+        
+        self.model.classifier[2] = nn.Linear(in_features, num_variant_classes)
+
+    def forward(self, x):
+        return self.model(x)
+
+
 # Data Loading
 
 class PadToSquare:
@@ -186,13 +414,6 @@ def load_split_dataframes(train_csv_path, val_csv_path, test_csv_path):
     return train_df, val_df, test_df
 
 
-
-
-
-
-# Assuming train_df, val_df, test_df are already loaded
-
-
 def build_mapping_from_csv(csv_path, column_name):
     """Reads a CSV and builds a dictionary mapping strings to integers."""
     df = pd.read_csv(csv_path)
@@ -207,233 +428,7 @@ def build_mapping_from_csv(csv_path, column_name):
     # Create the dictionary: {'AJet': 0, 'Aeroflot': 1, ..., 'OTHERS': N}
     return {name: idx for idx, name in enumerate(class_list)}
 
-
-
-
-
-
-# Neural Net Modules
-
-# Baseline Models for Single Task Classification (Variant Classification)
-
-class BaselineEfficientNet(nn.Module):
-    def __init__(self, num_variant_classes):
-        super(BaselineEfficientNet, self).__init__()
-        # Load the off-the-shelf backbone
-        self.model = efficientnet_b3(weights=EfficientNet_B3_Weights.DEFAULT)
-        
-        # Replace the final classifier head for the single task
-        in_features = self.model.classifier[1].in_features
-        self.model.classifier = nn.Sequential(
-            nn.Dropout(p=0.3, inplace=True),
-            nn.Linear(in_features, num_variant_classes)
-        )
-
-    def forward(self, x):
-        return self.model(x)
-
-
-class BaselineResNet(nn.Module):
-    def __init__(self, num_variant_classes):
-        super(BaselineResNet, self).__init__()
-        # 1. Load the model
-        self.model = resnet50(weights=ResNet50_Weights.DEFAULT)
-        
-        # 2. Extract the input features of the final layer
-        # Note: For ResNet, the final layer is called 'fc', not 'classifier'
-        in_features = self.model.fc.in_features 
-        
-        # 3. Replace the final layer
-        self.model.fc = nn.Linear(in_features, num_variant_classes)
-
-    def forward(self, x):
-        return self.model(x)
-
-
-class BaselineMobileNet(nn.Module):
-    def __init__(self, num_variant_classes):
-        super(BaselineMobileNet, self).__init__()
-        self.model = mobilenet_v3_large(weights=MobileNet_V3_Large_Weights.DEFAULT)
-        
-        # MobileNet uses a 'classifier' sequential block like EfficientNet
-        # The linear layer is at index 3
-        in_features = self.model.classifier[3].in_features
-        
-        self.model.classifier[3] = nn.Linear(in_features, num_variant_classes)
-
-    def forward(self, x):
-        return self.model(x)
-    
-class BaselineConvNeXt(nn.Module):
-    def __init__(self, num_variant_classes):
-        super(BaselineConvNeXt, self).__init__()
-        self.model = convnext_tiny(weights=ConvNeXt_Tiny_Weights.DEFAULT)
-        
-        # ConvNeXt uses a 'classifier' block, the linear layer is at index 2
-        in_features = self.model.classifier[2].in_features
-        
-        self.model.classifier[2] = nn.Linear(in_features, num_variant_classes)
-
-    def forward(self, x):
-        return self.model(x)
-    
-# Primary Model for Multi-Task Classification (Variant + Airline Classification)
-
-class DualBranchNet(nn.Module):
-    def __init__(self, num_variant_classes, num_airline_classes):
-        super(DualBranchNet, self).__init__()
-        
-        # 1. Shared Convolutional Backbone (Remove default classifier)
-        base_model = efficientnet_b3(weights=EfficientNet_B3_Weights.DEFAULT)
-        self.features = base_model.features
-        
-        # 1536 is the output channel size for EfficientNet-B3
-        feature_dim = 1536 
-        
-        # 2. Structural Head (Global Average Pooling for Variant)
-        self.gap = nn.AdaptiveAvgPool2d(1)
-        self.structural_mlp = nn.Sequential(
-            nn.Linear(feature_dim, 512),
-            nn.ReLU(),
-            nn.Dropout(0.3),
-            nn.Linear(512, num_variant_classes)
-        )
-        
-        # 3. Branding Head (Adaptive Max Pooling for Airline Livery)
-        self.amp = nn.AdaptiveMaxPool2d(1)
-        self.branding_mlp = nn.Sequential(
-            nn.Linear(feature_dim, 512),
-            nn.ReLU(),
-            nn.Dropout(0.3),
-            nn.Linear(512, num_airline_classes)
-        )
-
-    def forward(self, x):
-        # Shared feature extraction
-        shared_features = self.features(x)
-        
-        # Branch 1: Variant Prediction
-        v = self.gap(shared_features).view(shared_features.size(0), -1)
-        variant_pred = self.structural_mlp(v)
-        
-        # Branch 2: Airline Prediction
-        a = self.amp(shared_features).view(shared_features.size(0), -1)
-        airline_pred = self.branding_mlp(a)
-        
-        return variant_pred, airline_pred
-
-class BaselineVariantCNN(nn.Module):
-    """
-    From-scratch Baseline CNN for Structural Variant Classification.
-    Uses Global Average Pooling to capture overall structural shapes.
-    """
-    def __init__(self, num_variant_classes):
-        super(BaselineVariantCNN, self).__init__()
-        self.name = "Baseline_Variant_Scratch"
-        
-        # Lightweight Convolutional Feature Extractor
-        self.features = nn.Sequential(
-            # Block 1
-            nn.Conv2d(3, 32, kernel_size=3, stride=2),
-            nn.BatchNorm2d(32),
-            nn.ReLU(inplace=True),
-            # nn.MaxPool2d(kernel_size=2, stride=2), # 300 -> 150
-            
-            # Block 2
-            nn.Conv2d(32, 64, kernel_size=3, stride=2),
-            nn.BatchNorm2d(64),
-            nn.ReLU(inplace=True),
-            # nn.MaxPool2d(kernel_size=2, stride=2), # 150 -> 75
-            
-            # Block 3
-            nn.Conv2d(64, 128, kernel_size=3, stride=2),
-            nn.BatchNorm2d(128),
-            nn.ReLU(inplace=True),
-            # nn.MaxPool2d(kernel_size=2, stride=2), # 75 -> 37
-            
-            # Block 4
-            nn.Conv2d(128, 256, kernel_size=3, stride=2),
-            nn.BatchNorm2d(256),
-            nn.ReLU(inplace=True),
-            # nn.MaxPool2d(kernel_size=2, stride=2), # 37 -> 18
-        )
-        
-        # Structural Head: Global Average Pooling
-        self.pool = nn.AdaptiveAvgPool2d(1)
-        
-        # MLP Classifier
-        self.classifier = nn.Sequential(
-            nn.Dropout(p=0.4),
-            nn.Linear(256, 128),
-            nn.ReLU(inplace=True),
-            nn.Dropout(p=0.4),
-            nn.Linear(128, num_variant_classes)
-        )
-
-    def forward(self, x):
-        x = self.features(x)
-        x = self.pool(x)
-        x = torch.flatten(x, 1)
-        x = self.classifier(x)
-        return x
-
-
-class BaselineAirlineCNN(nn.Module):
-    """
-    From-scratch Baseline CNN for Airline Livery Classification.
-    Uses Adaptive Max Pooling to capture sharp, localized branding features.
-    """
-    def __init__(self, num_airline_classes):
-        super(BaselineAirlineCNN, self).__init__()
-        self.name = "Baseline_Airline_Scratch"
-        
-        # Lightweight Convolutional Feature Extractor (Identical Architecture)
-        self.features = nn.Sequential(
-            # Block 1
-            nn.Conv2d(3, 32, kernel_size=3, stride=2),
-            nn.BatchNorm2d(32),
-            nn.ReLU(inplace=True),
-            # nn.MaxPool2d(kernel_size=2, stride=2),
-            
-            # Block 2
-            nn.Conv2d(32, 64, kernel_size=3, stride=2),
-            nn.BatchNorm2d(64),
-            nn.ReLU(inplace=True),
-            # nn.MaxPool2d(kernel_size=2, stride=2),
-            
-            # Block 3
-            nn.Conv2d(64, 128, kernel_size=3, stride=2),
-            nn.BatchNorm2d(128),
-            nn.ReLU(inplace=True),
-            # nn.MaxPool2d(kernel_size=2, stride=2),
-            
-            # Block 4
-            nn.Conv2d(128, 256, kernel_size=3, stride=2),
-            nn.BatchNorm2d(256),
-            nn.ReLU(inplace=True),
-            # nn.MaxPool2d(kernel_size=2, stride=2),
-        )
-        
-        # Branding Head: Adaptive Max Pooling
-        self.pool = nn.AdaptiveMaxPool2d(1)
-        
-        # MLP Classifier
-        self.classifier = nn.Sequential(
-            nn.Dropout(p=0.4),
-            nn.Linear(256, 128),
-            nn.ReLU(inplace=True),
-            nn.Dropout(p=0.4),
-            nn.Linear(128, num_airline_classes)
-        )
-
-    def forward(self, x):
-        x = self.features(x)
-        x = self.pool(x)
-        x = torch.flatten(x, 1)
-        x = self.classifier(x)
-        return x
-
-
+# Training loop
 
 def get_model_name(name, batch_size, learning_rate, epoch, checkpoint_dir="checkpoints"):
     """
@@ -535,592 +530,6 @@ def evaluate(net, loader, criterion, device, is_multitask=True):
     else:
         return var_f1, avg_loss
 
-'''
-def plot_training_curve(path, is_multitask=True):
-    """
-    Plot training curves for F1-Scores and Loss.
-    Dynamically adjusts layout based on whether it was a baseline or primary model run.
-    """
-    # Load Variant F1 metrics
-    train_var_f1 = np.atleast_1d(np.loadtxt(f"{path}_train_var_f1.csv"))
-    val_var_f1 = np.atleast_1d(np.loadtxt(f"{path}_val_var_f1.csv"))
-    
-    # Load Loss metrics
-    train_loss = np.atleast_1d(np.loadtxt(f"{path}_train_loss.csv"))
-    val_loss = np.atleast_1d(np.loadtxt(f"{path}_val_loss.csv"))
-    
-    if is_multitask:
-        # Load Airline F1 metrics if primary model
-        train_air_f1 = np.atleast_1d(np.loadtxt(f"{path}_train_air_f1.csv"))
-        val_air_f1 = np.atleast_1d(np.loadtxt(f"{path}_val_air_f1.csv"))
-
-    n = len(train_var_f1) # num of epochs
-
-    # Make the figure wider if we have 3 plots (Multi-task) instead of 2 (Baseline)
-    plt.figure(figsize=(15 if is_multitask else 10, 4))
-
-    # Plot Variant F1-Score
-    plt.subplot(1, 3 if is_multitask else 2, 1)
-    plt.title("Variant Weighted F1-Score")
-    plt.plot(range(1, n+1), train_var_f1, label="Train")
-    plt.plot(range(1, n+1), val_var_f1, label="Validation")
-    plt.xlabel("Epoch")
-    plt.ylabel("F1-Score")
-    plt.legend(loc='best')
-
-    # Plot Airline F1-Score (Only if Multi-Task)
-    if is_multitask:
-        plt.subplot(1, 3, 2)
-        plt.title("Airline Weighted F1-Score")
-        plt.plot(range(1, n+1), train_air_f1, label="Train")
-        plt.plot(range(1, n+1), val_air_f1, label="Validation")
-        plt.xlabel("Epoch")
-        plt.ylabel("F1-Score")
-        plt.legend(loc='best')
-
-    # Plot Total Loss
-    plt.subplot(1, 3 if is_multitask else 2, 3 if is_multitask else 2)
-    plt.title("Train vs Validation Loss")
-    plt.plot(range(1, n+1), train_loss, label="Train")
-    plt.plot(range(1, n+1), val_loss, label="Validation")
-    plt.xlabel("Epoch")
-    plt.ylabel("Loss")
-    plt.legend(loc='best')
-
-    plt.tight_layout()
-    plt.show()
-
-
-def train_net(net, train_loader, val_loader, batch_size=64, learning_rate=0.01, num_epochs=30, checkpoint_freq=1, 
-              is_multitask=True, checkpoint_dir=r"D:\Bruce-Qiu-APS360-Project\training\checkpoints",
-              optimizer=None, start_epoch=0):
-    """
-    Trains the neural network. Supports both dual-branch (multitask) and single-branch models.
-    """
-    # Setup Device (Use GPU if available)
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    print(f"Training on device: {device}")
-    net.to(device)
-
-    # Fixed PyTorch random seed for reproducible result
-    torch.manual_seed(1000)
-
-    # multi-class loss and Adam Optimizer
-    criterion = nn.CrossEntropyLoss()
-
-    if optimizer is None:
-        optimizer = optim.Adam(
-            net.parameters(),
-            lr=learning_rate
-        )
-
-    # Arrays to store metrics
-    train_var_f1 = np.zeros(num_epochs)
-    train_loss = np.zeros(num_epochs)
-    val_var_f1 = np.zeros(num_epochs)
-    val_loss = np.zeros(num_epochs)
-
-    if is_multitask:
-        train_air_f1 = np.zeros(num_epochs)
-        val_air_f1 = np.zeros(num_epochs)
-
-    start_time = time.time()
-    print("Start training...")
-
-    for epoch in range(start_epoch, num_epochs): 
-        print(f"Epoch {epoch + 1}...")
-        # Training
-        net.train() # Training mode
-        total_train_loss = 0.0
-        
-        # Track predictions over the epoch for F1 calculation
-        all_var_preds = []
-        all_var_labels = []
-        if is_multitask:
-            all_air_preds = []
-            all_air_labels = []
-
-        progress = tqdm(train_loader, desc=f"Epoch {epoch+1}/{num_epochs}")
-
-        for i, data in enumerate(progress):
-            # Unpack 3 items
-            inputs, variant_labels, airline_labels = data
-            inputs = inputs.to(device)
-            variant_labels = variant_labels.to(device)
-            airline_labels = airline_labels.to(device)
-
-            # Zero gradients
-            optimizer.zero_grad()
-
-            # print(inputs.shape)
-            # print(inputs.dtype)
-            # print(torch.isnan(inputs).any())
-            # print(torch.isinf(inputs).any())
-
-            # print("Start forward pass")
-            # Forward pass
-            if is_multitask:
-                var_outputs, air_outputs = net(inputs)
-                loss = criterion(var_outputs, variant_labels) + criterion(air_outputs, airline_labels)
-                
-                _, var_preds = torch.max(var_outputs.data, 1)
-                _, air_preds = torch.max(air_outputs.data, 1)
-                
-                all_air_preds.extend(air_preds.cpu().numpy())
-                all_air_labels.extend(airline_labels.cpu().numpy())
-            else:
-                #print("Ribbit")
-                var_outputs = net(inputs)
-                
-
-                print("before features")
-                x = net.model.features(inputs)
-                print("after features")
-
-                print("before avgpool")
-                x = net.model.avgpool(x)
-                print("after avgpool")
-
-                print("before flatten")
-                x = torch.flatten(x, 1)
-                print("after flatten")
-
-                print("before classifier")
-                var_outputs = net.model.classifier(x)
-                print("after classifier")
-                
-
-                #print("Rogget")
-                loss = criterion(var_outputs, variant_labels)
-                #print("Croak")
-                _, var_preds = torch.max(var_outputs.data, 1)
-            # print("Forward pass complete")
-
-            # Backward pass
-            loss.backward()
-            # print("Backward pass complete")
-
-            # Optimize
-            optimizer.step()
-            # print("Optimizer complete")
-
-            
-            if (i + 1) % 10 == 0 or (i + 1) == len(train_loader):
-                print(
-                    f"Epoch [{epoch+1}/{num_epochs}] "
-                    f"Batch [{i+1}/{len(train_loader)}] "
-                    f"Loss: {loss.item():.4f}"
-                )
-            
-
-            # Tally metrics
-            total_train_loss += loss.item()
-            all_var_preds.extend(var_preds.cpu().numpy())
-            all_var_labels.extend(variant_labels.cpu().numpy())
-
-            progress.set_postfix(loss=f"{loss.item():.4f}")
-
-        
-        # Calculate epoch metrics
-        # In training mode
-        train_var_f1[epoch] = f1_score(all_var_labels, all_var_preds, average='weighted')
-        train_loss[epoch] = float(total_train_loss) / len(train_loader)
-        
-        if is_multitask:
-            train_air_f1[epoch] = f1_score(all_air_labels, all_air_preds, average='weighted')
-        
-        # Evaluate the training set in evaluation mode
-        if is_multitask:
-            train_var_f1[epoch], train_air_f1[epoch], train_loss[epoch] = evaluate(
-                net,
-                train_loader,
-                criterion,
-                device,
-                is_multitask=True
-            )
-        else:
-            train_var_f1[epoch], train_loss[epoch] = evaluate(
-                net,
-                train_loader,
-                criterion,
-                device,
-                is_multitask=False
-            )
-        
-        # Evaluate on validation set
-        if is_multitask:
-            val_var_f1[epoch], val_air_f1[epoch], val_loss[epoch] = evaluate(net, val_loader, criterion, device, is_multitask)
-            print(f"Epoch {epoch + 1}: Train Loss: {train_loss[epoch]:.4f} | Train Var F1: {train_var_f1[epoch]:.4f} | Train Air F1: {train_air_f1[epoch]:.4f}")
-            print(f"          Val Loss: {val_loss[epoch]:.4f} | Val Var F1: {val_var_f1[epoch]:.4f} | Val Air F1: {val_air_f1[epoch]:.4f}")
-        else:
-            val_var_f1[epoch], val_loss[epoch] = evaluate(net, val_loader, criterion, device, is_multitask)
-            print(f"Epoch {epoch + 1}: Train Loss: {train_loss[epoch]:.4f} | Train Var F1: {train_var_f1[epoch]:.4f}")
-            print(f"          Val Loss: {val_loss[epoch]:.4f} | Val Var F1: {val_var_f1[epoch]:.4f}")
-
-        # Checkpointing
-        if (epoch + 1) % checkpoint_freq == 0 or (epoch + 1) == num_epochs:
-            model_name = getattr(net, 'name', 'model') # Safely fallback if 'name' isn't set
-            model_path = get_model_name(model_name, batch_size, learning_rate, epoch + 1, checkpoint_dir)
-            # torch.save(net.state_dict(), model_path)
-            torch.save({
-                "epoch": epoch + 1, # "conventional" index, so it can be used as start_epoch
-                "model_state_dict": net.state_dict(),
-                "optimizer_state_dict": optimizer.state_dict(),
-                "train_loss": train_loss,
-                "val_loss": val_loss,
-            }, model_path)
-
-    print('Finished Training')
-    end_time = time.time()
-    print("Total time elapsed: {:.2f} seconds".format(end_time - start_time))
-
-    # Write the train/val loss and f1 into CSV files for plotting later
-    model_name = getattr(net, 'name', 'model')
-    model_base_path = get_model_name(model_name, batch_size, learning_rate, "final", checkpoint_dir).replace('.pt', '')
-    
-    np.savetxt(f"{model_base_path}_train_var_f1.csv", train_var_f1)
-    np.savetxt(f"{model_base_path}_val_var_f1.csv", val_var_f1)
-    np.savetxt(f"{model_base_path}_train_loss.csv", train_loss)
-    np.savetxt(f"{model_base_path}_val_loss.csv", val_loss)
-    
-    if is_multitask:
-        np.savetxt(f"{model_base_path}_train_air_f1.csv", train_air_f1)
-        np.savetxt(f"{model_base_path}_val_air_f1.csv", val_air_f1)
-
-    return model_base_path
-'''
-'''
-def plot_training_curve(path, is_multitask=True):
-    """
-    Plot training curves for F1-Scores and Loss.
-    Dynamically adjusts layout based on whether it was a baseline or primary model run.
-    Plots both Epoch-level (Train vs Val) and Iteration-level (Train only) charts.
-    """
-    # Load Epoch metrics
-    train_var_f1 = np.atleast_1d(np.loadtxt(f"{path}_train_var_f1.csv"))
-    val_var_f1 = np.atleast_1d(np.loadtxt(f"{path}_val_var_f1.csv"))
-    
-    train_loss = np.atleast_1d(np.loadtxt(f"{path}_train_loss.csv"))
-    val_loss = np.atleast_1d(np.loadtxt(f"{path}_val_loss.csv"))
-    
-    if is_multitask:
-        # Load Airline F1 metrics if primary model
-        train_air_f1 = np.atleast_1d(np.loadtxt(f"{path}_train_air_f1.csv"))
-        val_air_f1 = np.atleast_1d(np.loadtxt(f"{path}_val_air_f1.csv"))
-
-    # Load Iteration metrics (if they exist)
-    try:
-        iter_steps = np.atleast_1d(np.loadtxt(f"{path}_iter_steps.csv"))
-        iter_train_loss = np.atleast_1d(np.loadtxt(f"{path}_iter_train_loss.csv"))
-        iter_train_var_f1 = np.atleast_1d(np.loadtxt(f"{path}_iter_train_var_f1.csv"))
-        if is_multitask:
-            iter_train_air_f1 = np.atleast_1d(np.loadtxt(f"{path}_iter_train_air_f1.csv"))
-        has_iters = True
-    except OSError:
-        has_iters = False
-
-    # --- Plot 1: Epoch-Level Metrics ---
-    n_epochs = len(train_var_f1)
-
-    # Make the figure wider if we have 3 plots (Multi-task) instead of 2 (Baseline)
-    plt.figure(figsize=(15 if is_multitask else 10, 4))
-    plt.suptitle("Epoch-Level Metrics (Train vs Validation)", fontsize=14, y=1.05)
-
-    # Plot Variant F1-Score
-    plt.subplot(1, 3 if is_multitask else 2, 1)
-    plt.title("Variant Weighted F1-Score")
-    plt.plot(range(1, n_epochs+1), train_var_f1, label="Train")
-    plt.plot(range(1, n_epochs+1), val_var_f1, label="Validation")
-    plt.xlabel("Epoch")
-    plt.ylabel("F1-Score")
-    plt.legend(loc='best')
-
-    # Plot Airline F1-Score (Only if Multi-Task)
-    if is_multitask:
-        plt.subplot(1, 3, 2)
-        plt.title("Airline Weighted F1-Score")
-        plt.plot(range(1, n_epochs+1), train_air_f1, label="Train")
-        plt.plot(range(1, n_epochs+1), val_air_f1, label="Validation")
-        plt.xlabel("Epoch")
-        plt.ylabel("F1-Score")
-        plt.legend(loc='best')
-
-    # Plot Total Loss
-    plt.subplot(1, 3 if is_multitask else 2, 3 if is_multitask else 2)
-    plt.title("Train vs Validation Loss")
-    plt.plot(range(1, n_epochs+1), train_loss, label="Train")
-    plt.plot(range(1, n_epochs+1), val_loss, label="Validation")
-    plt.xlabel("Epoch")
-    plt.ylabel("Loss")
-    plt.legend(loc='best')
-
-    plt.tight_layout()
-    plt.show()
-
-    # --- Plot 2: Iteration-Level Metrics ---
-    if has_iters and len(iter_steps) > 0:
-        plt.figure(figsize=(15 if is_multitask else 10, 4))
-        plt.suptitle("Iteration-Level Metrics (Train Only)", fontsize=14, y=1.05)
-
-        # Plot Variant F1 (Iter)
-        plt.subplot(1, 3 if is_multitask else 2, 1)
-        plt.title("Variant Weighted F1-Score")
-        plt.plot(iter_steps, iter_train_var_f1, label="Train", color='blue')
-        plt.xlabel("Iteration (Batches)")
-        plt.ylabel("F1-Score")
-        plt.legend(loc='best')
-
-        if is_multitask:
-            plt.subplot(1, 3, 2)
-            plt.title("Airline Weighted F1-Score")
-            plt.plot(iter_steps, iter_train_air_f1, label="Train", color='orange')
-            plt.xlabel("Iteration (Batches)")
-            plt.ylabel("F1-Score")
-            plt.legend(loc='best')
-
-        plt.subplot(1, 3 if is_multitask else 2, 3 if is_multitask else 2)
-        plt.title("Train Loss")
-        plt.plot(iter_steps, iter_train_loss, label="Train Loss", color='red')
-        plt.xlabel("Iteration (Batches)")
-        plt.ylabel("Loss")
-        plt.legend(loc='best')
-
-        plt.tight_layout()
-        plt.show()
-
-
-def train_net(net, train_loader, val_loader, batch_size=64, learning_rate=0.01, num_epochs=30, checkpoint_freq=1, 
-              is_multitask=True, checkpoint_dir=r"D:\Bruce-Qiu-APS360-Project\training\checkpoints",
-              optimizer=None, start_epoch=0, record_freq=100, loaded_history=None):
-    """
-    Trains the neural network. Supports both dual-branch (multitask) and single-branch models.
-    """
-    # Setup Device (Use GPU if available)
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    print(f"Training on device: {device}")
-    net.to(device)
-
-    # Fixed PyTorch random seed for reproducible result
-    torch.manual_seed(1000)
-
-    # multi-class loss and Adam Optimizer
-    criterion = nn.CrossEntropyLoss()
-
-    if optimizer is None:
-        optimizer = optim.Adam(
-            net.parameters(),
-            lr=learning_rate
-        )
-
-    # Arrays to store epoch metrics
-    train_var_f1 = np.zeros(num_epochs)
-    train_loss = np.zeros(num_epochs)
-    val_var_f1 = np.zeros(num_epochs)
-    val_loss = np.zeros(num_epochs)
-
-    if is_multitask:
-        train_air_f1 = np.zeros(num_epochs)
-        val_air_f1 = np.zeros(num_epochs)
-
-    # Arrays to store iteration metrics
-    global_step = 0
-    iter_steps = []
-    iter_train_loss = []
-    iter_train_var_f1 = []
-    if is_multitask:
-        iter_train_air_f1 = []
-
-    
-    # ============================================================
-    # RESUME HISTORY LOGIC
-    # ============================================================
-    if loaded_history is not None:
-        print("Restoring training history from checkpoint for seamless graphs...")
-        # Use min() in case you decided to increase/decrease num_epochs on the resumed run
-        limit = min(start_epoch, len(loaded_history.get('train_loss', [])))
-        
-        train_var_f1[:limit] = loaded_history['train_var_f1'][:limit]
-        val_var_f1[:limit] = loaded_history['val_var_f1'][:limit]
-        train_loss[:limit] = loaded_history['train_loss'][:limit]
-        val_loss[:limit] = loaded_history['val_loss'][:limit]
-        
-        if is_multitask and loaded_history.get('train_air_f1') is not None:
-            train_air_f1[:limit] = loaded_history['train_air_f1'][:limit]
-            val_air_f1[:limit] = loaded_history['val_air_f1'][:limit]
-            
-        global_step = loaded_history.get('global_step', 0)
-        iter_steps = loaded_history.get('iter_steps', [])
-        iter_train_loss = loaded_history.get('iter_train_loss', [])
-        iter_train_var_f1 = loaded_history.get('iter_train_var_f1', [])
-        if is_multitask:
-            iter_train_air_f1 = loaded_history.get('iter_train_air_f1', [])
-    # ============================================================
-
-    start_time = time.time()
-    print("Start training...")
-
-    for epoch in range(start_epoch, num_epochs): 
-        print(f"Epoch {epoch + 1}...")
-        # Training
-        net.train() # Training mode
-        total_train_loss = 0.0
-        
-        # Track predictions over the epoch for F1 calculation
-        all_var_preds = []
-        all_var_labels = []
-        if is_multitask:
-            all_air_preds = []
-            all_air_labels = []
-
-        # Track predictions over the window (e.g. 100 iterations)
-        window_loss = 0.0
-        window_var_preds = []
-        window_var_labels = []
-        if is_multitask:
-            window_air_preds = []
-            window_air_labels = []
-
-        from tqdm import tqdm
-        progress = tqdm(train_loader, desc=f"Epoch {epoch+1}/{num_epochs}")
-
-        for i, data in enumerate(progress):
-            global_step += 1
-            
-            # Unpack 3 items
-            inputs, variant_labels, airline_labels = data
-            inputs = inputs.to(device)
-            variant_labels = variant_labels.to(device)
-            airline_labels = airline_labels.to(device)
-
-            # Zero gradients
-            optimizer.zero_grad()
-
-            # Forward pass
-            if is_multitask:
-                var_outputs, air_outputs = net(inputs)
-                loss = criterion(var_outputs, variant_labels) + criterion(air_outputs, airline_labels)
-                
-                _, var_preds = torch.max(var_outputs.data, 1)
-                _, air_preds = torch.max(air_outputs.data, 1)
-                
-                all_air_preds.extend(air_preds.cpu().numpy())
-                all_air_labels.extend(airline_labels.cpu().numpy())
-            else:
-                var_outputs = net(inputs)
-                loss = criterion(var_outputs, variant_labels)
-                
-                _, var_preds = torch.max(var_outputs.data, 1)
-
-            # Backward pass
-            loss.backward()
-
-            # Optimize
-            optimizer.step()
-
-            # Tally metrics (Epoch level)
-            total_train_loss += loss.item()
-            all_var_preds.extend(var_preds.cpu().numpy())
-            all_var_labels.extend(variant_labels.cpu().numpy())
-
-            # Tally metrics (Window level)
-            window_loss += loss.item()
-            window_var_preds.extend(var_preds.cpu().numpy())
-            window_var_labels.extend(variant_labels.cpu().numpy())
-            
-            if is_multitask:
-                window_air_preds.extend(air_preds.cpu().numpy())
-                window_air_labels.extend(airline_labels.cpu().numpy())
-
-            # Record iteration statistics
-            if global_step % record_freq == 0:
-                iter_steps.append(global_step)
-                iter_train_loss.append(window_loss / record_freq)
-                iter_train_var_f1.append(f1_score(window_var_labels, window_var_preds, average='weighted', zero_division=0))
-                
-                if is_multitask:
-                    iter_train_air_f1.append(f1_score(window_air_labels, window_air_preds, average='weighted', zero_division=0))
-                
-                # Reset window
-                window_loss = 0.0
-                window_var_preds = []
-                window_var_labels = []
-                if is_multitask:
-                    window_air_preds = []
-                    window_air_labels = []
-
-            progress.set_postfix(loss=f"{loss.item():.4f}")
-
-        # Calculate epoch metrics
-        train_var_f1[epoch] = f1_score(all_var_labels, all_var_preds, average='weighted', zero_division=0)
-        train_loss[epoch] = float(total_train_loss) / len(train_loader)
-        
-        if is_multitask:
-            train_air_f1[epoch] = f1_score(all_air_labels, all_air_preds, average='weighted', zero_division=0)
-
-        # Evaluate on validation set
-        if is_multitask:
-            val_var_f1[epoch], val_air_f1[epoch], val_loss[epoch] = evaluate(net, val_loader, criterion, device, is_multitask)
-            print(f"Epoch {epoch + 1}: Train Loss: {train_loss[epoch]:.4f} | Train Var F1: {train_var_f1[epoch]:.4f} | Train Air F1: {train_air_f1[epoch]:.4f}")
-            print(f"          Val Loss: {val_loss[epoch]:.4f} | Val Var F1: {val_var_f1[epoch]:.4f} | Val Air F1: {val_air_f1[epoch]:.4f}")
-        else:
-            val_var_f1[epoch], val_loss[epoch] = evaluate(net, val_loader, criterion, device, is_multitask)
-            print(f"Epoch {epoch + 1}: Train Loss: {train_loss[epoch]:.4f} | Train Var F1: {train_var_f1[epoch]:.4f}")
-            print(f"          Val Loss: {val_loss[epoch]:.4f} | Val Var F1: {val_var_f1[epoch]:.4f}")
-
-        # Checkpointing
-        if (epoch + 1) % checkpoint_freq == 0 or (epoch + 1) == num_epochs:
-            model_name = getattr(net, 'name', 'model') # Safely fallback if 'name' isn't set
-            model_path = get_model_name(model_name, batch_size, learning_rate, epoch + 1, checkpoint_dir)
-
-            # --- SAVE FULL HISTORY DICT ---
-            history_dict = {
-                "train_var_f1": train_var_f1, "val_var_f1": val_var_f1,
-                "train_loss": train_loss, "val_loss": val_loss,
-                "train_air_f1": train_air_f1 if is_multitask else None,
-                "val_air_f1": val_air_f1 if is_multitask else None,
-                "iter_steps": iter_steps, "iter_train_loss": iter_train_loss,
-                "iter_train_var_f1": iter_train_var_f1,
-                "iter_train_air_f1": iter_train_air_f1 if is_multitask else None,
-                "global_step": global_step
-            }
-
-            torch.save({
-                "epoch": epoch + 1, # "conventional" index, so it can be used as start_epoch
-                "model_state_dict": net.state_dict(),
-                "optimizer_state_dict": optimizer.state_dict(),
-                "train_loss": train_loss,
-                "val_loss": val_loss,
-            }, model_path)
-
-    print('Finished Training')
-    end_time = time.time()
-    print("Total time elapsed: {:.2f} seconds".format(end_time - start_time))
-
-    # Write the train/val loss and f1 into CSV files for plotting later
-    model_name = getattr(net, 'name', 'model')
-    model_base_path = get_model_name(model_name, batch_size, learning_rate, "final", checkpoint_dir).replace('.pt', '')
-    
-    # Save Epoch CSVs
-    np.savetxt(f"{model_base_path}_train_var_f1.csv", train_var_f1)
-    np.savetxt(f"{model_base_path}_val_var_f1.csv", val_var_f1)
-    np.savetxt(f"{model_base_path}_train_loss.csv", train_loss)
-    np.savetxt(f"{model_base_path}_val_loss.csv", val_loss)
-    
-    # Save Iteration CSVs
-    if len(iter_steps) > 0:
-        np.savetxt(f"{model_base_path}_iter_steps.csv", iter_steps)
-        np.savetxt(f"{model_base_path}_iter_train_loss.csv", iter_train_loss)
-        np.savetxt(f"{model_base_path}_iter_train_var_f1.csv", iter_train_var_f1)
-        
-    if is_multitask:
-        np.savetxt(f"{model_base_path}_train_air_f1.csv", train_air_f1)
-        np.savetxt(f"{model_base_path}_val_air_f1.csv", val_air_f1)
-        if len(iter_steps) > 0:
-            np.savetxt(f"{model_base_path}_iter_train_air_f1.csv", iter_train_air_f1)
-
-    return model_base_path
-
-'''
 
 def plot_training_curve(path, is_multitask=True):
     """
@@ -1232,264 +641,6 @@ def plot_training_curve(path, is_multitask=True):
         plt.tight_layout()
         plt.show()
 
-'''
-
-def train_net(net, train_loader, val_loader, batch_size=64, learning_rate=0.01, num_epochs=30, checkpoint_freq=1, 
-              is_multitask=True, checkpoint_dir="checkpoints",
-              optimizer=None, start_epoch=0, record_freq=100, loaded_history=None):
-    """
-    Trains the neural network. Supports both dual-branch (multitask) and single-branch models.
-    Pass `loaded_history` from a saved checkpoint to seamlessly resume metric graphs.
-    """
-    # Setup Device (Use GPU if available)
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    print(f"Training on device: {device}")
-    net.to(device)
-
-    # Fixed PyTorch random seed for reproducible result
-    torch.manual_seed(1000)
-
-    # multi-class loss and Adam Optimizer
-    criterion = nn.CrossEntropyLoss()
-
-    if optimizer is None:
-        optimizer = optim.Adam(
-            net.parameters(),
-            lr=learning_rate
-        )
-
-    # Arrays to store epoch metrics
-    train_var_f1 = np.zeros(num_epochs)
-    train_loss = np.zeros(num_epochs)
-    val_var_f1 = np.zeros(num_epochs)
-    val_loss = np.zeros(num_epochs)
-
-    if is_multitask:
-        train_air_f1 = np.zeros(num_epochs)
-        val_air_f1 = np.zeros(num_epochs)
-
-    # Arrays to store iteration metrics
-    global_step = 0
-    iter_steps = []
-    iter_train_loss = []
-    iter_train_var_f1 = []
-    iter_val_loss = []
-    iter_val_var_f1 = []
-    if is_multitask:
-        iter_train_air_f1 = []
-        iter_val_air_f1 = []
-
-    # ============================================================
-    # RESUME HISTORY LOGIC
-    # ============================================================
-    if loaded_history is not None:
-        print("Restoring training history from checkpoint for seamless graphs...")
-        # Use min() in case you decided to increase/decrease num_epochs on the resumed run
-        limit = min(start_epoch, len(loaded_history.get('train_loss', [])))
-        
-        train_var_f1[:limit] = loaded_history['train_var_f1'][:limit]
-        val_var_f1[:limit] = loaded_history['val_var_f1'][:limit]
-        train_loss[:limit] = loaded_history['train_loss'][:limit]
-        val_loss[:limit] = loaded_history['val_loss'][:limit]
-        
-        if is_multitask and loaded_history.get('train_air_f1') is not None:
-            train_air_f1[:limit] = loaded_history['train_air_f1'][:limit]
-            val_air_f1[:limit] = loaded_history['val_air_f1'][:limit]
-            
-        global_step = loaded_history.get('global_step', 0)
-        iter_steps = loaded_history.get('iter_steps', [])
-        iter_train_loss = loaded_history.get('iter_train_loss', [])
-        iter_train_var_f1 = loaded_history.get('iter_train_var_f1', [])
-        iter_val_loss = loaded_history.get('iter_val_loss', [])
-        iter_val_var_f1 = loaded_history.get('iter_val_var_f1', [])
-        if is_multitask:
-            iter_train_air_f1 = loaded_history.get('iter_train_air_f1', [])
-            iter_val_air_f1 = loaded_history.get('iter_val_air_f1', [])
-    # ============================================================
-
-    start_time = time.time()
-    print("Start training...")
-
-    for epoch in range(start_epoch, num_epochs): 
-        print(f"Epoch {epoch + 1}...")
-        # Training
-        net.train() # Training mode
-        total_train_loss = 0.0
-        
-        # Track predictions over the epoch for F1 calculation
-        all_var_preds = []
-        all_var_labels = []
-        if is_multitask:
-            all_air_preds = []
-            all_air_labels = []
-
-        # Track predictions over the window (e.g. 100 iterations)
-        window_loss = 0.0
-        window_var_preds = []
-        window_var_labels = []
-        if is_multitask:
-            window_air_preds = []
-            window_air_labels = []
-
-        from tqdm import tqdm
-        progress = tqdm(train_loader, desc=f"Epoch {epoch+1}/{num_epochs}")
-
-        for i, data in enumerate(progress):
-            global_step += 1
-            
-            # Unpack 3 items
-            inputs, variant_labels, airline_labels = data
-            inputs = inputs.to(device)
-            variant_labels = variant_labels.to(device)
-            airline_labels = airline_labels.to(device)
-
-            # Zero gradients
-            optimizer.zero_grad()
-
-            # Forward pass
-            if is_multitask:
-                var_outputs, air_outputs = net(inputs)
-                loss = criterion(var_outputs, variant_labels) + criterion(air_outputs, airline_labels)
-                
-                _, var_preds = torch.max(var_outputs.data, 1)
-                _, air_preds = torch.max(air_outputs.data, 1)
-                
-                all_air_preds.extend(air_preds.cpu().numpy())
-                all_air_labels.extend(airline_labels.cpu().numpy())
-            else:
-                var_outputs = net(inputs)
-                loss = criterion(var_outputs, variant_labels)
-                
-                _, var_preds = torch.max(var_outputs.data, 1)
-
-            # Backward pass
-            loss.backward()
-
-            # Optimize
-            optimizer.step()
-
-            # Tally metrics (Epoch level)
-            total_train_loss += loss.item()
-            all_var_preds.extend(var_preds.cpu().numpy())
-            all_var_labels.extend(variant_labels.cpu().numpy())
-
-            # Tally metrics (Window level)
-            window_loss += loss.item()
-            window_var_preds.extend(var_preds.cpu().numpy())
-            window_var_labels.extend(variant_labels.cpu().numpy())
-            
-            if is_multitask:
-                window_air_preds.extend(air_preds.cpu().numpy())
-                window_air_labels.extend(airline_labels.cpu().numpy())
-
-            # Record iteration statistics
-            if global_step % record_freq == 0:
-                iter_steps.append(global_step)
-                iter_train_loss.append(window_loss / record_freq)
-                iter_train_var_f1.append(f1_score(window_var_labels, window_var_preds, average='weighted', zero_division=0))
-                
-                if is_multitask:
-                    iter_train_air_f1.append(f1_score(window_air_labels, window_air_preds, average='weighted', zero_division=0))
-                
-                # --- NEW: Run validation pass at this iteration ---
-                if is_multitask:
-                    v_var, v_air, v_loss = evaluate(net, val_loader, criterion, device, is_multitask)
-                    iter_val_var_f1.append(v_var)
-                    iter_val_air_f1.append(v_air)
-                    iter_val_loss.append(v_loss)
-                else:
-                    v_var, v_loss = evaluate(net, val_loader, criterion, device, is_multitask)
-                    iter_val_var_f1.append(v_var)
-                    iter_val_loss.append(v_loss)
-                    
-                # Evaluate puts the network in eval mode, MUST switch back to train mode!
-                net.train()
-                # ---------------------------------------------------
-
-                # Reset window
-                window_loss = 0.0
-                window_var_preds = []
-                window_var_labels = []
-                if is_multitask:
-                    window_air_preds = []
-                    window_air_labels = []
-
-            progress.set_postfix(loss=f"{loss.item():.4f}")
-
-        # Calculate epoch metrics
-        train_var_f1[epoch] = f1_score(all_var_labels, all_var_preds, average='weighted', zero_division=0)
-        train_loss[epoch] = float(total_train_loss) / len(train_loader)
-        
-        if is_multitask:
-            train_air_f1[epoch] = f1_score(all_air_labels, all_air_preds, average='weighted', zero_division=0)
-
-        # Evaluate on validation set
-        if is_multitask:
-            val_var_f1[epoch], val_air_f1[epoch], val_loss[epoch] = evaluate(net, val_loader, criterion, device, is_multitask)
-            print(f"Epoch {epoch + 1}: Train Loss: {train_loss[epoch]:.4f} | Train Var F1: {train_var_f1[epoch]:.4f} | Train Air F1: {train_air_f1[epoch]:.4f}")
-            print(f"          Val Loss: {val_loss[epoch]:.4f} | Val Var F1: {val_var_f1[epoch]:.4f} | Val Air F1: {val_air_f1[epoch]:.4f}")
-        else:
-            val_var_f1[epoch], val_loss[epoch] = evaluate(net, val_loader, criterion, device, is_multitask)
-            print(f"Epoch {epoch + 1}: Train Loss: {train_loss[epoch]:.4f} | Train Var F1: {train_var_f1[epoch]:.4f}")
-            print(f"          Val Loss: {val_loss[epoch]:.4f} | Val Var F1: {val_var_f1[epoch]:.4f}")
-
-        # Checkpointing
-        if (epoch + 1) % checkpoint_freq == 0 or (epoch + 1) == num_epochs:
-            model_name = getattr(net, 'name', 'model') # Safely fallback if 'name' isn't set
-            model_path = get_model_name(model_name, batch_size, learning_rate, epoch + 1, checkpoint_dir)
-            
-            # --- SAVE FULL HISTORY DICT ---
-            history_dict = {
-                "train_var_f1": train_var_f1, "val_var_f1": val_var_f1,
-                "train_loss": train_loss, "val_loss": val_loss,
-                "train_air_f1": train_air_f1 if is_multitask else None,
-                "val_air_f1": val_air_f1 if is_multitask else None,
-                "iter_steps": iter_steps, 
-                "iter_train_loss": iter_train_loss, "iter_val_loss": iter_val_loss,
-                "iter_train_var_f1": iter_train_var_f1, "iter_val_var_f1": iter_val_var_f1,
-                "iter_train_air_f1": iter_train_air_f1 if is_multitask else None,
-                "iter_val_air_f1": iter_val_air_f1 if is_multitask else None,
-                "global_step": global_step
-            }
-            
-            torch.save({
-                "epoch": epoch + 1, # "conventional" index, so it can be used as start_epoch
-                "model_state_dict": net.state_dict(),
-                "optimizer_state_dict": optimizer.state_dict(),
-                "history": history_dict
-            }, model_path)
-
-    print('Finished Training')
-    end_time = time.time()
-    print("Total time elapsed: {:.2f} seconds".format(end_time - start_time))
-
-    # Write the train/val loss and f1 into CSV files for plotting later
-    model_name = getattr(net, 'name', 'model')
-    model_base_path = get_model_name(model_name, batch_size, learning_rate, "final", checkpoint_dir).replace('.pt', '')
-    
-    # Save Epoch CSVs
-    np.savetxt(f"{model_base_path}_train_var_f1.csv", train_var_f1)
-    np.savetxt(f"{model_base_path}_val_var_f1.csv", val_var_f1)
-    np.savetxt(f"{model_base_path}_train_loss.csv", train_loss)
-    np.savetxt(f"{model_base_path}_val_loss.csv", val_loss)
-    
-    # Save Iteration CSVs
-    if len(iter_steps) > 0:
-        np.savetxt(f"{model_base_path}_iter_steps.csv", iter_steps)
-        np.savetxt(f"{model_base_path}_iter_train_loss.csv", iter_train_loss)
-        np.savetxt(f"{model_base_path}_iter_val_loss.csv", iter_val_loss)
-        np.savetxt(f"{model_base_path}_iter_train_var_f1.csv", iter_train_var_f1)
-        np.savetxt(f"{model_base_path}_iter_val_var_f1.csv", iter_val_var_f1)
-        
-    if is_multitask:
-        np.savetxt(f"{model_base_path}_train_air_f1.csv", train_air_f1)
-        np.savetxt(f"{model_base_path}_val_air_f1.csv", val_air_f1)
-        if len(iter_steps) > 0:
-            np.savetxt(f"{model_base_path}_iter_train_air_f1.csv", iter_train_air_f1)
-            np.savetxt(f"{model_base_path}_iter_val_air_f1.csv", iter_val_air_f1)
-
-    return model_base_path
-'''
 
 def train_net(net, train_loader, val_loader, batch_size=64, learning_rate=0.01, num_epochs=30, checkpoint_freq=1, 
               is_multitask=True, checkpoint_dir="checkpoints", optimizer=None, start_epoch=0, 
@@ -1712,21 +863,78 @@ def train_net(net, train_loader, val_loader, batch_size=64, learning_rate=0.01, 
     return model_base_path
 
 
+# Manual testing on singular images
+
+def pad_to_square(img, fill_color=(255, 255, 255)):
+    """
+    Pads a PIL image with white pixels to make it a perfect square, 
+    preserving the original aspect ratio (matching your training loader).
+    """
+    w, h = img.size
+    if w == h:
+        return img
+    size = max(w, h)
+    new_img = Image.new('RGB', (size, size), fill_color)
+    new_img.paste(img, ((size - w) // 2, (size - h) // 2))
+    return new_img
+
+
+def predict_image(image_path, model, device, variant_idx_to_name, airline_idx_to_name=None, is_multitask=True):
+    """
+    Loads a single image from disk, preprocesses it identically to the training set,
+    runs it through the model, and returns the human-readable class names.
+    """
+    model.eval() # Ensure dropout and batchnorm are in inference mode
+    
+    # 1. Load and Pad
+    try:
+        img = Image.open(image_path).convert('RGB')
+    except Exception as e:
+        print(f"Error loading image: {e}")
+        return None
+        
+    img = pad_to_square(img)
+    
+    # 2. Transform (Resize, ToTensor, Normalize)
+    # NOTE: If you used specific normalization values during training (like ImageNet means), 
+    # make sure they match here!
+    transform = transforms.Compose([
+        transforms.Resize((300, 300)),
+        transforms.ToTensor(),
+        # transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]) # Uncomment if used in training
+    ])
+    
+    # Add batch dimension: [Channels, H, W] -> [1, Channels, H, W]
+    img_tensor = transform(img).unsqueeze(0).to(device)
+    
+    # 3. Predict
+    with torch.no_grad():
+        if is_multitask:
+            var_outputs, air_outputs = model(img_tensor)
+            
+            # Get the index of the highest probability
+            var_idx = torch.argmax(var_outputs, dim=1).item()
+            air_idx = torch.argmax(air_outputs, dim=1).item()
+            
+            # Map back to string labels
+            var_pred = variant_idx_to_name[var_idx]
+            air_pred = airline_idx_to_name[air_idx]
+            
+            return var_pred, air_pred
+        else:
+            var_outputs = model(img_tensor)
+            var_idx = torch.argmax(var_outputs, dim=1).item()
+            var_pred = variant_idx_to_name[var_idx]
+            
+            return var_pred
+
 # Final Execution
 if __name__ == "__main__":
-    # =========================================================================
-    # PREREQUISITE SETUP
-    # Assume `train_loader` and `val_loader` have already been instantiated 
-    # here using your AirlinerDataset logic.
-    # 
-    # Also assume `variant_mapping` and `airline_mapping` are defined here.
-    # Example:
-    # NUM_VARIANT_CLASSES = len(variant_mapping)
-    # NUM_AIRLINE_CLASSES = len(airline_mapping)
-    # =========================================================================
+    
+    # Setup
     
     warnings.filterwarnings("ignore", message="The number of unique classes is greater than 50%")
-
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     train_df, val_df, test_df = load_split_dataframes(
         r'D:\Bruce-Qiu-APS360-Project\Data\metadata\train\train_metadata.csv', 
@@ -1755,86 +963,20 @@ if __name__ == "__main__":
 
     print("Loaders complete")
 
+    
     # Example constants (replace with the lengths of your mapping dictionaries)
     NUM_VARIANT_CLASSES = len(variant_mapping)
     NUM_AIRLINE_CLASSES = len(airline_mapping)
-
-    '''
-    # ==========================================================
-    # LOAD MODEL
-    # ==========================================================
-    print("Initializing Baseline Model...")
-    baseline_model = BaselineEfficientNet(
-        num_variant_classes=NUM_VARIANT_CLASSES
-    )
-
-    # Device (must match train_net)
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    baseline_model.to(device)
-
-    # Optimizer (must be identical to the original one)
-    optimizer = optim.Adam(
-        baseline_model.parameters(),
-        lr=0.001
-    )
-
-    # Load checkpoint
-    # loaded_checkpoint_path = r"checkpoints\model_model_bs8_lr0.001_epoch5.pt"
-
-    checkpoint = torch.load(
-        loaded_checkpoint_path,
-        map_location=device
-    )
-
-    baseline_model.load_state_dict(checkpoint["model_state_dict"])
-    optimizer.load_state_dict(checkpoint["optimizer_state_dict"])
-
-    start_epoch = checkpoint["epoch"]
-
-    print(f"Successfully loaded checkpoint from epoch {start_epoch}.")
-
-    saved_base_path = train_net(
-        net=baseline_model, 
-        train_loader=train_loader,    # Pass your actual train DataLoader here
-        val_loader=val_loader,        # Pass your actual val DataLoader here
-        batch_size=BATCH_SIZE, 
-        learning_rate=0.001, 
-        num_epochs=5, 
-        checkpoint_freq=1, 
-        is_multitask=False,           # CRITICAL: Set to False for the Baseline
-        checkpoint_dir="checkpoints",
-        optimizer=optimizer,
-        start_epoch = start_epoch
-    )
     
-    '''
+    
+    
 
     # ---------------------------------------------------------
-    # 1. RUNNING THE BASELINE MODEL
+    # RUNNING THE BASELINE MODEL
     # ---------------------------------------------------------
-    """
-    print("Initializing Baseline Model...")
-    baseline_model = BaselineEfficientNet(num_variant_classes=NUM_VARIANT_CLASSES)
     
-    print("Starting Baseline Training...")
     
-    saved_base_path = train_net(
-        net=baseline_model, 
-        train_loader=train_loader,    # Pass your actual train DataLoader here
-        val_loader=val_loader,        # Pass your actual val DataLoader here
-        batch_size=BATCH_SIZE, 
-        learning_rate=0.001, 
-        num_epochs=5, 
-        checkpoint_freq=1, 
-        is_multitask=False,           # CRITICAL: Set to False for the Baseline
-        checkpoint_dir="checkpoints"
-    )
-    
-    # Plot results!
-    plot_training_curve(saved_base_path, is_multitask=False)
-    """
-
-    
+    '''
     baseline_variant_model = BaselineVariantCNN(
         NUM_VARIANT_CLASSES
     )
@@ -1845,7 +987,6 @@ if __name__ == "__main__":
     baseline_variant_model = BaselineVariantCNN(num_variant_classes=NUM_VARIANT_CLASSES).to(device)
     optimizer = optim.Adam(baseline_variant_model.parameters(), lr=0.001)
 
-    # Now, just call the helper function!
     baseline_variant_model, optimizer, start_epoch, loaded_history = load_model_checkpoint(
         checkpoint_path=checkpoint_path, 
         model=baseline_variant_model, 
@@ -1876,9 +1017,10 @@ if __name__ == "__main__":
 
     plot_training_curve(saved_multi_path, is_multitask=False)
     
+    '''
 
     # ---------------------------------------------------------
-    # 2. RUNNING YOUR DUAL BRANCH MULTI-TASK MODEL LATER
+    # RUNNING THE PRIMARY MODEL
     # ---------------------------------------------------------
     '''
     print("Initializing Dual-Branch Model...")
@@ -1899,7 +1041,7 @@ if __name__ == "__main__":
     ).to(device)
     optimizer = optim.Adam(primary_model.parameters(), lr=0.001)
 
-    # Now, just call the helper function!
+
     primary_model, optimizer, start_epoch, loaded_history = load_model_checkpoint(
         checkpoint_path=checkpoint_path, 
         model=primary_model, 
@@ -1931,25 +1073,10 @@ if __name__ == "__main__":
 
     plot_training_curve(saved_multi_path, is_multitask=True)
     '''
-    '''
-    print("Starting Multi-Task Training...")
-    saved_multi_path = train_net(
-        net=primary_model, 
-        train_loader=train_loader, 
-        val_loader=val_loader, 
-        batch_size=BATCH_SIZE, 
-        learning_rate=0.001, 
-        num_epochs=1, 
-        checkpoint_freq=1, 
-        is_multitask=True,             # CRITICAL: Set to True for Dual-Branch
-        checkpoint_dir="checkpoints_primary",
-        record_freq=100
-    )
-    
-    # Plot results!
-    plot_training_curve(saved_multi_path, is_multitask=True)
 
-    '''
+    # ---------------------------------------------------------
+    # SANITY CHECK WITH SMALL DATASET
+    # ---------------------------------------------------------
 
     '''
     # Sanity Check code
@@ -2015,4 +1142,77 @@ if __name__ == "__main__":
 
     plot_training_curve(saved_multi_path, is_multitask=False)
     '''
+
+    # ---------------------------------------------------------
+    # MANUAL TESTING
+    # ---------------------------------------------------------
     
+
+    # Automatically build the mappings (Ensure the column names exactly match your CSVs)
+    airline_mapping = build_mapping_from_csv(airline_csv_path, column_name='Airline')
+    variant_mapping = build_mapping_from_csv(variant_csv_path, column_name='Variant')
+    # Example constants (replace with the lengths of your mapping dictionaries)
+    NUM_VARIANT_CLASSES = len(variant_mapping)
+    NUM_AIRLINE_CLASSES = len(airline_mapping)
+    
+    checkpoint_path = r"D:\Bruce-Qiu-APS360-Project\training\checkpoints_variant_baseline\model_Baseline_Variant_Scratch_bs16_lr0.001_epoch35.pt"
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+    baseline_variant_model = BaselineVariantCNN(num_variant_classes=NUM_VARIANT_CLASSES).to(device)
+    optimizer = optim.Adam(baseline_variant_model.parameters(), lr=0.001)
+
+    # Now, just call the helper function!
+    baseline_variant_model, optimizer, start_epoch, loaded_history = load_model_checkpoint(
+        checkpoint_path=checkpoint_path, 
+        model=baseline_variant_model, 
+        optimizer=optimizer, 
+        device=device
+    )
+
+    checkpoint_path = r"D:\Bruce-Qiu-APS360-Project\training\checkpoints_primary_2\model_model_bs16_lr0.001_epoch3.pt"
+    #device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+    primary_model = DualBranchNet(
+        num_variant_classes=NUM_VARIANT_CLASSES, 
+        num_airline_classes=NUM_AIRLINE_CLASSES
+    ).to(device)
+    optimizer = optim.Adam(primary_model.parameters(), lr=0.001)
+
+    primary_model, optimizer, start_epoch, loaded_history = load_model_checkpoint(
+        checkpoint_path=checkpoint_path, 
+        model=primary_model, 
+        optimizer=optimizer, 
+        device=device
+    )
+
+    variant_idx_to_name = {v: k for k, v in variant_mapping.items()}
+    airline_idx_to_name = {v: k for k, v in airline_mapping.items()}
+
+
+    raw_image_path = r"D:\Bruce-Qiu-APS360-Project\Data\test_images\_DSC1428.JPG"
+
+    predicted_variant = predict_image(
+        image_path=raw_image_path,
+        model=baseline_variant_model,
+        device=device,
+        variant_idx_to_name=variant_idx_to_name,
+        airline_idx_to_name=airline_idx_to_name,
+        is_multitask=False
+    )
+
+    print(f"Primary predicted:")
+    print(f"Variant: {predicted_variant}")
+    print("\n")
+
+    predicted_variant, predicted_airline = predict_image(
+        image_path=raw_image_path,
+        model=primary_model,
+        device=device,
+        variant_idx_to_name=variant_idx_to_name,
+        airline_idx_to_name=airline_idx_to_name,
+        is_multitask=True
+    )
+
+    print(f"Primary predicted:")
+    print(f"Variant: {predicted_variant}")
+    print(f"Airline: {predicted_airline}")

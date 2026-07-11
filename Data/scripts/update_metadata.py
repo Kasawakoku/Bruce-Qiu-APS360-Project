@@ -1,3 +1,6 @@
+# updates the metadata csv to use up to date variant and airline classes
+# after referencing mapping and hierarchy
+
 import pandas as pd
 import yaml
 import os
