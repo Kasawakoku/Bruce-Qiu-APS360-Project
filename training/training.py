@@ -1839,7 +1839,7 @@ if __name__ == "__main__":
         NUM_VARIANT_CLASSES
     )
 
-    checkpoint_path = r"D:\Bruce-Qiu-APS360-Project\training\checkpoints_variant_baseline\model_Baseline_Variant_Scratch_bs16_lr0.001_epoch25.pt"
+    checkpoint_path = r"D:\Bruce-Qiu-APS360-Project\training\checkpoints_variant_baseline\model_Baseline_Variant_Scratch_bs16_lr0.001_epoch30.pt"
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     baseline_variant_model = BaselineVariantCNN(num_variant_classes=NUM_VARIANT_CLASSES).to(device)
@@ -1861,7 +1861,7 @@ if __name__ == "__main__":
         val_loader=val_loader,
         batch_size=BATCH_SIZE,
         learning_rate=1e-3,
-        num_epochs=30,
+        num_epochs=35,
         
         is_multitask=False,
         checkpoint_freq = 1,
