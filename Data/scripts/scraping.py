@@ -1,3 +1,5 @@
+# main scraping script
+
 import os
 import time
 import random
