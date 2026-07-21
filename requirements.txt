@@ -1,0 +1,16 @@
+pandas
+matplotlib
+seaborn
+PyYAML 
+beautifulsoup4
+undetected_chromedriver
+curl_cffi
+selenium
+torch
+torchvision
+numpy
+natsort
+pillow
+scikit-learn
+tqdm
+
