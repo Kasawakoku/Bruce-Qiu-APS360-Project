@@ -18,3 +18,22 @@ Set up the Python environment as desired. Then install dependencies:
 ```
 pip install -r requirements.txt
 ```
+
+Data processing:
+
+To scrape:
+
+```
+python ./Data/scripts/scraping.py [start_page] [end_page] 
+```
+
+
+distribution_reports.py
+
+hierarchical_reports_trimmed.py
+
+updata_metadata_trimmed.py
+
+split_csvs_new.py
+
+check_splits.py

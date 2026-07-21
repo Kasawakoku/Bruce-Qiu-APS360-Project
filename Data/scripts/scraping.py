@@ -1,5 +1,6 @@
 # main scraping script
 
+import sys
 import os
 import time
 import random
@@ -15,18 +16,33 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException
 
-# --- Configuration ---
-START_PAGE = 1
-END_PAGE = 2
-BASE_URL = "https://www.airliners.net/search?photoCategory=39&sortBy=dateAccepted&sortOrder=desc&perPage=36&display=detail&page={}"
-IMAGE_SAVE_DIR = "../airliners_images"
-CSV_FILENAME = "../metadata/airliners_metadata.csv"
+# --- Default Configuration ---
+
+# Edit as necessary
+DEFAULT_START_PAGE = 1
+DEFAULT_END_PAGE = 2
+
+DEFAULT_IMAGE_SAVE_DIR = "../airliners_images"
+DEFAULT_CSV_FILENAME = "../metadata/airliners_metadata.csv"
+
+# This base URL sorts the Airliners.net database by most recently updated and filter for non-military aircraft
+DEFAULT_BASE_URL = "https://www.airliners.net/search?photoCategory=39&sortBy=dateAccepted&sortOrder=desc&perPage=36&display=detail&page={}"
 
 HEADERS = {
     "Accept": "image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8",
     "Referer": "https://www.airliners.net/",
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36"
 }
+
+# Positional terminal arguments:
+# python scraping.py [start_page] [end_page] [image_dir] [csv_file] [base_url]
+
+START_PAGE = int(sys.argv[1]) if len(sys.argv) > 1 else DEFAULT_START_PAGE
+END_PAGE = int(sys.argv[2]) if len(sys.argv) > 2 else DEFAULT_END_PAGE
+IMAGE_SAVE_DIR = sys.argv[3] if len(sys.argv) > 3 else DEFAULT_IMAGE_SAVE_DIR
+CSV_FILENAME = sys.argv[4] if len(sys.argv) > 4 else DEFAULT_CSV_FILENAME
+BASE_URL = sys.argv[5] if len(sys.argv) > 5 else DEFAULT_BASE_URL
+
 start_time = time.time()
 
 if not os.path.exists(IMAGE_SAVE_DIR):

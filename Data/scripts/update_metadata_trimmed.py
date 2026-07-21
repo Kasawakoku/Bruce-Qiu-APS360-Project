@@ -1,6 +1,8 @@
 # updates the metadata csv to use up to date variant and airline classes
 # after referencing mapping and hierarchy
 # after trimming out classes with low number of images
+# outputting metadata with invalid airlines trimmed, with invalid variants trimmed
+# as well as the AND, OR and XOR of these sets
 
 import pandas as pd
 import yaml

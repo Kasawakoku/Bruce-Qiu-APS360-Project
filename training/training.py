@@ -44,13 +44,13 @@ BATCH_SIZE = 16 # do not go above 16 for cpu
 IMAGE_SIZE = 300
 
 # File paths
-image_folder_path = r"D:\Bruce-Qiu-APS360-Project\Data\airliners_images"
+image_folder_path = r"..\Data\airliners_images"
 
 
-airline_csv_path = r"D:\Bruce-Qiu-APS360-Project\Data\metadata\counts_airlines_merged_trimmed.csv"
-variant_csv_path = r"D:\Bruce-Qiu-APS360-Project\Data\metadata\counts_variants_trimmed.csv"
+airline_csv_path = r"..\Data\metadata\counts_airlines_merged_trimmed.csv"
+variant_csv_path = r"..\Data\metadata\counts_variants_trimmed.csv"
 
-checkpoints_path = r"D:\Bruce-Qiu-APS360-Project\training\checkpoints_path"
+checkpoints_path = r"..\training\checkpoints_path"
 
 
 
@@ -433,7 +433,7 @@ def build_mapping_from_csv(csv_path, column_name):
 def get_model_name(name, batch_size, learning_rate, epoch, checkpoint_dir="checkpoints"):
     """
     Generate a path for saving the model checkpoints.
-    Allows specifying a custom directory (e.g., 'D:\\Bruce-Qiu-APS360-Project\\checkpoints')
+    Allows specifying a custom directory 
     """
     if not os.path.exists(checkpoint_dir):
         os.makedirs(checkpoint_dir)
@@ -932,14 +932,16 @@ def predict_image(image_path, model, device, variant_idx_to_name, airline_idx_to
 if __name__ == "__main__":
     
     # Setup
+
+    '''
     
     warnings.filterwarnings("ignore", message="The number of unique classes is greater than 50%")
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     train_df, val_df, test_df = load_split_dataframes(
-        r'D:\Bruce-Qiu-APS360-Project\Data\metadata\train\train_metadata.csv', 
-        r'D:\Bruce-Qiu-APS360-Project\Data\metadata\val\val_metadata.csv', 
-        r'D:\Bruce-Qiu-APS360-Project\Data\metadata\test\test_metadata.csv'
+        r'..\Data\metadata\train\train_metadata.csv', 
+        r'..\Data\metadata\val\val_metadata.csv', 
+        r'..\Data\metadata\test\test_metadata.csv'
     )
     print("Load split data frame complete")
 
@@ -968,7 +970,7 @@ if __name__ == "__main__":
     NUM_VARIANT_CLASSES = len(variant_mapping)
     NUM_AIRLINE_CLASSES = len(airline_mapping)
     
-    
+    '''
     
 
     # ---------------------------------------------------------
@@ -981,7 +983,7 @@ if __name__ == "__main__":
         NUM_VARIANT_CLASSES
     )
 
-    checkpoint_path = r"D:\Bruce-Qiu-APS360-Project\training\checkpoints_variant_baseline\model_Baseline_Variant_Scratch_bs16_lr0.001_epoch30.pt"
+    checkpoint_path = r"..\training\checkpoints_variant_baseline\model_Baseline_Variant_Scratch_bs16_lr0.001_epoch30.pt"
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     baseline_variant_model = BaselineVariantCNN(num_variant_classes=NUM_VARIANT_CLASSES).to(device)
@@ -1032,7 +1034,7 @@ if __name__ == "__main__":
     
     
     
-    checkpoint_path = r"D:\Bruce-Qiu-APS360-Project\training\checkpoints_primary_2\model_model_bs16_lr0.001_epoch1.pt"
+    checkpoint_path = r"..\training\checkpoints_primary_2\model_model_bs16_lr0.001_epoch1.pt"
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     primary_model = DualBranchNet(
@@ -1103,7 +1105,7 @@ if __name__ == "__main__":
     )
 
 
-    checkpoint_path = r"D:\Bruce-Qiu-APS360-Project\training\checkpoints_variant_baseline_sanity\model_Baseline_Variant_Scratch_bs8_lr0.001_epoch20.pt"
+    checkpoint_path = r"..\training\checkpoints_variant_baseline_sanity\model_Baseline_Variant_Scratch_bs8_lr0.001_epoch20.pt"
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     # 2. Instantiate your model and optimizer first
@@ -1155,7 +1157,7 @@ if __name__ == "__main__":
     NUM_VARIANT_CLASSES = len(variant_mapping)
     NUM_AIRLINE_CLASSES = len(airline_mapping)
     
-    checkpoint_path = r"D:\Bruce-Qiu-APS360-Project\training\checkpoints_variant_baseline\model_Baseline_Variant_Scratch_bs16_lr0.001_epoch35.pt"
+    checkpoint_path = r"..\training\checkpoints_variant_baseline\model_Baseline_Variant_Scratch_bs16_lr0.001_epoch35.pt"
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     baseline_variant_model = BaselineVariantCNN(num_variant_classes=NUM_VARIANT_CLASSES).to(device)
@@ -1169,7 +1171,7 @@ if __name__ == "__main__":
         device=device
     )
 
-    checkpoint_path = r"D:\Bruce-Qiu-APS360-Project\training\checkpoints_primary_2\model_model_bs16_lr0.001_epoch3.pt"
+    checkpoint_path = r"..\training\checkpoints_primary_2\model_model_bs16_lr0.001_epoch3.pt"
     #device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     primary_model = DualBranchNet(
@@ -1189,7 +1191,7 @@ if __name__ == "__main__":
     airline_idx_to_name = {v: k for k, v in airline_mapping.items()}
 
 
-    raw_image_path = r"D:\Bruce-Qiu-APS360-Project\Data\test_images\_DSC1428.JPG"
+    raw_image_path = r"..\Data\test_images\_DSC1084.JPG"
 
     predicted_variant = predict_image(
         image_path=raw_image_path,
