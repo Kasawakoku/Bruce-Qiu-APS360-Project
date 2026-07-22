@@ -2,11 +2,20 @@
 
 import pandas as pd
 import os
+import sys
 
 # --- Configuration ---
-INPUT_CSV = "../metadata/airliners_metadata.csv"
-AIRLINES_OUTPUT_CSV = "../class_definitions/counts_airlines.csv"
-MODEL_OUTPUT_CSV = "../class_definitions/counts_models.csv"
+# Default configurations
+DEFAULT_INPUT_CSV = "../metadata/airliners_metadata.csv"
+DEFAULT_AIRLINES_OUTPUT_CSV = "../class_definitions/counts_airlines.csv"
+DEFAULT_MODEL_OUTPUT_CSV = "../class_definitions/counts_models.csv"
+
+# Positional terminal arguments:
+# python distribution_reports.py [input_csv] [airlines_output_csv] [model_output_csv]
+
+INPUT_CSV = sys.argv[1] if len(sys.argv) > 1 else DEFAULT_INPUT_CSV
+AIRLINES_OUTPUT_CSV = sys.argv[2] if len(sys.argv) > 2 else DEFAULT_AIRLINES_OUTPUT_CSV
+MODEL_OUTPUT_CSV = sys.argv[3] if len(sys.argv) > 3 else DEFAULT_MODEL_OUTPUT_CSV
 
 def generate_distribution_reports():
     if not os.path.exists(INPUT_CSV):

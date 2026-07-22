@@ -7,15 +7,31 @@
 import pandas as pd
 import yaml
 import os
+import sys
 
 # --- Configuration ---
-INPUT_CSV = "../metadata/airliners_metadata.csv"
-AIRLINE_YAML = "../class_definitions/airline_mapping.yaml"
-AIRCRAFT_YAML = "../class_definitions/aircraft_hierarchy.yaml"
+# Default configurations
+DEFAULT_AIRLINE_THRESHOLD = 90
+DEFAULT_VARIANT_THRESHOLD = 90
+DEFAULT_INPUT_CSV = "../metadata/airliners_metadata.csv"
+DEFAULT_AIRLINE_YAML = "../class_definitions/airline_mapping.yaml"
+DEFAULT_AIRCRAFT_YAML = "../class_definitions/aircraft_hierarchy.yaml"
+# case insensitive
+DEFAULT_EXCLUDE_LABELS = ['unknown', 'untitled']
 
-AIRLINE_THRESHOLD = 90
-VARIANT_THRESHOLD = 90
-EXCLUDE_LABELS = ['unknown', 'untitled']
+# Positional terminal arguments:
+# python update_metadata_trimmed.py [airline_threshold] [variant_threshold] [input_csv] [airline_yaml] [aircraft_yaml] [exclude_labels]
+
+AIRLINE_THRESHOLD = int(sys.argv[1]) if len(sys.argv) > 1 else DEFAULT_AIRLINE_THRESHOLD
+VARIANT_THRESHOLD = int(sys.argv[2]) if len(sys.argv) > 2 else DEFAULT_VARIANT_THRESHOLD
+INPUT_CSV = sys.argv[3] if len(sys.argv) > 3 else DEFAULT_INPUT_CSV
+AIRLINE_YAML = sys.argv[4] if len(sys.argv) > 4 else DEFAULT_AIRLINE_YAML
+AIRCRAFT_YAML = sys.argv[5] if len(sys.argv) > 5 else DEFAULT_AIRCRAFT_YAML
+
+# Parse comma-separated exclude labels from terminal
+EXCLUDE_LABELS = [
+    label.strip() for label in sys.argv[6].split(",")
+] if len(sys.argv) > 6 else DEFAULT_EXCLUDE_LABELS
 
 def load_mappings():
     # Identical mapping logic to Script 1

@@ -4,17 +4,33 @@
 import pandas as pd
 import yaml
 import os
+import sys
 
 # --- Configuration ---
-INPUT_CSV = "../metadata/airliners_metadata.csv"
-AIRLINE_YAML = "../class_definitions/airline_mapping.yaml"
-AIRCRAFT_YAML = "../class_definitions/aircraft_hierarchy.yaml"
 
-AIRLINE_THRESHOLD = 90
-VARIANT_THRESHOLD = 90
+# Default configurations
+DEFAULT_AIRLINE_THRESHOLD = 90
+DEFAULT_VARIANT_THRESHOLD = 90
+DEFAULT_INPUT_CSV = "../metadata/airliners_metadata.csv"
+DEFAULT_AIRLINE_YAML = "../class_definitions/airline_mapping.yaml"
+DEFAULT_AIRCRAFT_YAML = "../class_definitions/aircraft_hierarchy.yaml"
+# case insensitive
+DEFAULT_EXCLUDE_LABELS = ['unknown', 'untitled']
 
-# Exclude list (case-insensitive)
-EXCLUDE_LABELS = ['unknown', 'untitled']
+# Positional terminal arguments:
+# python hierarchical_reports_trimmed.py [airline_threshold] [variant_threshold] [input_csv] [airline_yaml] [aircraft_yaml] [exclude_labels]
+
+AIRLINE_THRESHOLD = int(sys.argv[1]) if len(sys.argv) > 1 else DEFAULT_AIRLINE_THRESHOLD
+VARIANT_THRESHOLD = int(sys.argv[2]) if len(sys.argv) > 2 else DEFAULT_VARIANT_THRESHOLD
+INPUT_CSV = sys.argv[3] if len(sys.argv) > 3 else DEFAULT_INPUT_CSV
+AIRLINE_YAML = sys.argv[4] if len(sys.argv) > 4 else DEFAULT_AIRLINE_YAML
+AIRCRAFT_YAML = sys.argv[5] if len(sys.argv) > 5 else DEFAULT_AIRCRAFT_YAML
+
+# Parse comma-separated exclude labels from terminal
+EXCLUDE_LABELS = [
+    label.strip() for label in sys.argv[6].split(",")
+] if len(sys.argv) > 6 else DEFAULT_EXCLUDE_LABELS
+
 
 def load_mappings():
     # 1. Load Airline Mappings
@@ -101,10 +117,10 @@ def generate_trimmed_reports():
 
     # Variant & Hierarchy Exports (Based on valid variants)
     hierarchy_exports = {
-        'counts_variants_trimmed.csv': ('variant', 'Variant'),
-        'counts_models_trimmed.csv': ('aircraft_model', 'Model'),
-        'counts_families_trimmed.csv': ('family', 'Family'),
-        'counts_manufacturers_trimmed.csv': ('manufacturer', 'Manufacturer')
+        '../metadata/counts_variants_trimmed.csv': ('variant', 'Variant'),
+        '../metadata/counts_models_trimmed.csv': ('aircraft_model', 'Model'),
+        '../metadata/counts_families_trimmed.csv': ('family', 'Family'),
+        '../metadata/counts_manufacturers_trimmed.csv': ('manufacturer', 'Manufacturer')
     }
 
     for filename, (col_name, label) in hierarchy_exports.items():

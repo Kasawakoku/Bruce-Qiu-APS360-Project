@@ -4,14 +4,37 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 import os
+import sys
 
 # --- Configuration ---
-TRAIN_CSV = "../metadata/train/train_metadata.csv"
-VAL_CSV = "../metadata/val/val_metadata.csv"
-TEST_CSV = "../metadata/test/test_metadata.csv"
 
-VALID_AIRLINES_CSV = "../metadata/counts_airlines_merged_trimmed.csv"
-VALID_VARIANTS_CSV = "../metadata/counts_variants_trimmed.csv"
+# Helper function to handle string "None" inputs from terminal
+def parse_optional_str(val, default):
+    if val is None:
+        return default
+    if str(val).strip().lower() == "none":
+        return None
+    return val
+
+# Default configurations
+DEFAULT_AIRLINE_FILTER = None
+DEFAULT_VARIANT_FILTER = None
+DEFAULT_TRAIN_CSV = "../metadata/train/train_metadata.csv"
+DEFAULT_VAL_CSV = "../metadata/val/val_metadata.csv"
+DEFAULT_TEST_CSV = "../metadata/test/test_metadata.csv"
+DEFAULT_VALID_AIRLINES_CSV = "../metadata/counts_airlines_merged_trimmed.csv"
+DEFAULT_VALID_VARIANTS_CSV = "../metadata/counts_variants_trimmed.csv"
+
+# Positional terminal arguments:
+# python check_splits.py [airline_filter] [variant_filter] [train_csv] [val_csv] [test_csv] [valid_airlines_csv] [valid_variants_csv]
+
+AIRLINE_FILTER = parse_optional_str(sys.argv[1] if len(sys.argv) > 1 else None, DEFAULT_AIRLINE_FILTER)
+VARIANT_FILTER = parse_optional_str(sys.argv[2] if len(sys.argv) > 2 else None, DEFAULT_VARIANT_FILTER)
+TRAIN_CSV = sys.argv[3] if len(sys.argv) > 3 else DEFAULT_TRAIN_CSV
+VAL_CSV = sys.argv[4] if len(sys.argv) > 4 else DEFAULT_VAL_CSV
+TEST_CSV = sys.argv[5] if len(sys.argv) > 5 else DEFAULT_TEST_CSV
+VALID_AIRLINES_CSV = sys.argv[6] if len(sys.argv) > 6 else DEFAULT_VALID_AIRLINES_CSV
+VALID_VARIANTS_CSV = sys.argv[7] if len(sys.argv) > 7 else DEFAULT_VALID_VARIANTS_CSV
 
 def visualize_split(airline_filter=None, variant_filter=None):
     """
@@ -212,11 +235,12 @@ def analyze_skew():
 
 if __name__ == "__main__":
     analyze_skew()
+
+    visualize_split(airline_filter=AIRLINE_FILTER, variant_filter=VARIANT_FILTER)
     
-    visualize_split(variant_filter="Boeing 737-300 (B733)")
 
-    visualize_split(airline_filter="Austrian Airlines")
-
-    visualize_split(airline_filter="OTHERS")
+    # Used to create graphs in progress report
+    # visualize_split(airline_filter="Austrian Airlines")
+    # visualize_split(airline_filter="OTHERS")
 
     

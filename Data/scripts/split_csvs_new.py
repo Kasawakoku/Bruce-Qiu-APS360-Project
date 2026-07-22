@@ -2,17 +2,40 @@
 
 import math
 import pandas as pd
+import sys
 
 # In the future, may implement to remove any images with extreme dimensions
+
+# Default configurations
+DEFAULT_VAL_PCT = 0.10
+DEFAULT_TEST_PCT = 0.10
+DEFAULT_MIN_COUNT = 5
+DEFAULT_INTERSECTION_CSV_PATH = '../metadata/airliners_metadata_trimmed_intersection.csv'
+DEFAULT_UNION_ONLY_CSV_PATH = '../metadata/airliners_metadata_trimmed_symmetric_diff.csv'
+DEFAULT_VALID_AIRLINES_PATH = '../metadata/counts_airlines_merged_trimmed.csv'
+DEFAULT_VALID_VARIANTS_PATH = '../metadata/counts_variants_trimmed.csv'
+DEFAULT_RANDOM_STATE = 42
+
+# Positional terminal arguments:
+# python split_csvs_new.py [val_pct] [test_pct] [min_count] [intersection_csv] [union_csv] [airlines_path] [variants_path] [random_state]
+
+VAL_PCT = float(sys.argv[1]) if len(sys.argv) > 1 else DEFAULT_VAL_PCT
+TEST_PCT = float(sys.argv[2]) if len(sys.argv) > 2 else DEFAULT_TEST_PCT
+MIN_COUNT = int(sys.argv[3]) if len(sys.argv) > 3 else DEFAULT_MIN_COUNT
+INTERSECTION_CSV_PATH = sys.argv[4] if len(sys.argv) > 4 else DEFAULT_INTERSECTION_CSV_PATH
+UNION_ONLY_CSV_PATH = sys.argv[5] if len(sys.argv) > 5 else DEFAULT_UNION_ONLY_CSV_PATH
+VALID_AIRLINES_PATH = sys.argv[6] if len(sys.argv) > 6 else DEFAULT_VALID_AIRLINES_PATH
+VALID_VARIANTS_PATH = sys.argv[7] if len(sys.argv) > 7 else DEFAULT_VALID_VARIANTS_PATH
+RANDOM_STATE = int(sys.argv[8]) if len(sys.argv) > 8 else DEFAULT_RANDOM_STATE
 
 def generate_split_csvs(
     intersection_csv_path, 
     union_only_csv_path,
     valid_airlines_path, 
     valid_variants_path,
-    out_train_path='train_metadata.csv',
-    out_val_path='val_metadata.csv',
-    out_test_path='test_metadata.csv',
+    out_train_path='../metadata/train/train_metadata.csv',
+    out_val_path='../metadata/val/val_metadata.csv',
+    out_test_path='../metadata/test/test_metadata.csv',
     val_pct=0.10, 
     test_pct=0.10, 
     min_count=5, 
@@ -121,18 +144,18 @@ def generate_split_csvs(
     print(f"Val set:   {len(final_val_df)} rows saved to {out_val_path}")
     print(f"Test set:  {len(final_test_df)} rows saved to {out_test_path}")
 
-
-generate_split_csvs(
-    '../metadata/airliners_metadata_trimmed_intersection.csv',
-    '../metadata/airliners_metadata_trimmed_symmetric_diff.csv',
-    #'../metadata/intersection_breakdown.csv',
-    '../metadata/counts_airlines_merged_trimmed.csv',
-    '../metadata/counts_variants_trimmed.csv',
-    '../metadata/train/train_metadata.csv',
-    '../metadata/val/val_metadata.csv',
-    '../metadata/test/test_metadata.csv',
-    0.1,
-    0.1,
-    5,
-    42
-)
+if __name__ == "__main__":
+    generate_split_csvs(
+        DEFAULT_INTERSECTION_CSV_PATH,
+        DEFAULT_UNION_ONLY_CSV_PATH,
+        DEFAULT_VALID_AIRLINES_PATH,
+        DEFAULT_VALID_VARIANTS_PATH,
+        
+        '../metadata/train/train_metadata.csv',
+        '../metadata/val/val_metadata.csv',
+        '../metadata/test/test_metadata.csv',
+        VAL_PCT,
+        TEST_PCT,
+        MIN_COUNT,
+        RANDOM_STATE
+    )
