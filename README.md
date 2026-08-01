@@ -78,6 +78,7 @@ The neural network training, evaluation, and prediction pipeline is consolidated
 * `--lr`: Learning rate for the Adam optimizer (Default: `0.001`).
 * `--epochs`: Total number of epochs to train for (Default: `30`).
 * `--image_size`: Dimensions to resize the square-padded images to (Default: `300`).
+* `--num_workers`: Number of background CPU processes for data loading. Ensure your SLURM script requests at least this many CPU cores (Default: `4`).
 
 **Checkpointing & Logging:**
 * `--checkpoint_dir`: Directory to save/load `.pt` model files (Default: `checkpoints`).

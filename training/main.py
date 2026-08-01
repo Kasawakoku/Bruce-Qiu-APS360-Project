@@ -27,6 +27,8 @@ def main():
     parser.add_argument('--test_csv', type=str, default=r"..\Data\metadata\test\test_metadata.csv")
     parser.add_argument('--airline_csv', type=str, default=r"..\Data\metadata\counts_airlines_merged_trimmed.csv")
     parser.add_argument('--variant_csv', type=str, default=r"..\Data\metadata\counts_variants_trimmed.csv")
+
+    parser.add_argument('--num_workers', type=int, default=4, help="Number of CPU workers for the DataLoader")
     
     # Hyperparameters
     parser.add_argument('--batch_size', type=int, default=16)
@@ -91,8 +93,8 @@ def main():
             args.batch_size = min(4, args.batch_size)
             args.record_freq = 2
 
-        train_loader = DataLoader(train_dataset, batch_size=args.batch_size, shuffle=True, num_workers=2)
-        val_loader = DataLoader(val_dataset, batch_size=args.batch_size, shuffle=False, num_workers=2)
+        train_loader = DataLoader(train_dataset, batch_size=args.batch_size, shuffle=True, num_workers=args.num_workers, pin_memory=True)
+        val_loader = DataLoader(val_dataset, batch_size=args.batch_size, shuffle=False, num_workers=args.num_workers, pin_memory=True)
 
         saved_multi_path = train_net(
             net=model,
@@ -108,7 +110,8 @@ def main():
             loaded_history=loaded_history,
             track_iterations=True if args.mode == 'train' else False,
             record_freq=args.record_freq,
-            custom_model_name=args.run_name
+            custom_model_name=args.run_name,
+            num_workers=args.num_workers
         )
         
         # In the 'train' block, change the plot_training_curve call to include the save_path_prefix:
@@ -141,7 +144,7 @@ def main():
         _, _, test_df = load_split_dataframes(args.train_csv, args.val_csv, args.test_csv)
         _, eval_transforms = get_transforms(args.image_size)
         test_dataset = AirlinerDataset(test_df, args.data_dir, airline_mapping, variant_mapping, transform=eval_transforms)
-        test_loader = DataLoader(test_dataset, batch_size=args.batch_size, shuffle=False)
+        test_loader = DataLoader(test_dataset, batch_size=args.batch_size, shuffle=False, num_workers=args.num_workers, pin_memory=True)
         
         # We must have a trained model to test!
         if not args.resume_checkpoint:

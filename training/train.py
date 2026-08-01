@@ -52,7 +52,7 @@ def evaluate(net, loader, criterion, device, is_multitask=True):
 
 def train_net(net, train_loader, val_loader, batch_size=64, learning_rate=0.01, num_epochs=30, checkpoint_freq=1, 
               is_multitask=True, checkpoint_dir="checkpoints", optimizer=None, start_epoch=0, 
-              track_iterations=True, record_freq=100, loaded_history=None, custom_model_name=None):
+              track_iterations=True, record_freq=100, loaded_history=None, custom_model_name=None, num_workers=4):
     
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(f"Training on device: {device}")
@@ -219,6 +219,7 @@ def train_net(net, train_loader, val_loader, batch_size=64, learning_rate=0.01, 
                         "batch_size": batch_size,
                         "learning_rate": learning_rate,
                         "num_epochs_total": num_epochs,
+                        "num_workers": num_workers,
                         "optimizer": optimizer.__class__.__name__
                     }
                 }
