@@ -21,12 +21,12 @@ def main():
     parser.add_argument('--is_multitask', action='store_true', help="Use if the model outputs multiple branches (e.g. Primary)")
     
     # Data arguments
-    parser.add_argument('--data_dir', type=str, default=r"..\Data\airliners_images")
-    parser.add_argument('--train_csv', type=str, default=r"..\Data\metadata\train\train_metadata.csv")
-    parser.add_argument('--val_csv', type=str, default=r"..\Data\metadata\val\val_metadata.csv")
-    parser.add_argument('--test_csv', type=str, default=r"..\Data\metadata\test\test_metadata.csv")
-    parser.add_argument('--airline_csv', type=str, default=r"..\Data\metadata\counts_airlines_merged_trimmed.csv")
-    parser.add_argument('--variant_csv', type=str, default=r"..\Data\metadata\counts_variants_trimmed.csv")
+    parser.add_argument('--data_dir', type=str, default=r"../Data/airliners_images")
+    parser.add_argument('--train_csv', type=str, default=r"../Data/metadata/train/train_metadata.csv")
+    parser.add_argument('--val_csv', type=str, default=r"../Data/metadata/val/val_metadata.csv")
+    parser.add_argument('--test_csv', type=str, default=r"../Data/metadata/test/test_metadata.csv")
+    parser.add_argument('--airline_csv', type=str, default=r"../Data/metadata/counts_airlines_merged_trimmed.csv")
+    parser.add_argument('--variant_csv', type=str, default=r"../Data/metadata/counts_variants_trimmed.csv")
 
     parser.add_argument('--num_workers', type=int, default=4, help="Number of CPU workers for the DataLoader")
     
