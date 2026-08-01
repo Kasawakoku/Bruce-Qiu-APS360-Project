@@ -41,6 +41,7 @@ def main():
     parser.add_argument('--resume_checkpoint', type=str, default=None, help="Path to checkpoint to resume/predict from")
     parser.add_argument('--checkpoint_freq', type=int, default=1)
     parser.add_argument('--record_freq', type=int, default=100)
+    parser.add_argument('--track_iters', action='store_true', help="Enable iteration-level tracking for granular graphs")
     parser.add_argument('--run_name', type=str, default=None, help="Custom name for this run/model (overrides default model name)")
     
     # Inference specific
@@ -108,7 +109,7 @@ def main():
             checkpoint_dir=args.checkpoint_dir,
             start_epoch=start_epoch,
             loaded_history=loaded_history,
-            track_iterations=True if args.mode == 'train' else False,
+            track_iterations=args.track_iters,
             record_freq=args.record_freq,
             custom_model_name=args.run_name,
             num_workers=args.num_workers

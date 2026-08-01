@@ -85,6 +85,7 @@ The neural network training, evaluation, and prediction pipeline is consolidated
 * `--resume_checkpoint`: File path to a specific `.pt` file to resume training or run inference from.
 * `--checkpoint_freq`: Save a model checkpoint every X epochs (Default: `1`).
 * `--record_freq`: Record iteration-level loss/F1 metrics every X batches (Default: `100`).
+* `--track_iters` : Turn on iteration-level tracking
 
 **Data Paths:**
 * `--data_dir`, `--train_csv`, `--val_csv`, `--test_csv`, `--airline_csv`, `--variant_csv`: Use these to override default relative data paths if running from a different directory.
