@@ -1,3 +1,5 @@
+# DEPRECATED TRAINING SCRIPT
+
 # Include packages
 
 # PyTorch packages
