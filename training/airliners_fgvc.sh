@@ -30,11 +30,20 @@ python ./main.py \
     --batch_size 16 \
     --lr 0.001 \
     --checkpoint_dir "./checkpoints/checkpoints_primary_bs16_lr0.001" \
-    --run_name "Primary_H100_Run1"
     
 echo "Run 1 Training complete!"
 
-
+echo "Starting Run 2 training job..."
+python ./main.py \
+    --mode train \
+    --model primary \
+    --epochs 40 \
+    --batch_size 32 \
+    --lr 0.001 \
+    --checkpoint_dir "./checkpoints/checkpoints_primary_bs32_lr0.001" \
+    
+    
+echo "Run 2 Training complete!"
 
 echo "Starting Run 3 training job..."
 python ./main.py \
@@ -44,6 +53,6 @@ python ./main.py \
     --batch_size 64 \
     --lr 0.001 \
     --checkpoint_dir "./checkpoints/checkpoints_primary_bs64_lr0.001" \
-    --run_name "Primary_H100_Run3"
     
 echo "Run 3 Training complete!"
+

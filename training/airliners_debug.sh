@@ -23,13 +23,12 @@ source .venv/bin/activate
 
 # 3. Execute your Python script
 echo "Starting debug sanity check..."
-python ./training/main.py \
+python ./main.py \
     --mode sanity \
     --model primary \
     --epochs 10 \
     --batch_size 8 \
     --lr 0.001 \
     --checkpoint_dir "./checkpoints/sanity_primary_bs8_lr0.001" \
-    --run_name "Debug_H100_Run"
     
 echo "Debug job complete!"
