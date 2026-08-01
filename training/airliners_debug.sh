@@ -1,12 +1,11 @@
 #!/bin/bash
 #SBATCH --job-name=airliner_debug           # Name of your job
-#SBATCH --output=logs/%x_%j.out             # Standard output log (%x is job-name, %j is JobID)
-#SBATCH --error=logs/%x_%j.err              # Standard error log
-#SBATCH --time=02:00:00                     # Time limit (HH:MM:SS) - Be realistic!
+#SBATCH --output=~/scratch/Bruce-Qiu-APS360-Project/training/logs/%x_%j.out             # Standard output log (%x is job-name, %j is JobID)
+#SBATCH --error=~/scratch/Bruce-Qiu-APS360-Project/training/logs/%x_%j.err              # Standard error log
+#SBATCH --time=01:00:00                     # Time limit (HH:MM:SS) - Be realistic!
 #SBATCH --nodes=1                           # Number of nodes
 #SBATCH --ntasks-per-node=1                          # Number of tasks (usually 1 for basic PyTorch)
 #SBATCH --cpus-per-task=4                   # CPU cores (match your DataLoader num_workers + a bit of overhead)
-#SBATCH --mem=32G                           # RAM requested
 #SBATCH --gpus-per-node=1                            # Request 1 GPU (Trillium uses NVIDIA H100s)
 #SBATCH --partition=debug                     # (Optional/Depends on cluster) Specify the GPU queue
 

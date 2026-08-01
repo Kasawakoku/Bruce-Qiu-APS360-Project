@@ -1,12 +1,11 @@
 #!/bin/bash
 #SBATCH --job-name=airliner_primary         # Name of your job
-#SBATCH --output=logs/%x_%j.out             # Standard output log (%x is job-name, %j is JobID)
-#SBATCH --error=logs/%x_%j.err              # Standard error log
+#SBATCH --output=~/scratch/Bruce-Qiu-APS360-Project/training/logs/%x_%j.out             # Standard output log (%x is job-name, %j is JobID)
+#SBATCH --error=~/scratch/Bruce-Qiu-APS360-Project/training/logs/%x_%j.err              # Standard error log
 #SBATCH --time=06:00:00                     # Time limit (HH:MM:SS) - Be realistic!
 #SBATCH --nodes=1                           # Number of nodes
 #SBATCH --ntasks-per-node=1                          # Number of tasks (usually 1 for basic PyTorch)
 #SBATCH --cpus-per-task=4                   # CPU cores (match your DataLoader num_workers + a bit of overhead)
-#SBATCH --mem=32G                           # RAM requested
 #SBATCH --gpus-per-node=1                            # Request 1 GPU (Trillium uses NVIDIA H100s)
 #SBATCH --partition=compute                     # (Optional/Depends on cluster) Specify the GPU queue
 
@@ -35,17 +34,7 @@ python ./main.py \
     
 echo "Run 1 Training complete!"
 
-echo "Starting Run 2 training job..."
-python ./main.py \
-    --mode train \
-    --model primary \
-    --epochs 40 \
-    --batch_size 32 \
-    --lr 0.001 \
-    --checkpoint_dir "./checkpoints/checkpoints_primary_bs32_lr0.001" \
-    --run_name "Primary_H100_Run2"
-    
-echo "Run 2 Training complete!"
+
 
 echo "Starting Run 3 training job..."
 python ./main.py \
