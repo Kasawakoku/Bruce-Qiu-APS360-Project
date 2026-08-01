@@ -19,7 +19,7 @@ module load python/3.11.5
 module load cuda   # Load CUDA if required by SciNet's PyTorch setup
 
 # 2. Activate your environment
-source venv/bin/activate
+source .venv/bin/activate
 
 # 3. Execute your Python script
 echo "Starting debug sanity check..."
