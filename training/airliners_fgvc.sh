@@ -29,6 +29,7 @@ python ./main.py \
     --epochs 40 \
     --batch_size 16 \
     --lr 0.001 \
+    --checkpoint_freq 5 \
     --checkpoint_dir "./checkpoints/checkpoints_primary_bs16_lr0.001" \
     
 echo "Run 1 Training complete!"
@@ -40,6 +41,7 @@ python ./main.py \
     --epochs 40 \
     --batch_size 32 \
     --lr 0.001 \
+    --checkpoint_freq 5 \
     --checkpoint_dir "./checkpoints/checkpoints_primary_bs32_lr0.001" \
     
     
@@ -52,6 +54,7 @@ python ./main.py \
     --epochs 40 \
     --batch_size 64 \
     --lr 0.001 \
+    --checkpoint_freq 5 \
     --checkpoint_dir "./checkpoints/checkpoints_primary_bs64_lr0.001" \
     
 echo "Run 3 Training complete!"
