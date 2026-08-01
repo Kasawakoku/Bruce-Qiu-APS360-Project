@@ -4,17 +4,19 @@
 #SBATCH --error=logs/%x_%j.err              # Standard error log
 #SBATCH --time=06:00:00                     # Time limit (HH:MM:SS) - Be realistic!
 #SBATCH --nodes=1                           # Number of nodes
-#SBATCH --ntasks=1                          # Number of tasks (usually 1 for basic PyTorch)
+#SBATCH --ntasks-per-node=1                          # Number of tasks (usually 1 for basic PyTorch)
 #SBATCH --cpus-per-task=4                   # CPU cores (match your DataLoader num_workers + a bit of overhead)
 #SBATCH --mem=32G                           # RAM requested
-#SBATCH --gpus=1                            # Request 1 GPU (Trillium uses NVIDIA H100s)
-#SBATCH --partition=gpu                     # (Optional/Depends on cluster) Specify the GPU queue
+#SBATCH --gpus-per-node=1                            # Request 1 GPU (Trillium uses NVIDIA H100s)
+#SBATCH --partition=compute                     # (Optional/Depends on cluster) Specify the GPU queue
 
 # MUST RUN WITH TRAINING WORKING DIRECTORY AS CURRENT DIRECTORY
 
 # 1. Load the necessary modules (SciNet specific)
 module purge
-module load python
+module load StdEnv/2023
+module load python/3.11.5
+
 module load cuda   # Load CUDA if required by SciNet's PyTorch setup
 
 # 2. Activate your environment

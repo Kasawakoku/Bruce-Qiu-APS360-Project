@@ -1,0 +1,36 @@
+#!/bin/bash
+#SBATCH --job-name=airliner_debug           # Name of your job
+#SBATCH --output=logs/%x_%j.out             # Standard output log (%x is job-name, %j is JobID)
+#SBATCH --error=logs/%x_%j.err              # Standard error log
+#SBATCH --time=02:00:00                     # Time limit (HH:MM:SS) - Be realistic!
+#SBATCH --nodes=1                           # Number of nodes
+#SBATCH --ntasks-per-node=1                          # Number of tasks (usually 1 for basic PyTorch)
+#SBATCH --cpus-per-task=4                   # CPU cores (match your DataLoader num_workers + a bit of overhead)
+#SBATCH --mem=32G                           # RAM requested
+#SBATCH --gpus-per-node=1                            # Request 1 GPU (Trillium uses NVIDIA H100s)
+#SBATCH --partition=debug                     # (Optional/Depends on cluster) Specify the GPU queue
+
+# MUST RUN WITH TRAINING WORKING DIRECTORY AS CURRENT DIRECTORY
+
+# 1. Load the necessary modules (SciNet specific)
+module purge
+module load StdEnv/2023
+module load python/3.11.5
+
+module load cuda   # Load CUDA if required by SciNet's PyTorch setup
+
+# 2. Activate your environment
+source venv/bin/activate
+
+# 3. Execute your Python script
+echo "Starting debug sanity check..."
+python ./training/main.py \
+    --mode sanity \
+    --model primary \
+    --epochs 10 \
+    --batch_size 8 \
+    --lr 0.001 \
+    --checkpoint_dir "./checkpoints/sanity_primary_bs8_lr0.001" \
+    --run_name "Debug_H100_Run"
+    
+echo "Debug job complete!"
