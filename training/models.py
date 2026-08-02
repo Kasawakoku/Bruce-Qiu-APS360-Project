@@ -109,9 +109,11 @@ class DualBranchConvNeXt(nn.Module):
         self.amp = nn.AdaptiveMaxPool2d(1)
         
         self.structural_mlp = nn.Sequential(
+            nn.LayerNorm(feature_dim),
             nn.Linear(feature_dim, 512), nn.ReLU(), nn.Dropout(0.3), nn.Linear(512, num_variant_classes)
         )
         self.branding_mlp = nn.Sequential(
+            nn.LayerNorm(feature_dim),
             nn.Linear(feature_dim, 512), nn.ReLU(), nn.Dropout(0.3), nn.Linear(512, num_airline_classes)
         )
 
