@@ -34,60 +34,73 @@ def load_model_checkpoint(checkpoint_path, model, optimizer=None, device="cpu", 
     # We don't need to return multi_task_loss because it is updated in-place
     return model, optimizer, start_epoch, loaded_history
 
-def plot_training_curve(path, is_multitask=True, save_path_prefix=None, max_epoch=None):
+def plot_training_curve(path, is_multitask=True, target_task="variant", save_path_prefix=None, max_epoch=None):
     """
     Plot training curves for F1-Scores and Loss.
     Reads from CSVs and saves the output as PNG files.
     """
-    train_var_f1 = np.atleast_1d(np.loadtxt(f"{path}_train_var_f1.csv"))
-    val_var_f1 = np.atleast_1d(np.loadtxt(f"{path}_val_var_f1.csv"))
+    # 1. Load Loss (Always present)
     train_loss = np.atleast_1d(np.loadtxt(f"{path}_train_loss.csv"))
     val_loss = np.atleast_1d(np.loadtxt(f"{path}_val_loss.csv"))
     
-    if is_multitask:
-        train_air_f1 = np.atleast_1d(np.loadtxt(f"{path}_train_air_f1.csv"))
-        val_air_f1 = np.atleast_1d(np.loadtxt(f"{path}_val_air_f1.csv"))
-
     if max_epoch is not None:
-            train_var_f1 = train_var_f1[:max_epoch]
-            val_var_f1 = val_var_f1[:max_epoch]
-            train_loss = train_loss[:max_epoch]
-            val_loss = val_loss[:max_epoch]
-            if is_multitask:
-                train_air_f1 = train_air_f1[:max_epoch]
-                val_air_f1 = val_air_f1[:max_epoch]
+        train_loss = train_loss[:max_epoch]
+        val_loss = val_loss[:max_epoch]
+        
+    n_epochs = len(train_loss)
 
+    # 2. Load F1 Scores based on task
+    if is_multitask:
+        train_var_f1 = np.atleast_1d(np.loadtxt(f"{path}_train_var_f1.csv"))[:max_epoch]
+        val_var_f1 = np.atleast_1d(np.loadtxt(f"{path}_val_var_f1.csv"))[:max_epoch]
+        train_air_f1 = np.atleast_1d(np.loadtxt(f"{path}_train_air_f1.csv"))[:max_epoch]
+        val_air_f1 = np.atleast_1d(np.loadtxt(f"{path}_val_air_f1.csv"))[:max_epoch]
+    else:
+        if target_task == "airline":
+            train_f1 = np.atleast_1d(np.loadtxt(f"{path}_train_air_f1.csv"))[:max_epoch]
+            val_f1 = np.atleast_1d(np.loadtxt(f"{path}_val_air_f1.csv"))[:max_epoch]
+            f1_title = "Airline Weighted F1-Score"
+        else:
+            train_f1 = np.atleast_1d(np.loadtxt(f"{path}_train_var_f1.csv"))[:max_epoch]
+            val_f1 = np.atleast_1d(np.loadtxt(f"{path}_val_var_f1.csv"))[:max_epoch]
+            f1_title = "Variant Weighted F1-Score"
+
+    # 3. Load iteration metrics if they exist
     try:
         iter_steps = np.atleast_1d(np.loadtxt(f"{path}_iter_steps.csv"))
         iter_train_loss = np.atleast_1d(np.loadtxt(f"{path}_iter_train_loss.csv"))
-        iter_train_var_f1 = np.atleast_1d(np.loadtxt(f"{path}_iter_train_var_f1.csv"))
         iter_val_loss = np.atleast_1d(np.loadtxt(f"{path}_iter_val_loss.csv"))
-        iter_val_var_f1 = np.atleast_1d(np.loadtxt(f"{path}_iter_val_var_f1.csv"))
+        
         if is_multitask:
+            iter_train_var_f1 = np.atleast_1d(np.loadtxt(f"{path}_iter_train_var_f1.csv"))
+            iter_val_var_f1 = np.atleast_1d(np.loadtxt(f"{path}_iter_val_var_f1.csv"))
             iter_train_air_f1 = np.atleast_1d(np.loadtxt(f"{path}_iter_train_air_f1.csv"))
             iter_val_air_f1 = np.atleast_1d(np.loadtxt(f"{path}_iter_val_air_f1.csv"))
+        else:
+            if target_task == "airline":
+                iter_train_f1 = np.atleast_1d(np.loadtxt(f"{path}_iter_train_air_f1.csv"))
+                iter_val_f1 = np.atleast_1d(np.loadtxt(f"{path}_iter_val_air_f1.csv"))
+            else:
+                iter_train_f1 = np.atleast_1d(np.loadtxt(f"{path}_iter_train_var_f1.csv"))
+                iter_val_f1 = np.atleast_1d(np.loadtxt(f"{path}_iter_val_var_f1.csv"))
         has_iters = True
     except OSError:
         has_iters = False
 
-    n_epochs = len(train_var_f1)
-
-    
-    
     # --- Plot 1: Epoch-Level Metrics ---
     plt.figure(figsize=(15 if is_multitask else 10, 4))
     plt.suptitle("Epoch-Level Metrics (Train vs Validation)", fontsize=14, y=1.05)
 
-    plt.subplot(1, 3 if is_multitask else 2, 1)
-    plt.title("Variant Weighted F1-Score")
-    plt.plot(range(1, n_epochs+1), train_var_f1, label="Train")
-    plt.plot(range(1, n_epochs+1), val_var_f1, label="Validation")
-    plt.xlabel("Epoch")
-    plt.ylabel("F1-Score")
-    plt.legend(loc='best')
-    plt.locator_params(axis='x', integer=True)
-
     if is_multitask:
+        plt.subplot(1, 3, 1)
+        plt.title("Variant Weighted F1-Score")
+        plt.plot(range(1, n_epochs+1), train_var_f1, label="Train")
+        plt.plot(range(1, n_epochs+1), val_var_f1, label="Validation")
+        plt.xlabel("Epoch")
+        plt.ylabel("F1-Score")
+        plt.legend(loc='best')
+        plt.locator_params(axis='x', integer=True)
+
         plt.subplot(1, 3, 2)
         plt.title("Airline Weighted F1-Score")
         plt.plot(range(1, n_epochs+1), train_air_f1, label="Train")
@@ -96,8 +109,20 @@ def plot_training_curve(path, is_multitask=True, save_path_prefix=None, max_epoc
         plt.ylabel("F1-Score")
         plt.legend(loc='best')
         plt.locator_params(axis='x', integer=True)
+        
+        plt.subplot(1, 3, 3)
+    else:
+        plt.subplot(1, 2, 1)
+        plt.title(f1_title)
+        plt.plot(range(1, n_epochs+1), train_f1, label="Train")
+        plt.plot(range(1, n_epochs+1), val_f1, label="Validation")
+        plt.xlabel("Epoch")
+        plt.ylabel("F1-Score")
+        plt.legend(loc='best')
+        plt.locator_params(axis='x', integer=True)
+        
+        plt.subplot(1, 2, 2)
 
-    plt.subplot(1, 3 if is_multitask else 2, 3 if is_multitask else 2)
     plt.title("Train vs Validation Loss")
     plt.plot(range(1, n_epochs+1), train_loss, label="Train")
     plt.plot(range(1, n_epochs+1), val_loss, label="Validation")
@@ -120,15 +145,15 @@ def plot_training_curve(path, is_multitask=True, save_path_prefix=None, max_epoc
         plt.figure(figsize=(15 if is_multitask else 10, 4))
         plt.suptitle("Iteration-Level Metrics (Train vs Validation)", fontsize=14, y=1.05)
 
-        plt.subplot(1, 3 if is_multitask else 2, 1)
-        plt.title("Variant Weighted F1-Score")
-        plt.plot(iter_steps, iter_train_var_f1, label="Train", color='blue')
-        plt.plot(iter_steps, iter_val_var_f1, label="Validation", color='red')
-        plt.xlabel("Iteration (Batches)")
-        plt.ylabel("F1-Score")
-        plt.legend(loc='best')
-
         if is_multitask:
+            plt.subplot(1, 3, 1)
+            plt.title("Variant Weighted F1-Score")
+            plt.plot(iter_steps, iter_train_var_f1, label="Train", color='blue')
+            plt.plot(iter_steps, iter_val_var_f1, label="Validation", color='red')
+            plt.xlabel("Iteration (Batches)")
+            plt.ylabel("F1-Score")
+            plt.legend(loc='best')
+
             plt.subplot(1, 3, 2)
             plt.title("Airline Weighted F1-Score")
             plt.plot(iter_steps, iter_train_air_f1, label="Train", color='blue')
@@ -136,8 +161,19 @@ def plot_training_curve(path, is_multitask=True, save_path_prefix=None, max_epoc
             plt.xlabel("Iteration (Batches)")
             plt.ylabel("F1-Score")
             plt.legend(loc='best')
+            
+            plt.subplot(1, 3, 3)
+        else:
+            plt.subplot(1, 2, 1)
+            plt.title(f1_title)
+            plt.plot(iter_steps, iter_train_f1, label="Train", color='blue')
+            plt.plot(iter_steps, iter_val_f1, label="Validation", color='red')
+            plt.xlabel("Iteration (Batches)")
+            plt.ylabel("F1-Score")
+            plt.legend(loc='best')
+            
+            plt.subplot(1, 2, 2)
 
-        plt.subplot(1, 3 if is_multitask else 2, 3 if is_multitask else 2)
         plt.title("Train vs Validation Loss")
         plt.plot(iter_steps, iter_train_loss, label="Train Loss", color='blue')
         plt.plot(iter_steps, iter_val_loss, label="Val Loss", color='red')

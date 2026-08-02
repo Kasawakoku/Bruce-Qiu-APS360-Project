@@ -152,7 +152,7 @@ def main():
         )
         
         # In the 'train' block, change the plot_training_curve call to include the save_path_prefix:
-        plot_training_curve(saved_multi_path, is_multitask=args.is_multitask, save_path_prefix=saved_multi_path)
+        plot_training_curve(saved_multi_path, is_multitask=args.is_multitask, target_task=target_task, save_path_prefix=saved_multi_path)
         
     elif args.mode == 'predict':
         if not args.image_path:
@@ -229,7 +229,11 @@ def main():
         print(f"Generating graphs using CSVs located at: {csv_base_path}*.csv (Up to epoch {args.epochs})")
         
         # Pass args.epochs as max_epoch
-        plot_training_curve(csv_base_path, is_multitask=is_multitask, save_path_prefix=save_prefix, max_epoch=args.epochs)
+        target_task = "variant"
+        if not is_multitask and "airline" in model_name.lower():
+            target_task = "airline"
+            
+        plot_training_curve(csv_base_path, is_multitask=is_multitask, target_task=target_task, save_path_prefix=save_prefix, max_epoch=args.epochs)
 
 if __name__ == "__main__":
     main()
