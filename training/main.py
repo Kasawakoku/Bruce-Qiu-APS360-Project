@@ -7,7 +7,7 @@ import torch.optim as optim
 from yaml import parser
 from torch.utils.data import DataLoader, Subset
 
-from models import DualBranchNet, BaselineVariantCNN, BaselineAirlineCNN
+from models import MultiTaskLoss, DualBranchEfficientNet, BaselineVariantCNN, BaselineAirlineCNN, DualBranchResNet, DualBranchConvNeXt, DualBranchViT, SingleTaskNet
 from dataset import AirlinerDataset, load_split_dataframes, build_mapping_from_csv, get_transforms
 from train import train_net, evaluate
 from utils import load_model_checkpoint, plot_training_curve, predict_image, get_model_name
@@ -17,7 +17,10 @@ def main():
     
     # Mode and Setup
     parser.add_argument('--mode', type=str, required=True, choices=['train', 'sanity', 'predict', 'test', 'graph'], help="Execution mode")    
-    parser.add_argument('--model', type=str, required=True, choices=['baseline_variant', 'primary'], help="Model architecture")
+    parser.add_argument('--model', type=str, required=True, 
+                        choices=['baseline_variant', 'primary_efficientnet', 'primary_resnet', 
+                                 'primary_convnext', 'primary_vit', 'single_variant', 'single_airline'], 
+                        help="Model architecture")    
     parser.add_argument('--is_multitask', action='store_true', help="Use if the model outputs multiple branches (e.g. Primary)")
     
     # Data arguments
@@ -34,7 +37,7 @@ def main():
     parser.add_argument('--batch_size', type=int, default=16)
     parser.add_argument('--lr', type=float, default=1e-3)
     parser.add_argument('--epochs', type=int, default=30)
-    parser.add_argument('--image_size', type=int, default=300)
+    parser.add_argument('--image_size', type=int, default=224) # 224 for ablation study of ViT
     
     # Logging and checkpoints
     parser.add_argument('--checkpoint_dir', type=str, default="checkpoints")
@@ -51,8 +54,8 @@ def main():
 
     args = parser.parse_args()
 
-    # Primary model is multitask by design
-    if args.model == 'primary':
+    # Primary models are multitask by design
+    if 'primary' in args.model:
         args.is_multitask = True
 
 
@@ -68,15 +71,33 @@ def main():
     # 2. Instantiate Model
     if args.model == 'baseline_variant':
         model = BaselineVariantCNN(num_variant_classes=NUM_VARIANT_CLASSES).to(device)
-    elif args.model == 'primary':
-        model = DualBranchNet(num_variant_classes=NUM_VARIANT_CLASSES, num_airline_classes=NUM_AIRLINE_CLASSES).to(device)
+    elif args.model == 'primary_efficientnet':
+        model = DualBranchEfficientNet(num_variant_classes=NUM_VARIANT_CLASSES, num_airline_classes=NUM_AIRLINE_CLASSES).to(device)
+    elif args.model == 'primary_resnet':
+        model = DualBranchResNet(num_variant_classes=NUM_VARIANT_CLASSES, num_airline_classes=NUM_AIRLINE_CLASSES).to(device)
+    elif args.model == 'primary_convnext':
+        model = DualBranchConvNeXt(num_variant_classes=NUM_VARIANT_CLASSES, num_airline_classes=NUM_AIRLINE_CLASSES).to(device)
+    elif args.model == 'primary_vit':
+        model = DualBranchViT(num_variant_classes=NUM_VARIANT_CLASSES, num_airline_classes=NUM_AIRLINE_CLASSES).to(device)
+    elif args.model == 'single_variant':
+        model = SingleTaskNet(backbone_type="efficientnet", num_classes=NUM_VARIANT_CLASSES, task_name="Variant").to(device)
+    elif args.model == 'single_airline':
+        model = SingleTaskNet(backbone_type="efficientnet", num_classes=NUM_AIRLINE_CLASSES, task_name="Airline").to(device)
     
-    optimizer = optim.Adam(model.parameters(), lr=args.lr)
+    
+    # 2.5 Instantiate MultiTaskLoss and AdamW Optimizer
+    multi_task_loss = None
+    if args.is_multitask:
+        multi_task_loss = MultiTaskLoss(num_tasks=2).to(device)
+        # Pass BOTH model parameters and loss parameters to AdamW
+        optimizer = optim.AdamW(list(model.parameters()) + list(multi_task_loss.parameters()), lr=args.lr)
+    else:
+        optimizer = optim.AdamW(model.parameters(), lr=args.lr)
     
     start_epoch, loaded_history = 0, None
     if args.resume_checkpoint:
         model, optimizer, start_epoch, loaded_history = load_model_checkpoint(
-            args.resume_checkpoint, model, optimizer, device
+            args.resume_checkpoint, model, optimizer, device, multi_task_loss=multi_task_loss
         )
 
     # 3. Execution logic branching
@@ -112,7 +133,8 @@ def main():
             track_iterations=args.track_iters,
             record_freq=args.record_freq,
             custom_model_name=args.run_name,
-            num_workers=args.num_workers
+            num_workers=args.num_workers,
+            multi_task_loss=multi_task_loss
         )
         
         # In the 'train' block, change the plot_training_curve call to include the save_path_prefix:
@@ -131,7 +153,8 @@ def main():
             device=device,
             variant_idx_to_name=variant_idx_to_name,
             airline_idx_to_name=airline_idx_to_name,
-            is_multitask=args.is_multitask
+            is_multitask=args.is_multitask,
+            image_size=args.image_size
         )
         
         if args.is_multitask:

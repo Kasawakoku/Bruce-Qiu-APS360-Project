@@ -9,7 +9,7 @@ from tqdm import tqdm
 from sklearn.metrics import f1_score
 from utils import get_model_name
 
-def evaluate(net, loader, criterion, device, is_multitask=True):
+def evaluate(net, loader, criterion, device, is_multitask=True, multi_task_loss=None):
     total_loss = 0.0
     all_var_preds = []
     all_var_labels = []
@@ -27,7 +27,17 @@ def evaluate(net, loader, criterion, device, is_multitask=True):
 
             if is_multitask:
                 var_outputs, air_outputs = net(inputs)
-                loss = criterion(var_outputs, variant_labels) + criterion(air_outputs, airline_labels)
+                
+                # 1. Calculate separate base cross-entropy losses
+                loss_v = criterion(var_outputs, variant_labels)
+                loss_a = criterion(air_outputs, airline_labels)
+                
+                # 2. Apply adaptive weighting if provided, else standard addition
+                if multi_task_loss is not None:
+                    loss = multi_task_loss(loss_v, loss_a)
+                else:
+                    loss = loss_v + loss_a
+                    
                 _, var_preds = torch.max(var_outputs.data, 1)
                 _, air_preds = torch.max(air_outputs.data, 1)
                 all_air_preds.extend(air_preds.cpu().numpy())
@@ -52,7 +62,7 @@ def evaluate(net, loader, criterion, device, is_multitask=True):
 
 def train_net(net, train_loader, val_loader, batch_size=64, learning_rate=0.01, num_epochs=30, checkpoint_freq=1, 
               is_multitask=True, checkpoint_dir="checkpoints", optimizer=None, start_epoch=0, 
-              track_iterations=True, record_freq=100, loaded_history=None, custom_model_name=None, num_workers=4):
+              track_iterations=True, record_freq=100, loaded_history=None, custom_model_name=None, num_workers=4, multi_task_loss=None):
     
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(f"Training on device: {device}")
@@ -61,7 +71,11 @@ def train_net(net, train_loader, val_loader, batch_size=64, learning_rate=0.01, 
 
     criterion = nn.CrossEntropyLoss()
     if optimizer is None:
-        optimizer = optim.Adam(net.parameters(), lr=learning_rate)
+        if multi_task_loss is not None:
+            # Combine both model and loss parameters for AdamW
+            optimizer = optim.AdamW(list(net.parameters()) + list(multi_task_loss.parameters()), lr=learning_rate)
+        else:
+            optimizer = optim.AdamW(net.parameters(), lr=learning_rate)
 
     train_var_f1, train_loss = np.zeros(num_epochs), np.zeros(num_epochs)
     val_var_f1, val_loss = np.zeros(num_epochs), np.zeros(num_epochs)
@@ -126,7 +140,17 @@ def train_net(net, train_loader, val_loader, batch_size=64, learning_rate=0.01, 
 
             if is_multitask:
                 var_outputs, air_outputs = net(inputs)
-                loss = criterion(var_outputs, variant_labels) + criterion(air_outputs, airline_labels)
+                
+                # 1. Calculate separate base cross-entropy losses
+                loss_v = criterion(var_outputs, variant_labels)
+                loss_a = criterion(air_outputs, airline_labels)
+                
+                # 2. Apply adaptive weighting if provided, else standard addition
+                if multi_task_loss is not None:
+                    loss = multi_task_loss(loss_v, loss_a)
+                else:
+                    loss = loss_v + loss_a
+                    
                 _, var_preds = torch.max(var_outputs.data, 1)
                 _, air_preds = torch.max(air_outputs.data, 1)
                 all_air_preds.extend(air_preds.cpu().numpy())
@@ -158,10 +182,10 @@ def train_net(net, train_loader, val_loader, batch_size=64, learning_rate=0.01, 
                     
                     if is_multitask:
                         iter_train_air_f1.append(f1_score(window_air_labels, window_air_preds, average='weighted', zero_division=0))
-                        v_var, v_air, v_loss = evaluate(net, val_loader, criterion, device, is_multitask)
+                        v_var, v_air, v_loss = evaluate(net, val_loader, criterion, device, is_multitask, multi_task_loss)
                         iter_val_var_f1.append(v_var); iter_val_air_f1.append(v_air); iter_val_loss.append(v_loss)
                     else:
-                        v_var, v_loss = evaluate(net, val_loader, criterion, device, is_multitask)
+                        v_var, v_loss = evaluate(net, val_loader, criterion, device, is_multitask, multi_task_loss)
                         iter_val_var_f1.append(v_var); iter_val_loss.append(v_loss)
                         
                     net.train()
@@ -177,11 +201,11 @@ def train_net(net, train_loader, val_loader, batch_size=64, learning_rate=0.01, 
             train_air_f1[epoch] = f1_score(all_air_labels, all_air_preds, average='weighted', zero_division=0)
 
         if is_multitask:
-            val_var_f1[epoch], val_air_f1[epoch], val_loss[epoch] = evaluate(net, val_loader, criterion, device, is_multitask)
+            val_var_f1[epoch], val_air_f1[epoch], val_loss[epoch] = evaluate(net, val_loader, criterion, device, is_multitask, multi_task_loss)
             print(f"Epoch {epoch + 1}: Train Loss: {train_loss[epoch]:.4f} | Train Var F1: {train_var_f1[epoch]:.4f} | Train Air F1: {train_air_f1[epoch]:.4f}")
             print(f"          Val Loss: {val_loss[epoch]:.4f} | Val Var F1: {val_var_f1[epoch]:.4f} | Val Air F1: {val_air_f1[epoch]:.4f}")
         else:
-            val_var_f1[epoch], val_loss[epoch] = evaluate(net, val_loader, criterion, device, is_multitask)
+            val_var_f1[epoch], val_loss[epoch] = evaluate(net, val_loader, criterion, device, is_multitask, multi_task_loss)
             print(f"Epoch {epoch + 1}: Train Loss: {train_loss[epoch]:.4f} | Train Var F1: {train_var_f1[epoch]:.4f}")
             print(f"          Val Loss: {val_loss[epoch]:.4f} | Val Var F1: {val_var_f1[epoch]:.4f}")
 
@@ -208,6 +232,7 @@ def train_net(net, train_loader, val_loader, batch_size=64, learning_rate=0.01, 
             torch.save({
                 "epoch": epoch + 1,
                 "model_state_dict": net.state_dict(),
+                "loss_state_dict": multi_task_loss.state_dict() if multi_task_loss is not None else None,
                 "optimizer_state_dict": optimizer.state_dict(),
                 "history": history_dict,
 

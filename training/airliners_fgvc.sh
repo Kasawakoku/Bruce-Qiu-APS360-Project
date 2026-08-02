@@ -1,7 +1,7 @@
 #!/bin/bash
 #SBATCH --job-name=airliner_primary         # Name of your job
-#SBATCH --output=~/scratch/Bruce-Qiu-APS360-Project/training/logs/%x_%j.out             # Standard output log (%x is job-name, %j is JobID)
-#SBATCH --error=~/scratch/Bruce-Qiu-APS360-Project/training/logs/%x_%j.err              # Standard error log
+#SBATCH --output=logs/%x_%j.out             # Standard output log (%x is job-name, %j is JobID)
+#SBATCH --error=logs/%x_%j.err              # Standard error log
 #SBATCH --time=06:00:00                     # Time limit (HH:MM:SS) - Be realistic!
 #SBATCH --nodes=1                           # Number of nodes
 #SBATCH --ntasks-per-node=1                          # Number of tasks (usually 1 for basic PyTorch)

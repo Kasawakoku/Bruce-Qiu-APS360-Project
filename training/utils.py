@@ -13,17 +13,25 @@ def get_model_name(name, batch_size, learning_rate, epoch, checkpoint_dir="check
     filename = f"model_{name}_bs{batch_size}_lr{learning_rate}_epoch{epoch}.pt"
     return os.path.join(checkpoint_dir, filename)
 
-def load_model_checkpoint(checkpoint_path, model, optimizer=None, device="cpu"):
+def load_model_checkpoint(checkpoint_path, model, optimizer=None, device="cpu", multi_task_loss=None):
     checkpoint = torch.load(checkpoint_path, map_location=device, weights_only=False)
     model.load_state_dict(checkpoint["model_state_dict"])
+    
     if optimizer is not None and "optimizer_state_dict" in checkpoint:
         optimizer.load_state_dict(checkpoint["optimizer_state_dict"])
+        
+    # Load the learned uncertainty weights if provided and available
+    if multi_task_loss is not None and "loss_state_dict" in checkpoint and checkpoint["loss_state_dict"] is not None:
+        multi_task_loss.load_state_dict(checkpoint["loss_state_dict"])
+        print("Successfully loaded MultiTaskLoss uncertainty weights.")
         
     start_epoch = checkpoint.get("epoch", 0)
     loaded_history = checkpoint.get("history", None)
     
     print(f"Successfully loaded checkpoint: {os.path.basename(checkpoint_path)}")
     print(f"Resuming training from epoch {start_epoch}...")
+    
+    # We don't need to return multi_task_loss because it is updated in-place
     return model, optimizer, start_epoch, loaded_history
 
 def plot_training_curve(path, is_multitask=True, save_path_prefix=None, max_epoch=None):
@@ -154,7 +162,7 @@ def pad_to_square(img, fill_color=(255, 255, 255)):
     new_img.paste(img, ((size - w) // 2, (size - h) // 2))
     return new_img
 
-def predict_image(image_path, model, device, variant_idx_to_name, airline_idx_to_name=None, is_multitask=True):
+def predict_image(image_path, model, device, variant_idx_to_name, airline_idx_to_name=None, is_multitask=True, image_size=224):
     model.eval()
     try:
         img = Image.open(image_path).convert('RGB')
@@ -164,7 +172,7 @@ def predict_image(image_path, model, device, variant_idx_to_name, airline_idx_to
         
     img = pad_to_square(img)
     transform = transforms.Compose([
-        transforms.Resize((300, 300)),
+        transforms.Resize((image_size, image_size)),
         transforms.ToTensor(),
         transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
     ])
