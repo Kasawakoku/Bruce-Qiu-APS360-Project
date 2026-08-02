@@ -1,1 +1,1 @@
-# Placeholder readme for logs
+# Placeholder README for logs folder
