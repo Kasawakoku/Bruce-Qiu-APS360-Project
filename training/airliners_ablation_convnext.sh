@@ -1,8 +1,8 @@
 #!/bin/bash
-#SBATCH --job-name=airliner_primary         # Name of your job
+#SBATCH --job-name=airliner_ablation_convnext         # Name of your job
 #SBATCH --output=logs/%x_%j.out             # Standard output log (%x is job-name, %j is JobID)
 #SBATCH --error=logs/%x_%j.err              # Standard error log
-#SBATCH --time=06:00:00                     # Time limit (HH:MM:SS) - Be realistic!
+#SBATCH --time=03:00:00                     # Time limit (HH:MM:SS) - Be realistic!
 #SBATCH --nodes=1                           # Number of nodes
 #SBATCH --ntasks-per-node=1                          # Number of tasks (usually 1 for basic PyTorch)
 #SBATCH --cpus-per-task=8                   # CPU cores (match your DataLoader num_workers + a bit of overhead)
