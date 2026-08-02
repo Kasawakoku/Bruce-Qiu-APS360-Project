@@ -7,6 +7,10 @@
 sample.html
 
 .venv/
+__pycache__/
+logs/
+*.out
+*.err
 
 raw_aircraft.txt
 raw_airlines.txt
