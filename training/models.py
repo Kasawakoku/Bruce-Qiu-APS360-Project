@@ -13,6 +13,11 @@ from torchvision.models import (
 # ---------------------------------------------------------
 # PRIMARY MODEL
 # ---------------------------------------------------------
+
+
+# ---------------------------------------------------------
+# ABLATIONS
+# ---------------------------------------------------------
 class DualBranchEfficientNet(nn.Module):
     def __init__(self, num_variant_classes, num_airline_classes):
         super(DualBranchEfficientNet, self).__init__()
@@ -59,10 +64,6 @@ from torchvision.models import (
 )
 
 
-
-# ---------------------------------------------------------
-# ABLATIONS
-# ---------------------------------------------------------
 
 class DualBranchResNet(nn.Module):
     def __init__(self, num_variant_classes, num_airline_classes):
@@ -160,12 +161,12 @@ class DualBranchViT(nn.Module):
 #---------------------------------------------------------
 # SINGLE TASK MODELS
 #---------------------------------------------------------
-
 class SingleTaskNet(nn.Module):
     def __init__(self, backbone_type, num_classes, task_name="Variant"):
         super(SingleTaskNet, self).__init__()
         self.name = f"SingleTask_{backbone_type}_{task_name}"
         
+        # 1. Instantiate the backbone and get the feature dimension
         if backbone_type == "efficientnet":
             base_model = efficientnet_b3(weights=EfficientNet_B3_Weights.DEFAULT)
             self.features = base_model.features
@@ -174,27 +175,40 @@ class SingleTaskNet(nn.Module):
             base_model = resnet50(weights=ResNet50_Weights.DEFAULT)
             self.features = nn.Sequential(*list(base_model.children())[:-2])
             feature_dim = 2048
+        elif backbone_type == "convnext":
+            base_model = convnext_tiny(weights=ConvNeXt_Tiny_Weights.DEFAULT)
+            self.features = base_model.features
+            feature_dim = 768
         else:
             raise ValueError("Unsupported backbone for SingleTaskNet template")
             
+        # 2. Assign the pooling layer based on the task
         if task_name == "Variant":
             self.pool = nn.AdaptiveAvgPool2d(1)
         else:
             self.pool = nn.AdaptiveMaxPool2d(1)
             
-        self.mlp = nn.Sequential(
+        # 3. Build the MLP classifier
+        # Note: We conditionally add nn.LayerNorm for ConvNeXt, 
+        # as it was required for stable training in your dual-branch design.
+        mlp_layers = []
+        if backbone_type == "convnext":
+            mlp_layers.append(nn.LayerNorm(feature_dim))
+            
+        mlp_layers.extend([
             nn.Linear(feature_dim, 512),
             nn.ReLU(),
             nn.Dropout(0.3),
             nn.Linear(512, num_classes)
-        )
+        ])
+        
+        self.mlp = nn.Sequential(*mlp_layers)
 
     def forward(self, x):
         x = self.features(x)
         x = self.pool(x).view(x.size(0), -1)
         x = self.mlp(x)
         return x
-
 # ---------------------------------------------------------
 # BASELINES
 # ---------------------------------------------------------

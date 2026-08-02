@@ -18,8 +18,9 @@ def main():
     # Mode and Setup
     parser.add_argument('--mode', type=str, required=True, choices=['train', 'sanity', 'predict', 'test', 'graph'], help="Execution mode")    
     parser.add_argument('--model', type=str, required=True, 
-                        choices=['baseline_variant', 'primary_efficientnet', 'primary_resnet', 
-                                 'primary_convnext', 'primary_vit', 'single_variant', 'single_airline'], 
+                        choices=['baseline_variant', 'baseline_airline', 'primary_efficientnet', 'primary_resnet', 
+                                 'primary_convnext', 'primary_vit', 'single_variant_convnext', 'single_airline_convnext', 
+                                 'single_variant_efficientnet', 'single_airline_efficientnet'], 
                         help="Model architecture")    
     parser.add_argument('--is_multitask', action='store_true', help="Use if the model outputs multiple branches (e.g. Primary)")
     
@@ -37,7 +38,7 @@ def main():
     parser.add_argument('--batch_size', type=int, default=16)
     parser.add_argument('--lr', type=float, default=1e-3)
     parser.add_argument('--epochs', type=int, default=30)
-    parser.add_argument('--image_size', type=int, default=224) # 224 for ablation study of ViT
+    parser.add_argument('--image_size', type=int, default=300) # 224 for ablation study of ViT, back to 300 for regular CNNs
     
     # Logging and checkpoints
     parser.add_argument('--checkpoint_dir', type=str, default="checkpoints")
@@ -71,6 +72,8 @@ def main():
     # 2. Instantiate Model
     if args.model == 'baseline_variant':
         model = BaselineVariantCNN(num_variant_classes=NUM_VARIANT_CLASSES).to(device)
+    elif args.model == 'baseline_airline':  
+        model = BaselineAirlineCNN(num_airline_classes=NUM_AIRLINE_CLASSES).to(device)
     elif args.model == 'primary_efficientnet':
         model = DualBranchEfficientNet(num_variant_classes=NUM_VARIANT_CLASSES, num_airline_classes=NUM_AIRLINE_CLASSES).to(device)
     elif args.model == 'primary_resnet':
@@ -79,11 +82,15 @@ def main():
         model = DualBranchConvNeXt(num_variant_classes=NUM_VARIANT_CLASSES, num_airline_classes=NUM_AIRLINE_CLASSES).to(device)
     elif args.model == 'primary_vit':
         model = DualBranchViT(num_variant_classes=NUM_VARIANT_CLASSES, num_airline_classes=NUM_AIRLINE_CLASSES).to(device)
-    elif args.model == 'single_variant':
+    elif args.model == 'single_variant_efficientnet':
         model = SingleTaskNet(backbone_type="efficientnet", num_classes=NUM_VARIANT_CLASSES, task_name="Variant").to(device)
-    elif args.model == 'single_airline':
+    elif args.model == 'single_airline_efficientnet':
         model = SingleTaskNet(backbone_type="efficientnet", num_classes=NUM_AIRLINE_CLASSES, task_name="Airline").to(device)
-    
+    elif args.model == 'single_variant_convnext':
+        model = SingleTaskNet(backbone_type="convnext", num_classes=NUM_VARIANT_CLASSES, task_name="Variant").to(device)
+    elif args.model == 'single_airline_convnext':
+        model = SingleTaskNet(backbone_type="convnext", num_classes=NUM_AIRLINE_CLASSES, task_name="Airline").to(device)
+
     
     # 2.5 Instantiate MultiTaskLoss and AdamW Optimizer
     multi_task_loss = None
