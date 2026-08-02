@@ -6,6 +6,8 @@
 *.tar.gz
 sample.html
 
+.venv/
+
 raw_aircraft.txt
 raw_airlines.txt
 
