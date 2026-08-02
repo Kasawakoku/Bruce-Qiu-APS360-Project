@@ -8,6 +8,7 @@ sample.html
 
 .venv/
 __pycache__/
+.torch_cache/
 logs/
 *.out
 *.err
