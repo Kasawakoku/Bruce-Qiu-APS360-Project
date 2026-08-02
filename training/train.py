@@ -9,13 +9,10 @@ from tqdm import tqdm
 from sklearn.metrics import f1_score
 from utils import get_model_name
 
-def evaluate(net, loader, criterion, device, is_multitask=True, multi_task_loss=None):
+def evaluate(net, loader, criterion, device, is_multitask=True, multi_task_loss=None, target_task="variant"):
     total_loss = 0.0
-    all_var_preds = []
-    all_var_labels = []
-    if is_multitask:
-        all_air_preds = []
-        all_air_labels = []
+    all_var_preds, all_var_labels = [], []
+    all_air_preds, all_air_labels = [], []
         
     net.eval()
     with torch.no_grad():
@@ -27,12 +24,9 @@ def evaluate(net, loader, criterion, device, is_multitask=True, multi_task_loss=
 
             if is_multitask:
                 var_outputs, air_outputs = net(inputs)
-                
-                # 1. Calculate separate base cross-entropy losses
                 loss_v = criterion(var_outputs, variant_labels)
                 loss_a = criterion(air_outputs, airline_labels)
                 
-                # 2. Apply adaptive weighting if provided, else standard addition
                 if multi_task_loss is not None:
                     loss = multi_task_loss(loss_v, loss_a)
                 else:
@@ -42,27 +36,39 @@ def evaluate(net, loader, criterion, device, is_multitask=True, multi_task_loss=
                 _, air_preds = torch.max(air_outputs.data, 1)
                 all_air_preds.extend(air_preds.cpu().numpy())
                 all_air_labels.extend(airline_labels.cpu().numpy())
+                all_var_preds.extend(var_preds.cpu().numpy())
+                all_var_labels.extend(variant_labels.cpu().numpy())
             else:
-                var_outputs = net(inputs)
-                loss = criterion(var_outputs, variant_labels)
-                _, var_preds = torch.max(var_outputs.data, 1)
+                outputs = net(inputs)
+                _, preds = torch.max(outputs.data, 1)
+                
+                # Use the correct label based on the target task
+                if target_task == "airline":
+                    loss = criterion(outputs, airline_labels)
+                    all_air_preds.extend(preds.cpu().numpy())
+                    all_air_labels.extend(airline_labels.cpu().numpy())
+                else:
+                    loss = criterion(outputs, variant_labels)
+                    all_var_preds.extend(preds.cpu().numpy())
+                    all_var_labels.extend(variant_labels.cpu().numpy())
 
             total_loss += loss.item()
-            all_var_preds.extend(var_preds.cpu().numpy())
-            all_var_labels.extend(variant_labels.cpu().numpy())
 
-    var_f1 = f1_score(all_var_labels, all_var_preds, average='weighted', zero_division=0)
     avg_loss = float(total_loss) / len(loader)
 
     if is_multitask:
+        var_f1 = f1_score(all_var_labels, all_var_preds, average='weighted', zero_division=0)
         air_f1 = f1_score(all_air_labels, all_air_preds, average='weighted', zero_division=0)
         return var_f1, air_f1, avg_loss
     else:
-        return var_f1, avg_loss
+        if target_task == "airline":
+            return f1_score(all_air_labels, all_air_preds, average='weighted', zero_division=0), avg_loss
+        else:
+            return f1_score(all_var_labels, all_var_preds, average='weighted', zero_division=0), avg_loss
 
 def train_net(net, train_loader, val_loader, batch_size=64, learning_rate=0.01, num_epochs=30, checkpoint_freq=1, 
               is_multitask=True, checkpoint_dir="checkpoints", optimizer=None, start_epoch=0, 
-              track_iterations=True, record_freq=100, loaded_history=None, custom_model_name=None, num_workers=4, multi_task_loss=None):
+              track_iterations=True, record_freq=100, loaded_history=None, custom_model_name=None, num_workers=4, multi_task_loss=None, target_task="variant"):
     
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(f"Training on device: {device}")
@@ -72,7 +78,6 @@ def train_net(net, train_loader, val_loader, batch_size=64, learning_rate=0.01, 
     criterion = nn.CrossEntropyLoss()
     if optimizer is None:
         if multi_task_loss is not None:
-            # Combine both model and loss parameters for AdamW
             optimizer = optim.AdamW(list(net.parameters()) + list(multi_task_loss.parameters()), lr=learning_rate)
         else:
             optimizer = optim.AdamW(net.parameters(), lr=learning_rate)
@@ -80,16 +85,15 @@ def train_net(net, train_loader, val_loader, batch_size=64, learning_rate=0.01, 
     train_var_f1, train_loss = np.zeros(num_epochs), np.zeros(num_epochs)
     val_var_f1, val_loss = np.zeros(num_epochs), np.zeros(num_epochs)
 
-    if is_multitask:
-        train_air_f1 = np.zeros(num_epochs)
-        val_air_f1 = np.zeros(num_epochs)
+    train_air_f1 = np.zeros(num_epochs)
+    val_air_f1 = np.zeros(num_epochs)
 
     global_step = 0
     iter_steps = []
     iter_train_loss, iter_val_loss = [], []
     iter_train_var_f1, iter_val_var_f1 = [], []
-    if is_multitask:
-        iter_train_air_f1, iter_val_air_f1 = [], []
+    iter_train_air_f1, iter_val_air_f1 = [], []
+    
 
     if loaded_history is not None:
         print("Restoring training history from checkpoint for seamless graphs...")
@@ -120,13 +124,11 @@ def train_net(net, train_loader, val_loader, batch_size=64, learning_rate=0.01, 
         net.train()
         total_train_loss = 0.0
         all_var_preds, all_var_labels = [], []
-        if is_multitask:
-            all_air_preds, all_air_labels = [], []
+        all_air_preds, all_air_labels = [], []
 
         window_loss = 0.0
         window_var_preds, window_var_labels = [], []
-        if is_multitask:
-            window_air_preds, window_air_labels = [], []
+        window_air_preds, window_air_labels = [], []
 
         progress = tqdm(train_loader, desc=f"Epoch {epoch+1}/{num_epochs}")
 
@@ -140,12 +142,9 @@ def train_net(net, train_loader, val_loader, batch_size=64, learning_rate=0.01, 
 
             if is_multitask:
                 var_outputs, air_outputs = net(inputs)
-                
-                # 1. Calculate separate base cross-entropy losses
                 loss_v = criterion(var_outputs, variant_labels)
                 loss_a = criterion(air_outputs, airline_labels)
                 
-                # 2. Apply adaptive weighting if provided, else standard addition
                 if multi_task_loss is not None:
                     loss = multi_task_loss(loss_v, loss_a)
                 else:
@@ -153,59 +152,79 @@ def train_net(net, train_loader, val_loader, batch_size=64, learning_rate=0.01, 
                     
                 _, var_preds = torch.max(var_outputs.data, 1)
                 _, air_preds = torch.max(air_outputs.data, 1)
+                
                 all_air_preds.extend(air_preds.cpu().numpy())
                 all_air_labels.extend(airline_labels.cpu().numpy())
+                all_var_preds.extend(var_preds.cpu().numpy())
+                all_var_labels.extend(variant_labels.cpu().numpy())
             else:
-                var_outputs = net(inputs)
-                loss = criterion(var_outputs, variant_labels)
-                _, var_preds = torch.max(var_outputs.data, 1)
+                outputs = net(inputs)
+                _, preds = torch.max(outputs.data, 1)
+                
+                if target_task == "airline":
+                    loss = criterion(outputs, airline_labels)
+                    all_air_preds.extend(preds.cpu().numpy())
+                    all_air_labels.extend(airline_labels.cpu().numpy())
+                else:
+                    loss = criterion(outputs, variant_labels)
+                    all_var_preds.extend(preds.cpu().numpy())
+                    all_var_labels.extend(variant_labels.cpu().numpy())
 
             loss.backward()
             optimizer.step()
 
             total_train_loss += loss.item()
-            all_var_preds.extend(var_preds.cpu().numpy())
-            all_var_labels.extend(variant_labels.cpu().numpy())
 
             if track_iterations:
                 window_loss += loss.item()
-                window_var_preds.extend(var_preds.cpu().numpy())
-                window_var_labels.extend(variant_labels.cpu().numpy())
-                if is_multitask:
-                    window_air_preds.extend(air_preds.cpu().numpy())
+                if is_multitask or target_task == "variant":
+                    window_var_preds.extend(var_preds.cpu().numpy() if is_multitask else preds.cpu().numpy())
+                    window_var_labels.extend(variant_labels.cpu().numpy())
+                if is_multitask or target_task == "airline":
+                    window_air_preds.extend(air_preds.cpu().numpy() if is_multitask else preds.cpu().numpy())
                     window_air_labels.extend(airline_labels.cpu().numpy())
 
                 if global_step % record_freq == 0 or (i + 1) == len(train_loader):
                     iter_steps.append(global_step)
                     iter_train_loss.append(window_loss / ((global_step % record_freq) or record_freq))
-                    iter_train_var_f1.append(f1_score(window_var_labels, window_var_preds, average='weighted', zero_division=0))
                     
                     if is_multitask:
+                        iter_train_var_f1.append(f1_score(window_var_labels, window_var_preds, average='weighted', zero_division=0))
                         iter_train_air_f1.append(f1_score(window_air_labels, window_air_preds, average='weighted', zero_division=0))
-                        v_var, v_air, v_loss = evaluate(net, val_loader, criterion, device, is_multitask, multi_task_loss)
+                        v_var, v_air, v_loss = evaluate(net, val_loader, criterion, device, is_multitask, multi_task_loss, target_task)
                         iter_val_var_f1.append(v_var); iter_val_air_f1.append(v_air); iter_val_loss.append(v_loss)
+                    elif target_task == "airline":
+                        iter_train_air_f1.append(f1_score(window_air_labels, window_air_preds, average='weighted', zero_division=0))
+                        v_air, v_loss = evaluate(net, val_loader, criterion, device, is_multitask, multi_task_loss, target_task)
+                        iter_val_air_f1.append(v_air); iter_val_loss.append(v_loss)
                     else:
-                        v_var, v_loss = evaluate(net, val_loader, criterion, device, is_multitask, multi_task_loss)
+                        iter_train_var_f1.append(f1_score(window_var_labels, window_var_preds, average='weighted', zero_division=0))
+                        v_var, v_loss = evaluate(net, val_loader, criterion, device, is_multitask, multi_task_loss, target_task)
                         iter_val_var_f1.append(v_var); iter_val_loss.append(v_loss)
                         
                     net.train()
                     window_loss = 0.0
                     window_var_preds, window_var_labels = [], []
-                    if is_multitask: window_air_preds, window_air_labels = [], []
+                    window_air_preds, window_air_labels = [], []
 
             progress.set_postfix(loss=f"{loss.item():.4f}")
 
-        train_var_f1[epoch] = f1_score(all_var_labels, all_var_preds, average='weighted', zero_division=0)
         train_loss[epoch] = float(total_train_loss) / len(train_loader)
+        
         if is_multitask:
+            train_var_f1[epoch] = f1_score(all_var_labels, all_var_preds, average='weighted', zero_division=0)
             train_air_f1[epoch] = f1_score(all_air_labels, all_air_preds, average='weighted', zero_division=0)
-
-        if is_multitask:
-            val_var_f1[epoch], val_air_f1[epoch], val_loss[epoch] = evaluate(net, val_loader, criterion, device, is_multitask, multi_task_loss)
+            val_var_f1[epoch], val_air_f1[epoch], val_loss[epoch] = evaluate(net, val_loader, criterion, device, is_multitask, multi_task_loss, target_task)
             print(f"Epoch {epoch + 1}: Train Loss: {train_loss[epoch]:.4f} | Train Var F1: {train_var_f1[epoch]:.4f} | Train Air F1: {train_air_f1[epoch]:.4f}")
             print(f"          Val Loss: {val_loss[epoch]:.4f} | Val Var F1: {val_var_f1[epoch]:.4f} | Val Air F1: {val_air_f1[epoch]:.4f}")
+        elif target_task == "airline":
+            train_air_f1[epoch] = f1_score(all_air_labels, all_air_preds, average='weighted', zero_division=0)
+            val_air_f1[epoch], val_loss[epoch] = evaluate(net, val_loader, criterion, device, is_multitask, multi_task_loss, target_task)
+            print(f"Epoch {epoch + 1}: Train Loss: {train_loss[epoch]:.4f} | Train Air F1: {train_air_f1[epoch]:.4f}")
+            print(f"          Val Loss: {val_loss[epoch]:.4f} | Val Air F1: {val_air_f1[epoch]:.4f}")
         else:
-            val_var_f1[epoch], val_loss[epoch] = evaluate(net, val_loader, criterion, device, is_multitask, multi_task_loss)
+            train_var_f1[epoch] = f1_score(all_var_labels, all_var_preds, average='weighted', zero_division=0)
+            val_var_f1[epoch], val_loss[epoch] = evaluate(net, val_loader, criterion, device, is_multitask, multi_task_loss, target_task)
             print(f"Epoch {epoch + 1}: Train Loss: {train_loss[epoch]:.4f} | Train Var F1: {train_var_f1[epoch]:.4f}")
             print(f"          Val Loss: {val_loss[epoch]:.4f} | Val Var F1: {val_var_f1[epoch]:.4f}")
 
@@ -214,18 +233,20 @@ def train_net(net, train_loader, val_loader, batch_size=64, learning_rate=0.01, 
             model_path = get_model_name(model_name, batch_size, learning_rate, epoch + 1, checkpoint_dir)
             
             history_dict = {
-                "train_var_f1": train_var_f1, "val_var_f1": val_var_f1,
                 "train_loss": train_loss, "val_loss": val_loss,
-                "train_air_f1": train_air_f1 if is_multitask else None,
-                "val_air_f1": val_air_f1 if is_multitask else None,
+                "train_var_f1": train_var_f1 if is_multitask or target_task == "variant" else None,
+                "val_var_f1": val_var_f1 if is_multitask or target_task == "variant" else None,
+                "train_air_f1": train_air_f1 if is_multitask or target_task == "airline" else None,
+                "val_air_f1": val_air_f1 if is_multitask or target_task == "airline" else None,
             }
             if track_iterations:
                 history_dict.update({
                     "iter_steps": iter_steps, 
                     "iter_train_loss": iter_train_loss, "iter_val_loss": iter_val_loss,
-                    "iter_train_var_f1": iter_train_var_f1, "iter_val_var_f1": iter_val_var_f1,
-                    "iter_train_air_f1": iter_train_air_f1 if is_multitask else None,
-                    "iter_val_air_f1": iter_val_air_f1 if is_multitask else None,
+                    "iter_train_var_f1": iter_train_var_f1 if is_multitask or target_task == "variant" else None, 
+                    "iter_val_var_f1": iter_val_var_f1 if is_multitask or target_task == "variant" else None,
+                    "iter_train_air_f1": iter_train_air_f1 if is_multitask or target_task == "airline" else None,
+                    "iter_val_air_f1": iter_val_air_f1 if is_multitask or target_task == "airline" else None,
                     "global_step": global_step
                 })
             
@@ -235,17 +256,14 @@ def train_net(net, train_loader, val_loader, batch_size=64, learning_rate=0.01, 
                 "loss_state_dict": multi_task_loss.state_dict() if multi_task_loss is not None else None,
                 "optimizer_state_dict": optimizer.state_dict(),
                 "history": history_dict,
-
                 "metadata": {
                     "model_name": model_name,
                     "architecture_class": net.__class__.__name__,
                     "is_multitask": is_multitask,
+                    "target_task": target_task,
                     "hyperparameters": {
-                        "batch_size": batch_size,
-                        "learning_rate": learning_rate,
-                        "num_epochs_total": num_epochs,
-                        "num_workers": num_workers,
-                        "optimizer": optimizer.__class__.__name__
+                        "batch_size": batch_size, "learning_rate": learning_rate,
+                        "num_epochs_total": num_epochs, "num_workers": num_workers,
                     }
                 }
             }, model_path)
@@ -256,21 +274,25 @@ def train_net(net, train_loader, val_loader, batch_size=64, learning_rate=0.01, 
     model_name = getattr(net, 'name', 'model')
     model_base_path = get_model_name(model_name, batch_size, learning_rate, "final", checkpoint_dir).replace('.pt', '')
     
-    np.savetxt(f"{model_base_path}_train_var_f1.csv", train_var_f1)
-    np.savetxt(f"{model_base_path}_val_var_f1.csv", val_var_f1)
+    # Save the appropriate CSVs
     np.savetxt(f"{model_base_path}_train_loss.csv", train_loss)
     np.savetxt(f"{model_base_path}_val_loss.csv", val_loss)
-    if is_multitask:
-        np.savetxt(f"{model_base_path}_train_air_f1.csv", train_air_f1)
-        np.savetxt(f"{model_base_path}_val_air_f1.csv", val_air_f1)
-    
     if track_iterations and len(iter_steps) > 0:
         np.savetxt(f"{model_base_path}_iter_steps.csv", iter_steps)
         np.savetxt(f"{model_base_path}_iter_train_loss.csv", iter_train_loss)
         np.savetxt(f"{model_base_path}_iter_val_loss.csv", iter_val_loss)
-        np.savetxt(f"{model_base_path}_iter_train_var_f1.csv", iter_train_var_f1)
-        np.savetxt(f"{model_base_path}_iter_val_var_f1.csv", iter_val_var_f1)
-        if is_multitask:
+
+    if is_multitask or target_task == "variant":
+        np.savetxt(f"{model_base_path}_train_var_f1.csv", train_var_f1)
+        np.savetxt(f"{model_base_path}_val_var_f1.csv", val_var_f1)
+        if track_iterations and len(iter_steps) > 0:
+            np.savetxt(f"{model_base_path}_iter_train_var_f1.csv", iter_train_var_f1)
+            np.savetxt(f"{model_base_path}_iter_val_var_f1.csv", iter_val_var_f1)
+
+    if is_multitask or target_task == "airline":
+        np.savetxt(f"{model_base_path}_train_air_f1.csv", train_air_f1)
+        np.savetxt(f"{model_base_path}_val_air_f1.csv", val_air_f1)
+        if track_iterations and len(iter_steps) > 0:
             np.savetxt(f"{model_base_path}_iter_train_air_f1.csv", iter_train_air_f1)
             np.savetxt(f"{model_base_path}_iter_val_air_f1.csv", iter_val_air_f1)
 

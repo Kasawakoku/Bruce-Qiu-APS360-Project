@@ -100,6 +100,12 @@ def main():
         optimizer = optim.AdamW(list(model.parameters()) + list(multi_task_loss.parameters()), lr=args.lr)
     else:
         optimizer = optim.AdamW(model.parameters(), lr=args.lr)
+
+    # Determine the target task for single-task models
+    target_task = "variant" # default
+    if not args.is_multitask:
+        if "airline" in args.model:
+            target_task = "airline"
     
     start_epoch, loaded_history = 0, None
     if args.resume_checkpoint:
@@ -141,7 +147,8 @@ def main():
             record_freq=args.record_freq,
             custom_model_name=args.run_name,
             num_workers=args.num_workers,
-            multi_task_loss=multi_task_loss
+            multi_task_loss=multi_task_loss,
+            target_task=target_task
         )
         
         # In the 'train' block, change the plot_training_curve call to include the save_path_prefix:
