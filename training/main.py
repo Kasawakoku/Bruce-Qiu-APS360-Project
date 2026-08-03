@@ -40,6 +40,11 @@ def main():
     parser.add_argument('--epochs', type=int, default=30)
     parser.add_argument('--image_size', type=int, default=300) # 224 for ablation study of ViT, back to 300 for regular CNNs
     
+    parser.add_argument('--weight_decay', type=float, default=0.01, help="Weight decay for AdamW")
+    parser.add_argument('--hidden_dim', type=int, default=512, help="Hidden dimension for MLP heads")
+    parser.add_argument('--dropout_rate', type=float, default=0.3, help="Dropout rate for MLP heads")
+    parser.add_argument('--use_scheduler', action='store_true', help="Enable ReduceLROnPlateau scheduler")
+    
     # Logging and checkpoints
     parser.add_argument('--checkpoint_dir', type=str, default="checkpoints")
     parser.add_argument('--resume_checkpoint', type=str, default=None, help="Path to checkpoint to resume/predict from")
@@ -79,7 +84,8 @@ def main():
     elif args.model == 'primary_resnet':
         model = DualBranchResNet(num_variant_classes=NUM_VARIANT_CLASSES, num_airline_classes=NUM_AIRLINE_CLASSES).to(device)
     elif args.model == 'primary_convnext':
-        model = DualBranchConvNeXt(num_variant_classes=NUM_VARIANT_CLASSES, num_airline_classes=NUM_AIRLINE_CLASSES).to(device)
+        model = DualBranchConvNeXt(num_variant_classes=NUM_VARIANT_CLASSES, num_airline_classes=NUM_AIRLINE_CLASSES,
+                                   hidden_dim=args.hidden_dim, dropout_rate=args.dropout_rate).to(device)
     elif args.model == 'primary_vit':
         model = DualBranchViT(num_variant_classes=NUM_VARIANT_CLASSES, num_airline_classes=NUM_AIRLINE_CLASSES).to(device)
     elif args.model == 'single_variant_efficientnet':
@@ -148,6 +154,10 @@ def main():
             custom_model_name=args.run_name,
             num_workers=args.num_workers,
             multi_task_loss=multi_task_loss,
+            hidden_dim=args.hidden_dim,
+            dropout_rate=args.dropout_rate,
+            weight_decay=args.weight_decay, 
+            use_scheduler=args.use_scheduler,     
             target_task=target_task
         )
         
@@ -210,6 +220,13 @@ def main():
             bs = metadata["hyperparameters"]["batch_size"]
             lr = metadata["hyperparameters"]["learning_rate"]
             is_multitask = metadata.get("is_multitask", args.is_multitask)
+            
+            # Extract new parameters with safe defaults for older checkpoints
+            wd = metadata["hyperparameters"].get("weight_decay", 0.01)
+            hd = metadata["hyperparameters"].get("hidden_dim", 512)
+            drop = metadata["hyperparameters"].get("dropout_rate", 0.3)
+            use_sch = metadata["hyperparameters"].get("use_scheduler", False)
+            
         else:
             print("Warning: No metadata found in checkpoint. Falling back to argparse flags.")
             model_name = args.run_name if args.run_name else args.model
@@ -217,23 +234,29 @@ def main():
             lr = args.lr
             is_multitask = args.is_multitask
             
+            # Fall back to the argparse flags if metadata is missing
+            wd = args.weight_decay
+            hd = args.hidden_dim
+            drop = args.dropout_rate
+            use_sch = args.use_scheduler
+            
         epoch = checkpoint.get("epoch", "unknown")
 
         # 1. Reconstruct the base path for where the CSVs were saved (always saved with 'final')
-        #csv_base_path = os.path.join(args.checkpoint_dir, f"model_{model_name}_bs{bs}_lr{lr}_final")
-        csv_base_path = get_model_name(model_name, bs, lr, "final", args.checkpoint_dir).replace('.pt', '')
-        
+        csv_base_path = get_model_name(model_name, bs, lr, wd, hd, drop, use_sch, "final", args.checkpoint_dir).replace('.pt', '')    
+
         # 2. Reconstruct the file name prefix for the PNGs
         save_prefix = os.path.join(args.checkpoint_dir, f"graph_{model_name}_epoch{epoch}")
         
         print(f"Generating graphs using CSVs located at: {csv_base_path}*.csv (Up to epoch {args.epochs})")
         
-        # Pass args.epochs as max_epoch
+        # 3. Determine single-task target
         target_task = "variant"
         if not is_multitask and "airline" in model_name.lower():
             target_task = "airline"
             
+        # Pass args.epochs as max_epoch
         plot_training_curve(csv_base_path, is_multitask=is_multitask, target_task=target_task, save_path_prefix=save_prefix, max_epoch=args.epochs)
-
+        
 if __name__ == "__main__":
     main()

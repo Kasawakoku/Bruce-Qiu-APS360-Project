@@ -7,11 +7,15 @@ import matplotlib.pyplot as plt
 from PIL import Image
 from torchvision import transforms
 
-def get_model_name(name, batch_size, learning_rate, epoch, checkpoint_dir="checkpoints"):
+def get_model_name(name, batch_size, learning_rate, weight_decay, hidden_dim, dropout_rate, use_scheduler, epoch, checkpoint_dir="checkpoints"):
+    sch_str = "ON" if use_scheduler else "OFF"
+    # Format: Primary_ConvNeXt_bs64_lr0.0001_wd0.01_hd512_drop0.3_schON_epoch20
+    file_name = f"{name}_bs{batch_size}_lr{learning_rate}_wd{weight_decay}_hd{hidden_dim}_drop{dropout_rate}_sch{sch_str}_epoch{epoch}.pt"
+    
     if not os.path.exists(checkpoint_dir):
         os.makedirs(checkpoint_dir)
-    filename = f"model_{name}_bs{batch_size}_lr{learning_rate}_epoch{epoch}.pt"
-    return os.path.join(checkpoint_dir, filename)
+        
+    return os.path.join(checkpoint_dir, file_name)
 
 def load_model_checkpoint(checkpoint_path, model, optimizer=None, device="cpu", multi_task_loss=None):
     checkpoint = torch.load(checkpoint_path, map_location=device, weights_only=False)

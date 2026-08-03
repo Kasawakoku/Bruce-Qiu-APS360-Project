@@ -7,6 +7,7 @@ import torch.optim as optim
 import numpy as np
 from tqdm import tqdm
 from sklearn.metrics import f1_score
+from torch.optim.lr_scheduler import ReduceLROnPlateau
 from utils import get_model_name
 
 def evaluate(net, loader, criterion, device, is_multitask=True, multi_task_loss=None, target_task="variant"):
@@ -68,7 +69,9 @@ def evaluate(net, loader, criterion, device, is_multitask=True, multi_task_loss=
 
 def train_net(net, train_loader, val_loader, batch_size=64, learning_rate=0.01, num_epochs=30, checkpoint_freq=1, 
               is_multitask=True, checkpoint_dir="checkpoints", optimizer=None, start_epoch=0, 
-              track_iterations=True, record_freq=100, loaded_history=None, custom_model_name=None, num_workers=4, multi_task_loss=None, target_task="variant"):
+              track_iterations=True, record_freq=100, loaded_history=None, custom_model_name=None, 
+              num_workers=4, multi_task_loss=None, target_task="variant", 
+              weight_decay=0.01, hidden_dim=512, dropout_rate=0.3, use_scheduler=False):
     
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(f"Training on device: {device}")
@@ -78,15 +81,22 @@ def train_net(net, train_loader, val_loader, batch_size=64, learning_rate=0.01, 
     criterion = nn.CrossEntropyLoss()
     if optimizer is None:
         if multi_task_loss is not None:
-            optimizer = optim.AdamW(list(net.parameters()) + list(multi_task_loss.parameters()), lr=learning_rate)
+            optimizer = optim.AdamW(list(net.parameters()) + list(multi_task_loss.parameters()), 
+                                    lr=learning_rate, weight_decay=weight_decay) 
         else:
-            optimizer = optim.AdamW(net.parameters(), lr=learning_rate)
+            optimizer = optim.AdamW(net.parameters(), lr=learning_rate, weight_decay=weight_decay) 
+
+    scheduler = None
+    if use_scheduler:
+        scheduler = ReduceLROnPlateau(optimizer, mode='min', factor=0.5, patience=2, min_lr=1e-6, verbose=True)
 
     train_var_f1, train_loss = np.zeros(num_epochs), np.zeros(num_epochs)
     val_var_f1, val_loss = np.zeros(num_epochs), np.zeros(num_epochs)
 
     train_air_f1 = np.zeros(num_epochs)
     val_air_f1 = np.zeros(num_epochs)
+
+    epoch_lrs = np.zeros(num_epochs)
 
     global_step = 0
     iter_steps = []
@@ -228,12 +238,25 @@ def train_net(net, train_loader, val_loader, batch_size=64, learning_rate=0.01, 
             print(f"Epoch {epoch + 1}: Train Loss: {train_loss[epoch]:.4f} | Train Var F1: {train_var_f1[epoch]:.4f}")
             print(f"          Val Loss: {val_loss[epoch]:.4f} | Val Var F1: {val_var_f1[epoch]:.4f}")
 
+        # Record the learning rate used for this epoch
+        current_lr = optimizer.param_groups[0]['lr']
+        epoch_lrs[epoch] = current_lr
+        
+        if use_scheduler:
+            scheduler.step(val_loss[epoch])
+            # If you want it to print the exact float instead of PyTorch's scientific notation:
+            new_lr = optimizer.param_groups[0]['lr']
+            if new_lr != current_lr:
+                print(f"*** Scheduler activated: Learning Rate dropped to {new_lr} ***")
+
         if (epoch + 1) % checkpoint_freq == 0 or (epoch + 1) == num_epochs:
             model_name = custom_model_name if custom_model_name else getattr(net, 'name', net.__class__.__name__)
-            model_path = get_model_name(model_name, batch_size, learning_rate, epoch + 1, checkpoint_dir)
-            
+            model_path = get_model_name(model_name, batch_size, learning_rate, weight_decay, 
+                                        hidden_dim, dropout_rate, use_scheduler, epoch + 1, checkpoint_dir) 
+                       
             history_dict = {
                 "train_loss": train_loss, "val_loss": val_loss,
+                "epoch_lrs": epoch_lrs,
                 "train_var_f1": train_var_f1 if is_multitask or target_task == "variant" else None,
                 "val_var_f1": val_var_f1 if is_multitask or target_task == "variant" else None,
                 "train_air_f1": train_air_f1 if is_multitask or target_task == "airline" else None,
@@ -262,8 +285,14 @@ def train_net(net, train_loader, val_loader, batch_size=64, learning_rate=0.01, 
                     "is_multitask": is_multitask,
                     "target_task": target_task,
                     "hyperparameters": {
-                        "batch_size": batch_size, "learning_rate": learning_rate,
-                        "num_epochs_total": num_epochs, "num_workers": num_workers,
+                        "batch_size": batch_size, 
+                        "learning_rate": learning_rate,
+                        "weight_decay": weight_decay,
+                        "hidden_dim": hidden_dim,
+                        "dropout_rate": dropout_rate,
+                        "use_scheduler": use_scheduler,
+                        "num_epochs_total": num_epochs, 
+                        "num_workers": num_workers,
                     }
                 }
             }, model_path)
@@ -272,11 +301,13 @@ def train_net(net, train_loader, val_loader, batch_size=64, learning_rate=0.01, 
     print("Total time elapsed: {:.2f} seconds".format(time.time() - start_time))
 
     model_name = getattr(net, 'name', 'model')
-    model_base_path = get_model_name(model_name, batch_size, learning_rate, "final", checkpoint_dir).replace('.pt', '')
+    model_base_path = get_model_name(model_name, batch_size, learning_rate, weight_decay, 
+                                     hidden_dim, dropout_rate, use_scheduler, "final", checkpoint_dir).replace('.pt', '')
     
     # Save the appropriate CSVs
     np.savetxt(f"{model_base_path}_train_loss.csv", train_loss)
     np.savetxt(f"{model_base_path}_val_loss.csv", val_loss)
+    np.savetxt(f"{model_base_path}_learning_rate.csv", epoch_lrs)
     if track_iterations and len(iter_steps) > 0:
         np.savetxt(f"{model_base_path}_iter_steps.csv", iter_steps)
         np.savetxt(f"{model_base_path}_iter_train_loss.csv", iter_train_loss)

@@ -15,8 +15,47 @@ from torchvision.models import (
 # ---------------------------------------------------------
 
 
+class DualBranchConvNeXt(nn.Module):
+    def __init__(self, num_variant_classes, num_airline_classes, hidden_dim=512, dropout_rate=0.3):
+        super(DualBranchConvNeXt, self).__init__()
+        self.name = "Primary_ConvNeXt"
+        
+        base_model = convnext_tiny(weights=ConvNeXt_Tiny_Weights.DEFAULT)
+        self.features = base_model.features
+        feature_dim = 768
+        
+        self.gap = nn.AdaptiveAvgPool2d(1)
+        self.amp = nn.AdaptiveMaxPool2d(1)
+        
+        # Inject the new variables here!
+        self.structural_mlp = nn.Sequential(
+            nn.LayerNorm(feature_dim),
+            nn.Linear(feature_dim, hidden_dim), 
+            nn.ReLU(), 
+            nn.Dropout(dropout_rate), 
+            nn.Linear(hidden_dim, num_variant_classes)
+        )
+        self.branding_mlp = nn.Sequential(
+            nn.LayerNorm(feature_dim),
+            nn.Linear(feature_dim, hidden_dim), 
+            nn.ReLU(), 
+            nn.Dropout(dropout_rate), 
+            nn.Linear(hidden_dim, num_airline_classes)
+        )
+
+    def forward(self, x):
+        shared_features = self.features(x)
+        
+        v = self.gap(shared_features).view(shared_features.size(0), -1)
+        variant_pred = self.structural_mlp(v)
+        
+        a = self.amp(shared_features).view(shared_features.size(0), -1)
+        airline_pred = self.branding_mlp(a)
+        
+        return variant_pred, airline_pred
+
 # ---------------------------------------------------------
-# ABLATIONS
+# ABLATION MODELS
 # ---------------------------------------------------------
 class DualBranchEfficientNet(nn.Module):
     def __init__(self, num_variant_classes, num_airline_classes):
@@ -96,38 +135,6 @@ class DualBranchResNet(nn.Module):
         
         return variant_pred, airline_pred
 
-
-class DualBranchConvNeXt(nn.Module):
-    def __init__(self, num_variant_classes, num_airline_classes):
-        super(DualBranchConvNeXt, self).__init__()
-        self.name = "Primary_ConvNeXt"
-        
-        base_model = convnext_tiny(weights=ConvNeXt_Tiny_Weights.DEFAULT)
-        self.features = base_model.features
-        feature_dim = 768
-        
-        self.gap = nn.AdaptiveAvgPool2d(1)
-        self.amp = nn.AdaptiveMaxPool2d(1)
-        
-        self.structural_mlp = nn.Sequential(
-            nn.LayerNorm(feature_dim),
-            nn.Linear(feature_dim, 512), nn.ReLU(), nn.Dropout(0.3), nn.Linear(512, num_variant_classes)
-        )
-        self.branding_mlp = nn.Sequential(
-            nn.LayerNorm(feature_dim),
-            nn.Linear(feature_dim, 512), nn.ReLU(), nn.Dropout(0.3), nn.Linear(512, num_airline_classes)
-        )
-
-    def forward(self, x):
-        shared_features = self.features(x)
-        
-        v = self.gap(shared_features).view(shared_features.size(0), -1)
-        variant_pred = self.structural_mlp(v)
-        
-        a = self.amp(shared_features).view(shared_features.size(0), -1)
-        airline_pred = self.branding_mlp(a)
-        
-        return variant_pred, airline_pred
 
 class DualBranchViT(nn.Module):
     def __init__(self, num_variant_classes, num_airline_classes):
@@ -291,7 +298,7 @@ class BaselineAirlineCNN(nn.Module):
         return x
 
 # ---------------------------------------------------------
-# ABLATION MODELS
+# ABLATION MODELS FOR BASELINE (UNUSED)
 # ---------------------------------------------------------
 class BaselineEfficientNet(nn.Module):
     def __init__(self, num_variant_classes):
@@ -333,7 +340,7 @@ class BaselineConvNeXt(nn.Module):
     def forward(self, x): return self.model(x)
 
 # ---------------------------------------------------------
-# Uncertainty-Based Adaptive Weighting
+# Uncertainty-Based Adaptive Weighting (Multitask Loss Function)
 # ---------------------------------------------------------
 
 class MultiTaskLoss(nn.Module):
