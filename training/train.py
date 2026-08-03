@@ -1,6 +1,7 @@
 # Core training and evaluation loops
 
 import time
+import os
 import torch
 import torch.nn as nn
 import torch.optim as optim
@@ -127,6 +128,8 @@ def train_net(net, train_loader, val_loader, batch_size=64, learning_rate=0.01, 
                 iter_train_air_f1 = loaded_history.get('iter_train_air_f1', [])
                 iter_val_air_f1 = loaded_history.get('iter_val_air_f1', [])
 
+    best_val_f1 = 0.0
+    check_best_after_epoch = 20  # Ignore "peaks" before this epoch
     start_time = time.time()
     print("Start training...")
 
@@ -249,11 +252,22 @@ def train_net(net, train_loader, val_loader, batch_size=64, learning_rate=0.01, 
             if new_lr != current_lr:
                 print(f"*** Scheduler activated: Learning Rate dropped to {new_lr} ***")
 
-        if (epoch + 1) % checkpoint_freq == 0 or (epoch + 1) == num_epochs:
+        # Save Conditions
+        is_freq_save = ((epoch + 1) % checkpoint_freq == 0) or ((epoch + 1) == num_epochs)
+        is_best_save = False
+
+        # Determine the target metric (Variant F1 for multitask, or Airline F1 if that's the target)
+        current_f1 = val_var_f1[epoch] if (is_multitask or target_task == "variant") else val_air_f1[epoch]
+
+        if (epoch + 1) >= check_best_after_epoch and current_f1 > best_val_f1:
+            best_val_f1 = current_f1
+            is_best_save = True
+            print(f"*** New Best Validation F1: {best_val_f1:.4f}! (Saving Best Weights at Epoch {epoch+1}) ***")
+
+        # Build Dictionary
+        if is_freq_save or is_best_save:
             model_name = custom_model_name if custom_model_name else getattr(net, 'name', net.__class__.__name__)
-            model_path = get_model_name(model_name, batch_size, learning_rate, weight_decay, 
-                                        hidden_dim, dropout_rate, use_scheduler, epoch + 1, checkpoint_dir) 
-                       
+            
             history_dict = {
                 "train_loss": train_loss, "val_loss": val_loss,
                 "epoch_lrs": epoch_lrs,
@@ -273,7 +287,7 @@ def train_net(net, train_loader, val_loader, batch_size=64, learning_rate=0.01, 
                     "global_step": global_step
                 })
             
-            torch.save({
+            save_dict = {
                 "epoch": epoch + 1,
                 "model_state_dict": net.state_dict(),
                 "loss_state_dict": multi_task_loss.state_dict() if multi_task_loss is not None else None,
@@ -285,17 +299,34 @@ def train_net(net, train_loader, val_loader, batch_size=64, learning_rate=0.01, 
                     "is_multitask": is_multitask,
                     "target_task": target_task,
                     "hyperparameters": {
-                        "batch_size": batch_size, 
-                        "learning_rate": learning_rate,
-                        "weight_decay": weight_decay,
-                        "hidden_dim": hidden_dim,
-                        "dropout_rate": dropout_rate,
-                        "use_scheduler": use_scheduler,
-                        "num_epochs_total": num_epochs, 
-                        "num_workers": num_workers,
+                        "batch_size": batch_size, "learning_rate": learning_rate,
+                        "weight_decay": weight_decay, "hidden_dim": hidden_dim,
+                        "dropout_rate": dropout_rate, "use_scheduler": use_scheduler,
+                        "num_epochs_total": num_epochs, "num_workers": num_workers,
                     }
                 }
-            }, model_path)
+            }
+
+            # Rooute to Files
+            if is_freq_save:
+                model_path = get_model_name(model_name, batch_size, learning_rate, weight_decay, 
+                                            hidden_dim, dropout_rate, use_scheduler, epoch + 1, checkpoint_dir) 
+                torch.save(save_dict, model_path)
+                
+            if is_best_save:
+                # Dynamically construct the string to show "BEST_37" or "BEST_42"
+                best_epoch_string = f"BEST_{epoch + 1}"
+                best_path = get_model_name(model_name, batch_size, learning_rate, weight_decay, 
+                                           hidden_dim, dropout_rate, use_scheduler, best_epoch_string, checkpoint_dir)
+                
+                # Delete any older BEST files before saving the new one
+                for filename in os.listdir(checkpoint_dir):
+                    if "BEST" in filename and model_name in filename:
+                        os.remove(os.path.join(checkpoint_dir, filename))
+                
+                torch.save(save_dict, best_path)
+            
+            
 
     print('Finished Training')
     print("Total time elapsed: {:.2f} seconds".format(time.time() - start_time))
