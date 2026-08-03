@@ -88,7 +88,7 @@ def train_net(net, train_loader, val_loader, batch_size=64, learning_rate=0.01, 
 
     scheduler = None
     if use_scheduler:
-        scheduler = ReduceLROnPlateau(optimizer, mode='min', factor=0.5, patience=2, min_lr=1e-6, verbose=True)
+        scheduler = ReduceLROnPlateau(optimizer, mode='min', factor=0.5, patience=2, min_lr=1e-6)
 
     train_var_f1, train_loss = np.zeros(num_epochs), np.zeros(num_epochs)
     val_var_f1, val_loss = np.zeros(num_epochs), np.zeros(num_epochs)
