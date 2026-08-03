@@ -129,6 +129,7 @@ def train_net(net, train_loader, val_loader, batch_size=64, learning_rate=0.01, 
                 iter_val_air_f1 = loaded_history.get('iter_val_air_f1', [])
 
     best_val_f1 = 0.0
+    best_val_loss_for_f1 = float('inf')
     check_best_after_epoch = 20  # Ignore "peaks" before this epoch
     start_time = time.time()
     print("Start training...")
@@ -256,13 +257,20 @@ def train_net(net, train_loader, val_loader, batch_size=64, learning_rate=0.01, 
         is_freq_save = ((epoch + 1) % checkpoint_freq == 0) or ((epoch + 1) == num_epochs)
         is_best_save = False
 
-        # Determine the target metric (Variant F1 for multitask, or Airline F1 if that's the target)
         current_f1 = val_var_f1[epoch] if (is_multitask or target_task == "variant") else val_air_f1[epoch]
+        current_loss = val_loss[epoch]
 
-        if (epoch + 1) >= check_best_after_epoch and current_f1 > best_val_f1:
-            best_val_f1 = current_f1
-            is_best_save = True
-            print(f"*** New Best Validation F1: {best_val_f1:.4f}! (Saving Best Weights at Epoch {epoch+1}) ***")
+        # The Tie-Breaking Logic
+        if (epoch + 1) >= check_best_after_epoch:
+            if current_f1 > best_val_f1:
+                best_val_f1 = current_f1
+                best_val_loss_for_f1 = current_loss
+                is_best_save = True
+                print(f"*** New Best Validation F1: {best_val_f1:.4f}! (Saving Best Weights at Epoch {epoch+1}) ***")
+            elif current_f1 == best_val_f1 and current_loss < best_val_loss_for_f1:
+                best_val_loss_for_f1 = current_loss
+                is_best_save = True
+                print(f"*** Tied F1, but Lower Loss: {current_loss:.4f}! (Saving Best Weights at Epoch {epoch+1}) ***")
 
         # Build Dictionary
         if is_freq_save or is_best_save:
