@@ -38,7 +38,7 @@ python ./main.py \
     --hidden_dim 512 \
     --use_scheduler \
     --checkpoint_freq 20 \
-    --checkpoint_dir "./checkpoints/final/primary_convnext_final_schedON" \
+    --checkpoint_dir "./checkpoints/final/primary_convnext_final_schedON_100epochs" \
     --image_size 300 \
     --num_workers 8 
     
