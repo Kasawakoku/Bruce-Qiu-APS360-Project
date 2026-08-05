@@ -9,7 +9,7 @@ from torch.utils.data import DataLoader, Subset
 
 from models import MultiTaskLoss, DualBranchEfficientNet, BaselineVariantCNN, BaselineAirlineCNN, DualBranchResNet, DualBranchConvNeXt, DualBranchViT, SingleTaskNet
 from dataset import AirlinerDataset, load_split_dataframes, build_mapping_from_csv, get_transforms
-from train import train_net, evaluate
+from train import train_net, evaluate, test_evaluate
 from utils import load_model_checkpoint, plot_training_curve, predict_image, get_model_name
 
 def main():
@@ -55,6 +55,8 @@ def main():
     
     # Inference specific
     parser.add_argument('--image_path', type=str, default=None, help="Image to predict (for predict mode)")
+    parser.add_argument('--output_test_csv', action='store_true', help="Output per-class accuracy CSVs during test mode")
+    parser.add_argument('--test_csv_dir', type=str, default="test_results", help="Directory to save test CSVs")
 
     # Plotting
 
@@ -171,21 +173,36 @@ def main():
         variant_idx_to_name = {v: k for k, v in variant_mapping.items()}
         airline_idx_to_name = {v: k for k, v in airline_mapping.items()}
 
-        result = predict_image(
+        # Predict image now returns lists of tuples: [(class_name, probability), ...]
+        var_results, air_results = predict_image(
             image_path=args.image_path,
             model=model,
             device=device,
             variant_idx_to_name=variant_idx_to_name,
             airline_idx_to_name=airline_idx_to_name,
             is_multitask=args.is_multitask,
-            image_size=args.image_size
+            image_size=args.image_size,
+            top_k=5,
+            show_plot=True # Set this to False if you don't want the pop-up window
         )
         
+        print("\n" + "="*30)
+        print("       TOP 5 PREDICTIONS")
+        print("="*30)
+        
         if args.is_multitask:
-            print(f"Predicted Variant: {result[0]}")
-            print(f"Predicted Airline: {result[1]}")
+            print("\n--- VARIANT ---")
+            for i, (name, prob) in enumerate(var_results):
+                print(f"  {i+1}. {name:<25} {prob*100:>6.2f}%")
+                
+            print("\n--- AIRLINE ---")
+            for i, (name, prob) in enumerate(air_results):
+                print(f"  {i+1}. {name:<25} {prob*100:>6.2f}%")
         else:
-            print(f"Predicted Variant: {result}")
+            print("\n--- PREDICTIONS ---")
+            for i, (name, prob) in enumerate(var_results):
+                print(f"  {i+1}. {name:<25} {prob*100:>6.2f}%")
+        print("="*30 + "\n")
 
     elif args.mode == 'test':
         # Load just the test dataset
@@ -199,12 +216,29 @@ def main():
             raise ValueError("Must provide --resume_checkpoint in test mode.")
             
         criterion = torch.nn.CrossEntropyLoss()
+        
+        # Reverse the mappings for CSV output
+        variant_idx_to_name = {v: k for k, v in variant_mapping.items()}
+        airline_idx_to_name = {v: k for k, v in airline_mapping.items()}
+        
+        run_name = args.run_name if args.run_name else args.model
+
         if args.is_multitask:
-            test_var_f1, test_air_f1, test_loss = evaluate(model, test_loader, criterion, device, is_multitask=True)
+            test_var_f1, test_air_f1, test_loss = test_evaluate(
+                net=model, loader=test_loader, criterion=criterion, device=device,
+                variant_idx_to_name=variant_idx_to_name, airline_idx_to_name=airline_idx_to_name,
+                is_multitask=True, target_task=target_task, 
+                output_csv=args.output_test_csv, csv_dir=args.test_csv_dir, run_name=run_name
+            )
             print(f"Final Test - Var F1: {test_var_f1:.4f} | Air F1: {test_air_f1:.4f} | Loss: {test_loss:.4f}")
         else:
-            test_var_f1, test_loss = evaluate(model, test_loader, criterion, device, is_multitask=False)
-            print(f"Final Test - Var F1: {test_var_f1:.4f} | Loss: {test_loss:.4f}")
+            test_f1, test_loss = test_evaluate(
+                net=model, loader=test_loader, criterion=criterion, device=device,
+                variant_idx_to_name=variant_idx_to_name, airline_idx_to_name=airline_idx_to_name,
+                is_multitask=False, target_task=target_task, 
+                output_csv=args.output_test_csv, csv_dir=args.test_csv_dir, run_name=run_name
+            )
+            print(f"Final Test - {target_task.capitalize()} F1: {test_f1:.4f} | Loss: {test_loss:.4f}")
 
     elif args.mode == 'graph':
         if not args.resume_checkpoint:
@@ -257,6 +291,10 @@ def main():
             
         # Pass args.epochs as max_epoch
         plot_training_curve(csv_base_path, is_multitask=is_multitask, target_task=target_task, save_path_prefix=save_prefix, max_epoch=args.epochs)
-        
+
 if __name__ == "__main__":
     main()
+
+
+# IDEAS: output metrics in csvs for each class in test mode
+# for predict mode, output loss and/or top 5 predicated classes with probabilities, and maybe a visualization of the image with the predicted class highlighted.

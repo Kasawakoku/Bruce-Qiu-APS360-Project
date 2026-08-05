@@ -9,7 +9,131 @@ import numpy as np
 from tqdm import tqdm
 from sklearn.metrics import f1_score
 from torch.optim.lr_scheduler import ReduceLROnPlateau
+from collections import defaultdict
+import csv
 from utils import get_model_name
+
+
+# Evluation function for Test Mode to output per-class accuracy to CSV files
+def test_evaluate(net, loader, criterion, device, variant_idx_to_name=None, airline_idx_to_name=None, 
+                  is_multitask=True, target_task="variant", output_csv=False, csv_dir="test_results", run_name="model"):
+    
+    total_loss = 0.0
+    all_var_preds, all_var_labels = [], []
+    all_air_preds, all_air_labels = [], []
+    
+    # Track correct and total predictions per class
+    var_correct = defaultdict(int)
+    var_total = defaultdict(int)
+    air_correct = defaultdict(int)
+    air_total = defaultdict(int)
+
+    net.eval()
+    with torch.no_grad():
+        for data in loader:
+            inputs, variant_labels, airline_labels = data
+            inputs = inputs.to(device)
+            variant_labels = variant_labels.to(device)
+            airline_labels = airline_labels.to(device)
+
+            if is_multitask:
+                var_outputs, air_outputs = net(inputs)
+                loss_v = criterion(var_outputs, variant_labels)
+                loss_a = criterion(air_outputs, airline_labels)
+                loss = loss_v + loss_a # Use simple sum for testing metric
+                
+                _, var_preds = torch.max(var_outputs.data, 1)
+                _, air_preds = torch.max(air_outputs.data, 1)
+                
+                var_preds_np = var_preds.cpu().numpy()
+                var_labels_np = variant_labels.cpu().numpy()
+                air_preds_np = air_preds.cpu().numpy()
+                air_labels_np = airline_labels.cpu().numpy()
+                
+                all_var_preds.extend(var_preds_np)
+                all_var_labels.extend(var_labels_np)
+                all_air_preds.extend(air_preds_np)
+                all_air_labels.extend(air_labels_np)
+                
+                # Update variant counts
+                for p, l in zip(var_preds_np, var_labels_np):
+                    var_total[l] += 1
+                    if p == l:
+                        var_correct[l] += 1
+                        
+                # Update airline counts
+                for p, l in zip(air_preds_np, air_labels_np):
+                    air_total[l] += 1
+                    if p == l:
+                        air_correct[l] += 1
+            else:
+                outputs = net(inputs)
+                _, preds = torch.max(outputs.data, 1)
+                preds_np = preds.cpu().numpy()
+                
+                if target_task == "airline":
+                    labels_np = airline_labels.cpu().numpy()
+                    loss = criterion(outputs, airline_labels)
+                    all_air_preds.extend(preds_np)
+                    all_air_labels.extend(labels_np)
+                    
+                    for p, l in zip(preds_np, labels_np):
+                        air_total[l] += 1
+                        if p == l:
+                            air_correct[l] += 1
+                else:
+                    labels_np = variant_labels.cpu().numpy()
+                    loss = criterion(outputs, variant_labels)
+                    all_var_preds.extend(preds_np)
+                    all_var_labels.extend(labels_np)
+                    
+                    for p, l in zip(preds_np, labels_np):
+                        var_total[l] += 1
+                        if p == l:
+                            var_correct[l] += 1
+
+            total_loss += loss.item()
+
+    avg_loss = float(total_loss) / len(loader)
+
+    # Output CSV Logic
+    if output_csv:
+        os.makedirs(csv_dir, exist_ok=True)
+        
+        if is_multitask or target_task != "airline":
+            var_csv_path = os.path.join(csv_dir, f"{run_name}_test_variant_accuracy.csv")
+            with open(var_csv_path, 'w', newline='', encoding='utf-8') as f:
+                writer = csv.writer(f)
+                writer.writerow(["Variant", "Total Images", "Correct %"])
+                for idx, name in variant_idx_to_name.items():
+                    total = var_total[idx]
+                    if total > 0:
+                        acc = (var_correct[idx] / total) * 100
+                        writer.writerow([name, total, f"{acc:.2f}"])
+            print(f"Saved Variant Test Accuracy to: {var_csv_path}")
+
+        if is_multitask or target_task == "airline":
+            air_csv_path = os.path.join(csv_dir, f"{run_name}_test_airline_accuracy.csv")
+            with open(air_csv_path, 'w', newline='', encoding='utf-8') as f:
+                writer = csv.writer(f)
+                writer.writerow(["Airline", "Total Images", "Correct %"])
+                for idx, name in airline_idx_to_name.items():
+                    total = air_total[idx]
+                    if total > 0:
+                        acc = (air_correct[idx] / total) * 100
+                        writer.writerow([name, total, f"{acc:.2f}"])
+            print(f"Saved Airline Test Accuracy to: {air_csv_path}")
+
+    # Final Return Logic
+    if is_multitask:
+        var_f1 = f1_score(all_var_labels, all_var_preds, average='weighted', zero_division=0)
+        air_f1 = f1_score(all_air_labels, all_air_preds, average='weighted', zero_division=0)
+        return var_f1, air_f1, avg_loss
+    else:
+        if target_task == "airline":
+            return f1_score(all_air_labels, all_air_preds, average='weighted', zero_division=0), avg_loss
+        else:
+            return f1_score(all_var_labels, all_var_preds, average='weighted', zero_division=0), avg_loss
 
 def evaluate(net, loader, criterion, device, is_multitask=True, multi_task_loss=None, target_task="variant"):
     total_loss = 0.0

@@ -6,6 +6,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 from PIL import Image
 from torchvision import transforms
+import torch.nn.functional as F
+
 
 def get_model_name(name, batch_size, learning_rate, weight_decay, hidden_dim, dropout_rate, use_scheduler, epoch, checkpoint_dir="checkpoints"):
     sch_str = "ON" if use_scheduler else "OFF"
@@ -202,15 +204,16 @@ def pad_to_square(img, fill_color=(255, 255, 255)):
     new_img.paste(img, ((size - w) // 2, (size - h) // 2))
     return new_img
 
-def predict_image(image_path, model, device, variant_idx_to_name, airline_idx_to_name=None, is_multitask=True, image_size=224):
+def predict_image(image_path, model, device, variant_idx_to_name, airline_idx_to_name=None, is_multitask=True, image_size=300, top_k=5, show_plot=True):
     model.eval()
     try:
-        img = Image.open(image_path).convert('RGB')
+        # Keep a copy of the raw image for plotting
+        raw_img = Image.open(image_path).convert('RGB')
     except Exception as e:
         print(f"Error loading image: {e}")
         return None
         
-    img = pad_to_square(img)
+    img = pad_to_square(raw_img)
     transform = transforms.Compose([
         transforms.Resize((image_size, image_size)),
         transforms.ToTensor(),
@@ -222,13 +225,38 @@ def predict_image(image_path, model, device, variant_idx_to_name, airline_idx_to
     with torch.no_grad():
         if is_multitask:
             var_outputs, air_outputs = model(img_tensor)
-            var_idx = torch.argmax(var_outputs, dim=1).item()
-            air_idx = torch.argmax(air_outputs, dim=1).item()
-            var_pred = variant_idx_to_name[var_idx]
-            air_pred = airline_idx_to_name[air_idx]
-            return var_pred, air_pred
+            
+            # Apply softmax to convert raw logits to probabilities (0.0 to 1.0)
+            var_probs = F.softmax(var_outputs, dim=1)[0]
+            air_probs = F.softmax(air_outputs, dim=1)[0]
+            
+            # Get the top K probabilities and their corresponding indices
+            var_top_probs, var_top_idx = torch.topk(var_probs, min(top_k, len(variant_idx_to_name)))
+            air_top_probs, air_top_idx = torch.topk(air_probs, min(top_k, len(airline_idx_to_name)))
+            
+            # Map the indices back to their string names
+            var_results = [(variant_idx_to_name[idx.item()], prob.item()) for prob, idx in zip(var_top_probs, var_top_idx)]
+            air_results = [(airline_idx_to_name[idx.item()], prob.item()) for prob, idx in zip(air_top_probs, air_top_idx)]
+            
+            top_pred_str = f"Variant: {var_results[0][0]} ({var_results[0][1]*100:.2f}%)\nAirline: {air_results[0][0]} ({air_results[0][1]*100:.2f}%)"
+            
         else:
             var_outputs = model(img_tensor)
-            var_idx = torch.argmax(var_outputs, dim=1).item()
-            var_pred = variant_idx_to_name[var_idx]
-            return var_pred
+            var_probs = F.softmax(var_outputs, dim=1)[0]
+            var_top_probs, var_top_idx = torch.topk(var_probs, min(top_k, len(variant_idx_to_name)))
+            
+            var_results = [(variant_idx_to_name[idx.item()], prob.item()) for prob, idx in zip(var_top_probs, var_top_idx)]
+            air_results = None
+            
+            top_pred_str = f"Prediction: {var_results[0][0]} ({var_results[0][1]*100:.2f}%)"
+
+    # Render the visualization
+    if show_plot:
+        plt.figure(figsize=(8, 8))
+        plt.imshow(raw_img)
+        plt.axis('off')
+        plt.title(top_pred_str, fontsize=14, pad=15, fontweight='bold')
+        plt.tight_layout()
+        plt.show()
+
+    return var_results, air_results
