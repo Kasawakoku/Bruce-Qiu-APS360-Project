@@ -5,6 +5,7 @@ from email import parser
 import torch
 import torch.optim as optim
 from yaml import parser
+import pandas as pd # Added pandas import
 from torch.utils.data import DataLoader, Subset
 
 from models import MultiTaskLoss, DualBranchEfficientNet, BaselineVariantCNN, BaselineAirlineCNN, DualBranchResNet, DualBranchConvNeXt, DualBranchViT, SingleTaskNet
@@ -57,6 +58,11 @@ def main():
     parser.add_argument('--image_path', type=str, default=None, help="Image to predict (for predict mode)")
     parser.add_argument('--output_test_csv', action='store_true', help="Output per-class accuracy CSVs during test mode")
     parser.add_argument('--test_csv_dir', type=str, default="test_results", help="Directory to save test CSVs")
+    
+    # Final Test specific
+    parser.add_argument('--test_final', action='store_true', help="Use the final holdout test set (metadata and images) in test mode")
+    parser.add_argument('--final_test_csv', type=str, default=r"../Data/metadata/final_test/final_test_airliners_metadata_updated.csv")
+    parser.add_argument('--final_data_dir', type=str, default=r"../Data/final_test_airliners_images")
 
     # Plotting
 
@@ -187,7 +193,7 @@ def main():
         )
         
         print("\n" + "="*30)
-        print("       TOP 5 PREDICTIONS")
+        print("      TOP 5 PREDICTIONS")
         print("="*30)
         
         if args.is_multitask:
@@ -205,10 +211,22 @@ def main():
         print("="*30 + "\n")
 
     elif args.mode == 'test':
-        # Load just the test dataset
-        _, _, test_df = load_split_dataframes(args.train_csv, args.val_csv, args.test_csv)
+        # Select data source based on --test_final flag
+        if args.test_final:
+            print(f"*** EVALUATING ON FINAL TEST SET ***")
+            print(f"CSV: {args.final_test_csv}")
+            print(f"Images: {args.final_data_dir}")
+            test_df = pd.read_csv(args.final_test_csv)
+            test_data_dir = args.final_data_dir
+            run_name = f"{args.run_name if args.run_name else args.model}_FINAL"
+        else:
+            # Load standard validation/test dataset
+            _, _, test_df = load_split_dataframes(args.train_csv, args.val_csv, args.test_csv)
+            test_data_dir = args.data_dir
+            run_name = args.run_name if args.run_name else args.model
+
         _, eval_transforms = get_transforms(args.image_size)
-        test_dataset = AirlinerDataset(test_df, args.data_dir, airline_mapping, variant_mapping, transform=eval_transforms)
+        test_dataset = AirlinerDataset(test_df, test_data_dir, airline_mapping, variant_mapping, transform=eval_transforms)
         test_loader = DataLoader(test_dataset, batch_size=args.batch_size, shuffle=False, num_workers=args.num_workers, pin_memory=True)
         
         # We must have a trained model to test!
@@ -220,8 +238,6 @@ def main():
         # Reverse the mappings for CSV output
         variant_idx_to_name = {v: k for k, v in variant_mapping.items()}
         airline_idx_to_name = {v: k for k, v in airline_mapping.items()}
-        
-        run_name = args.run_name if args.run_name else args.model
 
         if args.is_multitask:
             test_var_f1, test_air_f1, test_loss = test_evaluate(
@@ -294,7 +310,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-
-# IDEAS: output metrics in csvs for each class in test mode
-# for predict mode, output loss and/or top 5 predicated classes with probabilities, and maybe a visualization of the image with the predicted class highlighted.

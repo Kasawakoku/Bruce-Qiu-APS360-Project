@@ -149,6 +149,7 @@ Royal Jordanian Airlines:
 
 ITA Airways:
   - Alitalia
+  - Alitalia CityLiner
   - ITA Airways
   - ITA Arways
 # Done as some ITA Airways aircraft still operate in Alitalia livery. Will separate if necessary
@@ -356,7 +357,7 @@ China Airlines:
 
 China Eastern Airlines:
   - China Eastern Airlines
-  - China Airlines Cargo
+  - China Cargo Airlines
 
 China Express Airlines:
   - China Express Airlines
@@ -383,6 +384,7 @@ United Airlines:
   - United Air Lines
   - United Expres
   - United Express
+  - United Airways
 # Due to Continental Airlines livery being carried over post-merger
 
 Corendon Airlines:
@@ -567,6 +569,8 @@ Hainan Airlines:
   - Hong Kong Air Cargo
   - Hong Kong Airlines
   - Hong Kong Airlines Cargo
+  - Yangtze River Airlines
+
 # Due to livery being the same
 
 

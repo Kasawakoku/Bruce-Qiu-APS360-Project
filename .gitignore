@@ -16,4 +16,7 @@ logs/
 raw_aircraft.txt
 raw_airlines.txt
 
+new_airlines_discovered.csv
+new_models_discovered.csv
+
 fgvc-aircraft-2013b/

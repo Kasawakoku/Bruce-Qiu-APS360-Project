@@ -1,0 +1,41 @@
+variant,count
+ATR 72 (AT72/AT73/AT74/AT75/AT76),88
+Airbus A319-100/A319 NEO (A319/A19N),135
+Airbus A320-100/-200/A320 NEO (A320/A20N),604
+Airbus A321-100/-200/A321 NEO (A321/A21N),391
+Airbus A330-200/-800 NEO (A332/A338),97
+Airbus A330-300/-900 NEO (A333/A339),176
+Airbus A340-300 (A343),80
+Airbus A350-1000 XWB (A351),80
+Airbus A350-900 XWB (A359),177
+Airbus A380-800 (A388),84
+Boeing 737-300 (B733),80
+Boeing 737-400 (B734),80
+Boeing 737-700/Boeing 737 MAX 7 (B737/B37M),84
+Boeing 737-800/Boeing 737 MAX 8 (B738/B38M),549
+Boeing 737-900/-900ER/Boeing 737 MAX 9 (B739/B39M),93
+Boeing 747-400 (B744),126
+Boeing 747-8 (B748),90
+Boeing 757-200 (B752),83
+Boeing 767-300/-300ER (B763),151
+Boeing 777-200/-200ER/-200LR/F (B772/B77L),152
+Boeing 777-300/-300ER (B773/B77W),217
+Boeing 787-10 (B78X),85
+Boeing 787-8 (B788),94
+Boeing 787-9 (B789),178
+Bombardier CS300/Airbus A220-300 (BCS3),93
+Bombardier Global 6000/6500/Global Express (GLEX),80
+Canadian Regional Jet CRJ-900/-705/Challenger 890 (CRJ9),80
+Cessna 172 Skyhawk/Cutlass/Hawk (C172/C72R),80
+Cessna 525 CitationJet/CJ/M2 (C525),80
+Cessna 560XL Citation Excel/XLS (C56X),80
+De Havilland Canada DHC-8-400 Dash 8 (DH8D),80
+Embraer E175 (E75S/E75L),85
+Embraer E190/Embraer Lineage 1000 (E190),82
+Embraer E195 (E195),80
+Embraer EMB 505-300 Phenom 300 (E55P),80
+Gulfstream G500/550 (GA5C),80
+McDonnell Douglas MD-81/-82/-83/-88 (MD81/MD82/MD83/MD88),80
+OTHERS,268
+Pilatus PC-12 (PC12),80
+Piper PA-28 Cherokee (P28A/B/R/S/T/U),80
