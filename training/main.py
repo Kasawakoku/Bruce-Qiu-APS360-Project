@@ -61,8 +61,8 @@ def main():
     
     # Final Test specific
     parser.add_argument('--test_final', action='store_true', help="Use the final holdout test set (metadata and images) in test mode")
-    parser.add_argument('--final_test_csv', type=str, default=r"../Data/metadata/final_test/final_test_airliners_metadata_updated.csv")
-    parser.add_argument('--final_data_dir', type=str, default=r"../Data/final_test_airliners_images")
+    parser.add_argument('--final_test_csv', type=str, default=r"../Data/metadata/manual_test/manual_test_set_metadata.csv")
+    parser.add_argument('--final_data_dir', type=str, default=r"../Data/test_images")
 
     # Plotting
 

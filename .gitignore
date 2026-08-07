@@ -9,7 +9,7 @@ sample.html
 .venv/
 __pycache__/
 .torch_cache/
-logs/
+SLURM_scripts/
 *.out
 *.err
 
@@ -20,3 +20,10 @@ new_airlines_discovered.csv
 new_models_discovered.csv
 
 fgvc-aircraft-2013b/
+
+!sample1.png
+!sample2.png
+!sample3.png
+!sample4.png
+!sample5.png
+!sample6.png

@@ -2,10 +2,10 @@
 ## Introduction
 This is the repository for the **Ground-Level Fine-Grained Aircraft Variant and Airline Classification via Multi-Task Deep Learning** Project by Bruce Qiu, done for the APS360 Introducation to Deep Learning at the University of Toronto.  
 The main training and evaluating scripts, as well as CSVs recording training metrics for each model are stored in the `training` folder.  
-The `Data` folder consists of images (untracked), class definitions to define airline and aircraft hierarchy mapping, metadata CSVs that define metadata such as photo ID, aircraft variant, airline, and photographer attribution for each image, as well as data processing scripts. For explicit photographer and copyright attribution for each image, please check `./Data/metadata/airliners_metadata.csv`.  
+The `Data` folder consists of images (untracked), class definitions to define airline and aircraft hierarchy mapping, metadata CSVs that define metadata such as photo ID, aircraft variant, airline, and photographer attribution for each image, as well as data processing scripts. For explicit photographer and copyright attribution for each image used in the project, please check `./Data/metadata/airliners_metadata.csv`, `./Data/metadata/manual_test/manual_test_set_metadata.csv`, and `./Data/metadata/final_test/final_test_airliners_metadata.csv` (Unused in the final report).  
 
 ## Some Resources Used   
-[Airliners.net](https://www.airliners.net/) and its [photo database](https://www.airliners.net/search) is the main photo database used by the project. Its [terms of use](https://www.verticalscope.com/aboutus/tos.php?site=airliners.net) grants use of the site to "download any content made available on the Web Site" for "non-commercial, personal, or educational purposes". 
+[Airliners.net](https://www.airliners.net/) and its [photo database](https://www.airliners.net/search) is the main photo database used by the project. Its [terms of use](https://www.verticalscope.com/aboutus/tos.php?site=airliners.net) grants use of the site to "download any content made available on the Web Site" for "non-commercial, personal, or educational purposes". The manual dataset was constructed from the author's own images as well as some public domain and Creative Commons images from [Wikimedia Commons](https://commons.wikimedia.org/wiki/Main_Page).
 [The 2013 FGVC-Aircraft Benchmark](https://www.robots.ox.ac.uk/~vgg/data/fgvc-aircraft/) by Maji et al. is used by this project as a fallback dataset as well as reference for the aircraft hierarchy definitions in `./Data/class_definitions/aircraft_hierarchy.yaml`.  
   
 ## Setup
@@ -72,6 +72,7 @@ The neural network training, evaluation, and prediction pipeline is consolidated
 * `--mode`: The execution mode. Choices: `train`, `sanity`, `predict`, `test` *(Required)*.
 * `--model`: The architecture to use. Choices: `baseline_variant`, `primary` *(Required)*.
 * `--run_name`: Optional custom name for the run (useful for ablation studies). Overrides default naming.
+* `--is_multitask`: Flag to manually enable multi-task loss and dual-branch routing (Note: models with 'primary' in their name enable this automatically).
 
 **Hyperparameters:**
 * `--batch_size`: Batch size for DataLoaders (Default: `16`).
@@ -79,6 +80,10 @@ The neural network training, evaluation, and prediction pipeline is consolidated
 * `--epochs`: Total number of epochs to train for (Default: `30`).
 * `--image_size`: Dimensions to resize the square-padded images to (Default: `300`).
 * `--num_workers`: Number of background CPU processes for data loading. Ensure your SLURM script requests at least this many CPU cores (Default: `4`).
+* `--weight_decay`: Weight decay penalty for the AdamW optimizer (Default: `0.01`).
+* `--hidden_dim`: Hidden dimension size for the MLP classification heads (Default: `512`).
+* `--dropout_rate`: Dropout rate applied before the final classification layers (Default: `0.3`).
+* `--use_scheduler`: Flag to enable the `ReduceLROnPlateau` learning rate scheduler.
 
 **Checkpointing & Logging:**
 * `--checkpoint_dir`: Directory to save/load `.pt` model files (Default: `checkpoints`).
@@ -90,6 +95,9 @@ The neural network training, evaluation, and prediction pipeline is consolidated
 **Data Paths:**
 * `--data_dir`, `--train_csv`, `--val_csv`, `--test_csv`, `--airline_csv`, `--variant_csv`: Use these to override default relative data paths if running from a different directory.
 * `--image_path`: Path to a single image file *(Required ONLY when `--mode predict` is used)*.
+* `--test_final`: Flag to run evaluation on the completely separate final manual dataset instead of the standard split.
+* `--final_test_csv`: Path to the manual metadata CSV (Default: `../Data/metadata/manual_test/manual_test_set_metadata.csv`).
+* `--final_data_dir`: Path to the manual testing images directory (Default: `../Data/test_images`).
 
 ---
 
@@ -125,7 +133,7 @@ Loads a single image from disk, applies padding and standard transforms, and out
 python ./training/main.py --mode predict --model primary --image_path [image_directory] --resume_checkpoint [checkpoint_directory]
 ```
 
-#### 6. Final Evaluation (Test Set)
+#### 6. Standard Evaluation (Validation/Test Split)
 Runs the best saved checkpoint exclusively on the unseen `test_csv` split to calculate final Loss and Weighted F1-Scores.
 ```
 python ./training/main.py --mode test --model primary --resume_checkpoint [checkpoint_directory]
@@ -133,6 +141,21 @@ python ./training/main.py --mode test --model primary --resume_checkpoint [check
 
 #### 7. Generate Training Graphs (From Checkpoint)
 Reads a model's `.pt` checkpoint to automatically extract the hyperparameters, locate the associated CSV logs, and save the resulting graphs locally as PNG images.
-```bash
+```
 python ./training/main.py --mode graph --model primary --checkpoint_dir "checkpoints_primary" --resume_checkpoint [checkpoint_directory]
 ```
+
+#### 8. Manual Evaluation (Final Manual Test Set)
+Runs the best saved checkpoint exclusively on the entirely separate final manual dataset. This automatically appends `_FINAL` to your output CSVs to prevent overwriting standard test results.
+```
+python ./training/main.py --mode test --model primary --test_final --resume_checkpoint [checkpoint_directory]
+```
+
+## Sample Outputs
+Percentages are most likely softmax probability outputs.
+![sample1](sample1.png)
+![sample2](sample2.png)
+![sample3](sample3.png)
+![sample4](sample4.png)
+![sample5](sample5.png)
+![sample6](sample6.png)

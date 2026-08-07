@@ -1,4 +1,5 @@
-# smart_scraper.py
+# smart scraper to collect a more balanced test set
+# note: the smarter "final test set" was not used in the final report as it shares the same source as the initial test set
 import sys
 import os
 import time
